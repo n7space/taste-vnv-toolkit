@@ -55,3 +55,6 @@ View script is eexecuted on user deman (view button click):
 - it returns status, one of OK, warning or error, status text, and show status indication:
     - if show status is true, a dialog presenting the status (via icon and label) along with status text is shown (this is intended for showing error, e.g., missing results),
     - if show status is false, a dialog is not presented, it is assumed that the tool will present its own results (this is intended for nominal behaviour).
+At the top of the MainWindow, vertically at the same place where the application name is presented, but aligned to the right, there shall be a configuration button (indicated by "gear" icon), that launches confiugration window which behaves exactly like tool configuration window, but shows application specific settings, like tools and output directories. Ignore TASTE project path setting.
+Command line shall allow to execute status and run actions of the tool; verb shall be status and run respectively, with parameter indicating tool name. CLI execution shall not create or show any windows.
+

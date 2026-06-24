@@ -9,6 +9,7 @@
 
 # General
 .vscode/
+output/
 
 # Build results
 [Dd]ebug/

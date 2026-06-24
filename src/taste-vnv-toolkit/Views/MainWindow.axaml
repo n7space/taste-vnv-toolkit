@@ -24,19 +24,39 @@
                 Background="#1A1A1A"
                 BorderBrush="#444"
                 BorderThickness="0,0,0,1"
-                Padding="16,10">
-            <TextBlock Text="TASTE VnV Toolkit"
-                       FontSize="16"
-                       FontWeight="SemiBold"
-                       Foreground="#E0E0E0"/>
+                Padding="16,6">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="TASTE VnV Toolkit"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#E0E0E0"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="1"
+                        Content="⚙"
+                        ToolTip.Tip="Application configuration"
+                        Command="{Binding OpenAppConfigCommand}"
+                        Width="32" Height="32"
+                        Padding="0"
+                        FontSize="16"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+            </Grid>
         </Border>
 
         <!-- Tool groups scrollable area -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding ToolGroups}" Margin="8">
+            <ItemsControl ItemsSource="{Binding ToolGroups}" Margin="8"
+                          HorizontalAlignment="Stretch">
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+                </ItemsControl.Styles>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Expander IsExpanded="{Binding IsExpanded}"
+                                  HorizontalAlignment="Stretch"
                                   Margin="0,4">
                             <Expander.Header>
                                 <TextBlock Text="{Binding GroupName}"
@@ -45,7 +65,13 @@
                                            Foreground="#E0E0E0"/>
                             </Expander.Header>
 
-                            <ItemsControl ItemsSource="{Binding Tools}" Margin="8,4">
+                            <ItemsControl ItemsSource="{Binding Tools}" Margin="8,4"
+                                          HorizontalAlignment="Stretch">
+                                <ItemsControl.Styles>
+                                    <Style Selector="ItemsControl > ContentPresenter">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    </Style>
+                                </ItemsControl.Styles>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="#2A2A2A"
@@ -82,6 +108,8 @@
                                                         Width="28" Height="28"
                                                         Padding="0"
                                                         FontSize="13"
+                                                        HorizontalContentAlignment="Center"
+                                                        VerticalContentAlignment="Center"
                                                         Margin="2,0"/>
 
                                                 <!-- Configure button -->
@@ -92,6 +120,8 @@
                                                         Width="28" Height="28"
                                                         Padding="0"
                                                         FontSize="14"
+                                                        HorizontalContentAlignment="Center"
+                                                        VerticalContentAlignment="Center"
                                                         Margin="2,0"/>
 
                                                 <!-- View button -->
@@ -102,6 +132,8 @@
                                                         Width="28" Height="28"
                                                         Padding="0"
                                                         FontSize="14"
+                                                        HorizontalContentAlignment="Center"
+                                                        VerticalContentAlignment="Center"
                                                         Margin="2,0"/>
 
                                                 <!-- Run button -->
@@ -112,6 +144,8 @@
                                                         Width="28" Height="28"
                                                         Padding="0"
                                                         FontSize="13"
+                                                        HorizontalContentAlignment="Center"
+                                                        VerticalContentAlignment="Center"
                                                         Margin="2,0"/>
                                             </Grid>
                                         </Border>

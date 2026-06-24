@@ -5,7 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using CommunityToolkit.Mvvm.Input;
 using taste_vnv_toolkit.Models;
+using taste_vnv_toolkit.Views;
 
 namespace taste_vnv_toolkit.ViewModels;
 
@@ -67,4 +72,17 @@ public partial class MainWindowViewModel : ViewModelBase
             Console.WriteLine($"Failed to save configuration: {ex.Message}");
         }
     }
+
+    [RelayCommand]
+    private async Task OpenAppConfig()
+    {
+        var vm = new AppConfigViewModel(options, SaveConfig);
+        var window = new AppConfigWindow(vm);
+        var saved = await window.ShowDialog<bool>(GetMainWindow());
+        if (saved)
+            LoadTools();
+    }
+
+    private static Window? GetMainWindow() =>
+        (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 }

@@ -4,6 +4,7 @@
   <resultDirectory i:nil="true" />
   <tasteProjectDirectory i:nil="true" />
   <toolDirectory>../../data/tools</toolDirectory>
+  <resultDirectory>../../output</resultDirectory>
   <toolSettings>
     <ToolSettingEntry>
       <SettingName>output_filename</SettingName>

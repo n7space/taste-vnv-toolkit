@@ -40,6 +40,16 @@ public static class PythonRunner
         }
     }
 
+    public static void TryShutdown()
+    {
+        lock (_initLock)
+        {
+            if (!_initialized || !_available) return;
+            try { PythonEngine.Shutdown(); } catch { }
+            _available = false;
+        }
+    }
+
     public static Task<StatusScriptResult> RunStatusScriptAsync(
         string scriptPath,
         string toolDirectory,
