@@ -14,6 +14,16 @@ public class ConfigurationOptions
 
     public string? ToolDirectory { get => toolDirectory; set => toolDirectory = value ;}
 
+    [DataMember]
+    internal string? resultDirectory;
+
+    public string? ResultDirectory {get => resultDirectory; set => resultDirectory = value;}
+
+    [DataMember]
+    internal string? intermediateDirectory;
+
+    public string? IntermediateDirectory { get => intermediateDirectory; set => intermediateDirectory = value;}
+
     public static bool Serialize(ConfigurationOptions options, Stream stream)
     {
         try
