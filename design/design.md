@@ -10,7 +10,8 @@ Each tool is defined by an XML, which contains at least:
 - tool hint (shown on mouse hover/tooltip),
 - tool desription/help,
 - reference (relative path) to python script with code that returns tool status (status script),
-- reference (relative path) to python script with code that executes the tool (tool script),
+- reference (relative path) to python script with code that executes the tool and shows result (tool script),
+- reference (relative path) to python script with code that shows tool results (view script),
 - list of tool settings:
     - each setting has name and type, which can be string, int or bool, and default value.
 Tool settings contained in tool definition provide default values for the settings in application configuration; tool definition shall never be modified by the application.
@@ -22,7 +23,8 @@ Entry for each of the tool contains (in order, left to right):
 - status icon (one of OK, warning, error, status text is presented on mouse hoover), aligned right
 - help button (indicated by icon "?") showing the description/help in a modal dialog,
 - configure button (indicated by icon "gear") launching a configuration window,
-- run button (indicated by icon "play" ) executing the tool.
+- view button (indicated by icon "eye" or "looking glass"), showing the results.
+- run button (indicated by icon "play" ) executing the tool and showing the results.
 Tool confiugration window presents:
 - tool name (read-only),
 - list of tool settings, with each setting presented as:
@@ -49,5 +51,7 @@ Tool script is executed on user demand (run button click):
 - it returns status, one of OK, warning or error, status text, and show status indication:
     - if show status is true, a dialog presenting the status (via icon and label) along with status text is shown (this is intended for simple tools with minimal feedback, like format code, or create test stubs),
     - if show status is false, a dialog is not presented, it is assumed that the tool will present its own results (this is intended for complex tools, which ee.g., execute tests and launch a web browser which presents statuses and coverage).
-
-
+View script is eexecuted on user deman (view button click):
+- it returns status, one of OK, warning or error, status text, and show status indication:
+    - if show status is true, a dialog presenting the status (via icon and label) along with status text is shown (this is intended for showing error, e.g., missing results),
+    - if show status is false, a dialog is not presented, it is assumed that the tool will present its own results (this is intended for nominal behaviour).
