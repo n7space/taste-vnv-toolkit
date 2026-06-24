@@ -64,10 +64,13 @@ sealed class Program
     private static void RunGui(GuiOptions o)
     {
         Console.WriteLine("Launching GUI...");
+        var options_path = o.OptionsPath ?? Constants.DEFAULT_CONFIG_FILE_NAME;
+        var project_path = o.ProjectPath ?? Directory.GetCurrentDirectory();
+        Console.WriteLine($"options: {options_path}, project: {project_path}");
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime([
-                o.OptionsPath ?? Constants.DEFAULT_CONFIG_FILE_NAME,
-                o.ProjectPath ?? Directory.GetCurrentDirectory()
+                options_path,
+                project_path
             ]);
     }
 
