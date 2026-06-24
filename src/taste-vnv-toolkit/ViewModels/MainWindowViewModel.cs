@@ -59,8 +59,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public async Task LoadStatusesAsync()
     {
-        var tasks = _allTools.Select(t => t.LoadStatusAsync());
-        await Task.WhenAll(tasks);
+        _allTools.ForEach(t => t.ResetStatus());
+
+        var results = await PythonRunner.RunStatusBatchAsync(
+            _allTools.Select(t => t.BuildStatusRequest()));
+
+        for (int i = 0; i < results.Count; i++)
+            _allTools[i].ApplyStatusResult(results[i]);
     }
 
     private void SaveConfig()

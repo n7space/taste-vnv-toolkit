@@ -47,19 +47,41 @@ public partial class ToolViewModel : ViewModelBase
         _saveConfig = saveConfig;
     }
 
-    public async Task LoadStatusAsync()
+    // ── Status helpers used by MainWindowViewModel for batch loading ──────────
+
+    /// <summary>Returns the parameters needed to run this tool's status script.</summary>
+    public StatusScriptRequest BuildStatusRequest() => new(
+        Path.Combine(_toolDirectory, _definition.StatusScript),
+        _toolDirectory,
+        _tasteProjectDirectory,
+        _config.IntermediateDirectory,
+        _config.ResultDirectory,
+        GetCurrentSettings());
+
+    /// <summary>Applies a status-script result to the observable properties.</summary>
+    public void ApplyStatusResult(StatusScriptResult result)
     {
-        Status = ToolStatus.Unknown;
-        StatusText = "Loading…";
-
-        var scriptPath = Path.Combine(_toolDirectory, _definition.StatusScript);
-        var result = await PythonRunner.RunStatusScriptAsync(
-            scriptPath, _toolDirectory,
-            _tasteProjectDirectory, _config.IntermediateDirectory,
-            _config.ResultDirectory, GetCurrentSettings());
-
         Status = result.Status;
         StatusText = result.StatusText;
+    }
+
+    /// <summary>Resets the status to the "loading" state.</summary>
+    public void ResetStatus()
+    {
+        Status = ToolStatus.Unknown;
+        StatusText = "Loading\u2026";
+    }
+
+    /// <summary>
+    /// Convenience overload: opens a dedicated Python session for this single
+    /// tool.  Prefer <see cref="MainWindowViewModel.LoadStatusesAsync"/> for
+    /// batch loading all tools at startup.
+    /// </summary>
+    public async Task LoadStatusAsync()
+    {
+        ResetStatus();
+        var results = await PythonRunner.RunStatusBatchAsync([BuildStatusRequest()]);
+        ApplyStatusResult(results[0]);
     }
 
     [RelayCommand]

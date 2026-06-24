@@ -1,24 +1,26 @@
-.PHONY: all test clean build run-gui format
-
+SOLUTION_FILE_PATH=src/taste-vnv-toolkit.slnx
+TEST_PROJECT_FILE_PATH=src/taste-vnv-toolkit-tests/taste-vnv-toolkit-tests.csproj
 CURRENT_DIRECTORY=$(shell pwd)
 PROJECT_DIRECTORY=src/taste-vnv-toolkit
 PROJECT_FILE_PATH=${PROJECT_DIRECTORY}/taste-vnv-toolkit.csproj
 DEFAULT_CONFIG_FILE=tvnvtk_config.xml
 
+.PHONY: all test clean build run-gui format
+
 all: build
 
 clean:
 	rm -r -f output/*
-	dotnet clean ${PROJECT_FILE_PATH}
+	dotnet clean ${SOLUTION_FILE_PATH}
 
 format:
-	dotnet format ${PROJECT_FILE_PATH}
+	dotnet format ${SOLUTION_FILE_PATH}
 
 build:
-	dotnet build ${PROJECT_FILE_PATH}
+	dotnet build ${SOLUTION_FILE_PATH}
 
 test:
-	dotnet test ${PROJECT_FILE_PATH}
+	dotnet test ${TEST_PROJECT_FILE_PATH}
 	
 run-gui:
 	cd ${PROJECT_DIRECTORY} && \

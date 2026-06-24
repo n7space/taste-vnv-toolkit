@@ -143,18 +143,21 @@ sealed class Program
         if (found is null) { Environment.Exit(1); return; }
 
         var (def, toolDir) = found.Value;
-        var scriptPath = Path.Combine(toolDir, def.StatusScript);
+        var request = new StatusScriptRequest(
+            Path.Combine(toolDir, def.StatusScript),
+            toolDir, projectPath,
+            config.IntermediateDirectory, config.ResultDirectory,
+            GetSettings(def, config));
 
-        var result = PythonRunner.RunStatusScriptAsync(
-            scriptPath, toolDir,
-            projectPath, config.IntermediateDirectory,
-            config.ResultDirectory, GetSettings(def, config))
+        PythonRunner.Initialize();
+        var results = PythonRunner.RunStatusBatchAsync([request])
             .GetAwaiter().GetResult();
+        var result = results[0];
 
+        PythonRunner.Shutdown();
         Console.WriteLine($"Status:  {result.Status}");
         Console.WriteLine($"Message: {result.StatusText}");
 
-        PythonRunner.TryShutdown();
         Environment.Exit(result.Status == ToolStatus.OK ? 0 : 1);
     }
 
@@ -172,6 +175,7 @@ sealed class Program
 
         Action<int> progress = n => Console.Write($"\rProgress: {n}%   ");
 
+        PythonRunner.Initialize();
         var result = PythonRunner.RunToolScriptAsync(
             scriptPath, toolDir,
             projectPath, config.IntermediateDirectory,
@@ -179,10 +183,10 @@ sealed class Program
             .GetAwaiter().GetResult();
 
         Console.WriteLine();
+        PythonRunner.Shutdown();
         Console.WriteLine($"Status:  {result.Status}");
         Console.WriteLine($"Message: {result.StatusText}");
 
-        PythonRunner.TryShutdown();
         Environment.Exit(result.Status == ToolStatus.OK ? 0 : 1);
     }
 

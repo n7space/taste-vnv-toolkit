@@ -17,13 +17,14 @@ public partial class MainWindow : Window
 
     private async void OnWindowLoaded(object? sender, RoutedEventArgs e)
     {
+        PythonRunner.Initialize();
         if (DataContext is MainWindowViewModel vm)
             await vm.LoadStatusesAsync();
     }
 
     private void OnWindowClosed(object? sender, EventArgs e)
     {
-        PythonRunner.TryShutdown();
+        PythonRunner.Shutdown();
         Environment.Exit(0);
     }
 }
