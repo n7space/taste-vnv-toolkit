@@ -18,6 +18,7 @@ public partial class ToolViewModel : ViewModelBase
 {
     private readonly ToolDefinition _definition;
     private readonly string _toolDirectory;
+    private readonly string _tasteProjectDirectory;
     private readonly ConfigurationOptions _config;
     private readonly Action _saveConfig;
 
@@ -37,10 +38,11 @@ public partial class ToolViewModel : ViewModelBase
     public string StatusColor => ToolStatusHelper.ToColor(Status);
 
     public ToolViewModel(ToolDefinition definition, string toolDirectory,
-        ConfigurationOptions config, Action saveConfig)
+        string tasteProjectDirectory, ConfigurationOptions config, Action saveConfig)
     {
         _definition = definition;
         _toolDirectory = toolDirectory;
+        _tasteProjectDirectory = tasteProjectDirectory;
         _config = config;
         _saveConfig = saveConfig;
     }
@@ -53,7 +55,7 @@ public partial class ToolViewModel : ViewModelBase
         var scriptPath = Path.Combine(_toolDirectory, _definition.StatusScript);
         var result = await PythonRunner.RunStatusScriptAsync(
             scriptPath, _toolDirectory,
-            _config.TasteProjectDirectory, _config.IntermediateDirectory,
+            _tasteProjectDirectory, _config.IntermediateDirectory,
             _config.ResultDirectory, GetCurrentSettings());
 
         Status = result.Status;
@@ -81,7 +83,7 @@ public partial class ToolViewModel : ViewModelBase
         var scriptPath = Path.Combine(_toolDirectory, _definition.ViewScript);
         var result = await PythonRunner.RunViewScriptAsync(
             scriptPath, _toolDirectory,
-            _config.TasteProjectDirectory, _config.IntermediateDirectory,
+            _tasteProjectDirectory, _config.IntermediateDirectory,
             _config.ResultDirectory, GetCurrentSettings());
 
         if (result.ShowStatus)
@@ -111,7 +113,7 @@ public partial class ToolViewModel : ViewModelBase
         var scriptPath = Path.Combine(_toolDirectory, _definition.ToolScript);
         var result = await PythonRunner.RunToolScriptAsync(
             scriptPath, _toolDirectory,
-            _config.TasteProjectDirectory, _config.IntermediateDirectory,
+            _tasteProjectDirectory, _config.IntermediateDirectory,
             _config.ResultDirectory, GetCurrentSettings(), progressCallback);
 
         if (progressWindowShown)

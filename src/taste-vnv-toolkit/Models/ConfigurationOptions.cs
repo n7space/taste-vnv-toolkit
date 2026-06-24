@@ -28,11 +28,6 @@ public class ConfigurationOptions
     public string? ToolDirectory { get => toolDirectory; set => toolDirectory = value; }
 
     [DataMember]
-    internal string? tasteProjectDirectory;
-
-    public string? TasteProjectDirectory { get => tasteProjectDirectory; set => tasteProjectDirectory = value; }
-
-    [DataMember]
     internal string? resultDirectory;
 
     public string? ResultDirectory { get => resultDirectory; set => resultDirectory = value; }

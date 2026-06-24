@@ -17,6 +17,7 @@ namespace taste_vnv_toolkit.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly string _optionsPath;
+    private readonly string _tasteProjectDirectory;
     private readonly List<ToolViewModel> _allTools = new();
 
     public ConfigurationOptions options { get; set; }
@@ -24,8 +25,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(string[] args)
     {
-        Trace.Assert(args != null && args.Length == 1);
+        Trace.Assert(args != null && args.Length == 2);
         _optionsPath = args[0];
+        _tasteProjectDirectory = args[1];
         options = ConfigurationOptions.Deserialize(
             new FileStream(_optionsPath, FileMode.OpenOrCreate))
              ?? new ConfigurationOptions();
@@ -45,7 +47,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var loadedTools = ToolLoader.LoadAll(options.ToolDirectory);
 
         foreach (var (definition, toolDir) in loadedTools)
-            _allTools.Add(new ToolViewModel(definition, toolDir, options, saveConfig));
+            _allTools.Add(new ToolViewModel(definition, toolDir, _tasteProjectDirectory, options, saveConfig));
 
         var groups = _allTools
             .GroupBy(t => t.Definition.Group)
@@ -76,9 +78,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenAppConfig()
     {
+        var mainWindow = GetMainWindow();
+        if (mainWindow is null) return;
+
         var vm = new AppConfigViewModel(options, SaveConfig);
         var window = new AppConfigWindow(vm);
-        var saved = await window.ShowDialog<bool>(GetMainWindow());
+        var saved = await window.ShowDialog<bool>(mainWindow);
         if (saved)
             LoadTools();
     }

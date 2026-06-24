@@ -15,6 +15,9 @@ sealed class Program
     {
         [Option('c', "configuration-path", Required = false, HelpText = "Configuration file path")]
         public string? OptionsPath { get; set; }
+
+        [Option('p', "project-path", Required = false, HelpText = "TASTE project directory (default: current directory)")]
+        public string? ProjectPath { get; set; }
     }
 
     [Verb("status", HelpText = "Print the status of a tool")]
@@ -22,6 +25,9 @@ sealed class Program
     {
         [Option('c', "configuration-path", Required = false, HelpText = "Configuration file path")]
         public string? OptionsPath { get; set; }
+
+        [Option('p', "project-path", Required = false, HelpText = "TASTE project directory (default: current directory)")]
+        public string? ProjectPath { get; set; }
 
         [Value(0, Required = true, MetaName = "tool-name", HelpText = "Name of the tool")]
         public string ToolName { get; set; } = string.Empty;
@@ -32,6 +38,9 @@ sealed class Program
     {
         [Option('c', "configuration-path", Required = false, HelpText = "Configuration file path")]
         public string? OptionsPath { get; set; }
+
+        [Option('p', "project-path", Required = false, HelpText = "TASTE project directory (default: current directory)")]
+        public string? ProjectPath { get; set; }
 
         [Value(0, Required = true, MetaName = "tool-name", HelpText = "Name of the tool")]
         public string ToolName { get; set; } = string.Empty;
@@ -56,7 +65,10 @@ sealed class Program
     {
         Console.WriteLine("Launching GUI...");
         BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime([o.OptionsPath ?? Constants.DEFAULT_CONFIG_FILE_NAME]);
+            .StartWithClassicDesktopLifetime([
+                o.OptionsPath ?? Constants.DEFAULT_CONFIG_FILE_NAME,
+                o.ProjectPath ?? Directory.GetCurrentDirectory()
+            ]);
     }
 
     // ── CLI helpers ───────────────────────────────────────────────────────────
@@ -122,8 +134,9 @@ sealed class Program
 
     private static void RunStatus(StatusOptions o)
     {
-        var config = LoadConfig(o.OptionsPath);
-        var found  = FindTool(config, o.ToolName);
+        var config      = LoadConfig(o.OptionsPath);
+        var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
+        var found       = FindTool(config, o.ToolName);
         if (found is null) { Environment.Exit(1); return; }
 
         var (def, toolDir) = found.Value;
@@ -131,7 +144,7 @@ sealed class Program
 
         var result = PythonRunner.RunStatusScriptAsync(
             scriptPath, toolDir,
-            config.TasteProjectDirectory, config.IntermediateDirectory,
+            projectPath, config.IntermediateDirectory,
             config.ResultDirectory, GetSettings(def, config))
             .GetAwaiter().GetResult();
 
@@ -146,8 +159,9 @@ sealed class Program
 
     private static void RunTool(RunOptions o)
     {
-        var config = LoadConfig(o.OptionsPath);
-        var found  = FindTool(config, o.ToolName);
+        var config      = LoadConfig(o.OptionsPath);
+        var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
+        var found       = FindTool(config, o.ToolName);
         if (found is null) { Environment.Exit(1); return; }
 
         var (def, toolDir) = found.Value;
@@ -157,11 +171,11 @@ sealed class Program
 
         var result = PythonRunner.RunToolScriptAsync(
             scriptPath, toolDir,
-            config.TasteProjectDirectory, config.IntermediateDirectory,
+            projectPath, config.IntermediateDirectory,
             config.ResultDirectory, GetSettings(def, config), progress)
             .GetAwaiter().GetResult();
 
-        Console.WriteLine();  // newline after progress output
+        Console.WriteLine();
         Console.WriteLine($"Status:  {result.Status}");
         Console.WriteLine($"Message: {result.StatusText}");
 
