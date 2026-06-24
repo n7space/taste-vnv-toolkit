@@ -1,4 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ConfigurationOptions xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://n7space.com/TVnVTK">
-  <toolDirectory>/home/taste/test</toolDirectory>
+  <intermediateDirectory i:nil="true" />
+  <resultDirectory i:nil="true" />
+  <tasteProjectDirectory i:nil="true" />
+  <toolDirectory>../../data/tools</toolDirectory>
+  <toolSettings>
+    <ToolSettingEntry>
+      <SettingName>output_filename</SettingName>
+      <ToolName>GCC Help</ToolName>
+      <Value>gcc_help.txt</Value>
+    </ToolSettingEntry>
+  </toolSettings>
 </ConfigurationOptions>

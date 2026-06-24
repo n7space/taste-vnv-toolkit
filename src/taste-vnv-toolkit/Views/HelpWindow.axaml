@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:taste_vnv_toolkit.ViewModels"
+        x:Class="taste_vnv_toolkit.Views.HelpWindow"
+        x:CompileBindings="False"
+        Title="Help"
+        Width="500"
+        Height="350"
+        Background="#2D2D2D"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="16">
+        <TextBlock Grid.Row="0"
+                   Text="{Binding ToolName}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   Margin="0,0,0,12"/>
+
+        <ScrollViewer Grid.Row="1">
+            <TextBlock Text="{Binding Description}"
+                       TextWrapping="Wrap"
+                       Foreground="#CCCCCC"
+                       FontSize="13"/>
+        </ScrollViewer>
+
+        <Button Grid.Row="2"
+                Content="OK"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0"
+                Padding="24,6"
+                Click="OkButton_Click"/>
+    </Grid>
+</Window>

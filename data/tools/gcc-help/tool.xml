@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>GCC Help</Name>
+  <Group>Compilers</Group>
+  <Hint>Checks GCC availability and captures gcc --help output</Hint>
+  <Description>Checks whether GCC is present in the system PATH.
+Running the tool executes 'gcc --help', saves the output to a file in the configured output directory, and displays it in a dialog.
+Viewing shows the previously saved output file, or reports an error if it has not been generated yet.
+
+Setting:
+  output_filename – name of the file written inside the output directory (default: gcc_help.txt)</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <Settings>
+    <Setting>
+      <Name>output_filename</Name>
+      <Type>String</Type>
+      <Default>gcc_help.txt</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

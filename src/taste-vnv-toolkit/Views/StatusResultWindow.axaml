@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:taste_vnv_toolkit.ViewModels"
+        x:Class="taste_vnv_toolkit.Views.StatusResultWindow"
+        x:CompileBindings="False"
+        Title="Result"
+        Width="420"
+        Height="200"
+        Background="#2D2D2D"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid RowDefinitions="*,Auto" Margin="20">
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="12">
+            <TextBlock Text="{Binding StatusIcon}"
+                       FontSize="28"
+                       Foreground="{Binding StatusColor}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding StatusText}"
+                       TextWrapping="Wrap"
+                       MaxWidth="320"
+                       Foreground="White"
+                       VerticalAlignment="Center"
+                       FontSize="14"/>
+        </StackPanel>
+
+        <Button Grid.Row="1"
+                Content="OK"
+                HorizontalAlignment="Right"
+                Padding="24,6"
+                Click="OkButton_Click"/>
+    </Grid>
+</Window>
