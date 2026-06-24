@@ -51,7 +51,7 @@ public class ConfigurationOptions
         try
         {
             var serializer = new DataContractSerializer(typeof(ConfigurationOptions));
-            var settings = new XmlWriterSettings {Indent = true};
+            var settings = new XmlWriterSettings { Indent = true };
             using (var writer = XmlWriter.Create(stream, settings))
             {
                 serializer.WriteObject(writer, options);
@@ -62,7 +62,7 @@ public class ConfigurationOptions
         {
             System.Console.WriteLine($"Configuration Options serialization failed {ex.ToString()}");
             return false;
-        } 
+        }
     }
 
     public static ConfigurationOptions? Deserialize(Stream stream)
@@ -71,12 +71,12 @@ public class ConfigurationOptions
         {
             var serializer = new DataContractSerializer(typeof(ConfigurationOptions));
             var options = serializer.ReadObject(stream) as ConfigurationOptions;
-            return options;  
-        }   
+            return options;
+        }
         catch (Exception ex)
         {
             System.Console.WriteLine($"Configuration Options deserialization failed {ex.ToString()}");
             return null;
-        } 
+        }
     }
 }

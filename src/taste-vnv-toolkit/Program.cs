@@ -122,8 +122,8 @@ sealed class Program
             object value = setting.Type switch
             {
                 SettingType.Bool => bool.TryParse(strValue, out var b) ? b : false,
-                SettingType.Int  => int.TryParse(strValue, out var i)  ? i : 0,
-                _                => strValue
+                SettingType.Int => int.TryParse(strValue, out var i) ? i : 0,
+                _ => strValue
             };
 
             yield return (setting.Name, value);
@@ -134,9 +134,9 @@ sealed class Program
 
     private static void RunStatus(StatusOptions o)
     {
-        var config      = LoadConfig(o.OptionsPath);
+        var config = LoadConfig(o.OptionsPath);
         var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
-        var found       = FindTool(config, o.ToolName);
+        var found = FindTool(config, o.ToolName);
         if (found is null) { Environment.Exit(1); return; }
 
         var (def, toolDir) = found.Value;
@@ -159,9 +159,9 @@ sealed class Program
 
     private static void RunTool(RunOptions o)
     {
-        var config      = LoadConfig(o.OptionsPath);
+        var config = LoadConfig(o.OptionsPath);
         var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
-        var found       = FindTool(config, o.ToolName);
+        var found = FindTool(config, o.ToolName);
         if (found is null) { Environment.Exit(1); return; }
 
         var (def, toolDir) = found.Value;

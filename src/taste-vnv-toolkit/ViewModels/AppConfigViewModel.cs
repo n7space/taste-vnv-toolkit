@@ -22,9 +22,9 @@ public partial class AppConfigViewModel : ViewModelBase
         _config = config;
         _saveConfig = saveConfig;
 
-        AddEntry("ToolDirectory",        "Tool Directory",         config.ToolDirectory        ?? "");
-        AddEntry("ResultDirectory",      "Result Directory",       config.ResultDirectory      ?? "");
-        AddEntry("IntermediateDirectory","Intermediate Directory",  config.IntermediateDirectory ?? "");
+        AddEntry("ToolDirectory", "Tool Directory", config.ToolDirectory ?? "");
+        AddEntry("ResultDirectory", "Result Directory", config.ResultDirectory ?? "");
+        AddEntry("IntermediateDirectory", "Intermediate Directory", config.IntermediateDirectory ?? "");
     }
 
     private void AddEntry(string property, string label, string value)
@@ -42,8 +42,8 @@ public partial class AppConfigViewModel : ViewModelBase
         {
             switch (prop)
             {
-                case "ToolDirectory":         _config.ToolDirectory         = vm.StringValue; break;
-                case "ResultDirectory":       _config.ResultDirectory       = vm.StringValue; break;
+                case "ToolDirectory": _config.ToolDirectory = vm.StringValue; break;
+                case "ResultDirectory": _config.ResultDirectory = vm.StringValue; break;
                 case "IntermediateDirectory": _config.IntermediateDirectory = vm.StringValue; break;
             }
         }
