@@ -94,11 +94,13 @@ sealed class Program
     private static ConfigurationOptions LoadConfig(string? path)
     {
         var configPath = path ?? Constants.DEFAULT_CONFIG_FILE_NAME;
+        if (!File.Exists(configPath))
+            return new ConfigurationOptions();
+
         try
         {
-            return ConfigurationOptions.Deserialize(
-                       new FileStream(configPath, FileMode.Open, FileAccess.Read))
-                   ?? new ConfigurationOptions();
+            using var stream = new FileStream(configPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return ConfigurationOptions.Deserialize(stream) ?? new ConfigurationOptions();
         }
         catch
         {

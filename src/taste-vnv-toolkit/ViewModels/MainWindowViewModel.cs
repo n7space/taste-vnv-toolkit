@@ -31,11 +31,26 @@ public partial class MainWindowViewModel : ViewModelBase
         Trace.Assert(args != null && args.Length == 2);
         _optionsPath = args[_optionsPathArgumentIndex];
         _tasteProjectDirectory = args[_tasteProjectDirectoryArgumentIndex];
-        options = ConfigurationOptions.Deserialize(
-            new FileStream(_optionsPath, FileMode.OpenOrCreate))
-             ?? new ConfigurationOptions();
+        options = LoadOptions(_optionsPath);
 
         LoadTools();
+    }
+
+    private static ConfigurationOptions LoadOptions(string optionsPath)
+    {
+        if (!File.Exists(optionsPath))
+            return new ConfigurationOptions();
+
+        try
+        {
+            using var stream = new FileStream(optionsPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return ConfigurationOptions.Deserialize(stream) ?? new ConfigurationOptions();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to load configuration");
+            return new ConfigurationOptions();
+        }
     }
 
     private void LoadTools()
@@ -75,7 +90,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            ConfigurationOptions.Serialize(options, new FileStream(_optionsPath, FileMode.Create));
+            using var stream = new FileStream(_optionsPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            ConfigurationOptions.Serialize(options, stream);
         }
         catch (Exception ex)
         {

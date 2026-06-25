@@ -11,18 +11,18 @@ all: build
 
 clean:
 	rm -r -f output/*
-	dotnet clean ${SOLUTION_FILE_PATH}
+	dotnet clean --no-restore ${SOLUTION_FILE_PATH}
 
 format:
-	dotnet format ${SOLUTION_FILE_PATH}
+	dotnet format --no-restore ${SOLUTION_FILE_PATH}
 
 build:
 	dotnet build ${SOLUTION_FILE_PATH}
 
 test:
-	dotnet test ${TEST_PROJECT_FILE_PATH} -l:"console;verbosity=normal"
+	dotnet test --no-restore ${TEST_PROJECT_FILE_PATH} -l:"console;verbosity=normal"
 	
 run-gui:
 	cd ${PROJECT_DIRECTORY} && \
-	(dotnet run gui -c ${DEFAULT_CONFIG_FILE} || true) && \
+	(dotnet run --no-restore gui -c ${DEFAULT_CONFIG_FILE} || true) && \
 	cd ${CURRENT_DIRECTORY}

@@ -1,6 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Serilog;
 using taste_vnv_toolkit.Models;
 using taste_vnv_toolkit.ViewModels;
 
@@ -17,14 +18,27 @@ public partial class MainWindow : Window
 
     private async void OnWindowLoaded(object? sender, RoutedEventArgs e)
     {
-        PythonRunner.Initialize();
-        if (DataContext is MainWindowViewModel vm)
-            await vm.LoadStatusesAsync();
+        try
+        {
+            PythonRunner.Initialize();
+            if (DataContext is MainWindowViewModel vm)
+                await vm.LoadStatusesAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to load tool statuses during window startup");
+        }
     }
 
     private void OnWindowClosed(object? sender, EventArgs e)
     {
-        PythonRunner.Shutdown();
-        Environment.Exit(0);
+        try
+        {
+            PythonRunner.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to shut down Python runtime");
+        }
     }
 }
