@@ -17,6 +17,8 @@ namespace taste_vnv_toolkit.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private const uint _optionsPathArgumentIndex = 0;
+    private const uint _tasteProjectDirectoryArgumentIndex = 1;
     private readonly string _optionsPath;
     private readonly string _tasteProjectDirectory;
     private readonly List<ToolViewModel> _allTools = new();
@@ -27,8 +29,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(string[] args)
     {
         Trace.Assert(args != null && args.Length == 2);
-        _optionsPath = args[0];
-        _tasteProjectDirectory = args[1];
+        _optionsPath = args[_optionsPathArgumentIndex];
+        _tasteProjectDirectory = args[_tasteProjectDirectoryArgumentIndex];
         options = ConfigurationOptions.Deserialize(
             new FileStream(_optionsPath, FileMode.OpenOrCreate))
              ?? new ConfigurationOptions();

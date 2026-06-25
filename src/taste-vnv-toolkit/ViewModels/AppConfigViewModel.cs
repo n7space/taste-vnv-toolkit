@@ -8,6 +8,10 @@ namespace taste_vnv_toolkit.ViewModels;
 
 public partial class AppConfigViewModel : ViewModelBase
 {
+    private const string _toolDirectorySetting = "ToolDirectory";
+    private const string _resultDirectorySetting = "ResultDirectory";
+    private const string _intermediateDirectorySetting = "IntermediateDirectory";
+
     private readonly ConfigurationOptions _config;
     private readonly Action _saveConfig;
     private readonly List<(string Property, ToolSettingViewModel Vm)> _entries = new();
@@ -22,9 +26,9 @@ public partial class AppConfigViewModel : ViewModelBase
         _config = config;
         _saveConfig = saveConfig;
 
-        AddEntry("ToolDirectory", "Tool Directory", config.ToolDirectory ?? "");
-        AddEntry("ResultDirectory", "Result Directory", config.ResultDirectory ?? "");
-        AddEntry("IntermediateDirectory", "Intermediate Directory", config.IntermediateDirectory ?? "");
+        AddEntry(_toolDirectorySetting, "Tool Directory", config.ToolDirectory ?? "");
+        AddEntry(_resultDirectorySetting, "Result Directory", config.ResultDirectory ?? "");
+        AddEntry(_intermediateDirectorySetting, "Intermediate Directory", config.IntermediateDirectory ?? "");
     }
 
     private void AddEntry(string property, string label, string value)
@@ -42,9 +46,9 @@ public partial class AppConfigViewModel : ViewModelBase
         {
             switch (prop)
             {
-                case "ToolDirectory": _config.ToolDirectory = vm.StringValue; break;
-                case "ResultDirectory": _config.ResultDirectory = vm.StringValue; break;
-                case "IntermediateDirectory": _config.IntermediateDirectory = vm.StringValue; break;
+                case _toolDirectorySetting: _config.ToolDirectory = vm.StringValue; break;
+                case _resultDirectorySetting: _config.ResultDirectory = vm.StringValue; break;
+                case _intermediateDirectorySetting: _config.IntermediateDirectory = vm.StringValue; break;
             }
         }
         _saveConfig();

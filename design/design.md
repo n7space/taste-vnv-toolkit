@@ -51,7 +51,7 @@ Tool script is executed on user demand (run button click):
 - it returns status, one of OK, warning or error, status text, and show status indication:
     - if show status is true, a dialog presenting the status (via icon and label) along with status text is shown (this is intended for simple tools with minimal feedback, like format code, or create test stubs),
     - if show status is false, a dialog is not presented, it is assumed that the tool will present its own results (this is intended for complex tools, which ee.g., execute tests and launch a web browser which presents statuses and coverage).
-View script is eexecuted on user deman (view button click):
+View script is eexecuted on user demand (view button click):
 - it returns status, one of OK, warning or error, status text, and show status indication:
     - if show status is true, a dialog presenting the status (via icon and label) along with status text is shown (this is intended for showing error, e.g., missing results),
     - if show status is false, a dialog is not presented, it is assumed that the tool will present its own results (this is intended for nominal behaviour).
