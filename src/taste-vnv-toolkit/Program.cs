@@ -4,14 +4,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommandLine;
+using Serilog;
 using taste_vnv_toolkit.Models;
 
 namespace taste_vnv_toolkit;
 
 sealed class Program
 {
+    public abstract class LoggingOptions
+    {
+        [Option('v', "verbosity", Required = false, HelpText = "Console log verbosity")]
+        public LogVerbosity Verbosity { get; set; } = LogVerbosity.Info;
+    }
+
     [Verb("gui", HelpText = "Launch GUI")]
-    public class GuiOptions
+    public class GuiOptions : LoggingOptions
     {
         [Option('c', "configuration-path", Required = false, HelpText = "Configuration file path")]
         public string? OptionsPath { get; set; }
@@ -21,7 +28,7 @@ sealed class Program
     }
 
     [Verb("status", HelpText = "Print the status of a tool")]
-    public class StatusOptions
+    public class StatusOptions : LoggingOptions
     {
         [Option('c', "configuration-path", Required = false, HelpText = "Configuration file path")]
         public string? OptionsPath { get; set; }
@@ -34,7 +41,7 @@ sealed class Program
     }
 
     [Verb("run", HelpText = "Run a tool")]
-    public class RunOptions
+    public class RunOptions : LoggingOptions
     {
         [Option('c', "configuration-path", Required = false, HelpText = "Configuration file path")]
         public string? OptionsPath { get; set; }
@@ -50,28 +57,36 @@ sealed class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
-        Parser.Default
+        return Parser.Default
             .ParseArguments<GuiOptions, StatusOptions, RunOptions>(args)
-            .WithParsed<GuiOptions>(RunGui)
-            .WithParsed<StatusOptions>(RunStatus)
-            .WithParsed<RunOptions>(RunTool);
+            .MapResult<GuiOptions, StatusOptions, RunOptions, int>(
+                RunGui,
+                RunStatus,
+                RunTool,
+                _ => 1);
     }
 
     // ── GUI ──────────────────────────────────────────────────────────────────
 
-    private static void RunGui(GuiOptions o)
+    private static int RunGui(GuiOptions o)
     {
-        Console.WriteLine("Launching GUI...");
-        var options_path = o.OptionsPath ?? Constants.DEFAULT_CONFIG_FILE_NAME;
-        var project_path = o.ProjectPath ?? Directory.GetCurrentDirectory();
-        Console.WriteLine($"options: {options_path}, project: {project_path}");
+        using var _ = Logging.Configure(o.Verbosity);
+
+        var optionsPath = o.OptionsPath ?? Constants.DEFAULT_CONFIG_FILE_NAME;
+        var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
+
+        Log.Information("Launching GUI");
+        Log.Information("Options path: {OptionsPath}, project path: {ProjectPath}", optionsPath, projectPath);
+
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime([
-                options_path,
-                project_path
+                optionsPath,
+                projectPath
             ]);
+
+        return 0;
     }
 
     // ── CLI helpers ───────────────────────────────────────────────────────────
@@ -96,7 +111,7 @@ sealed class Program
     {
         if (string.IsNullOrEmpty(config.ToolDirectory))
         {
-            Console.Error.WriteLine("Tool directory is not configured.");
+            Log.Error("Tool directory is not configured.");
             return null;
         }
 
@@ -106,7 +121,7 @@ sealed class Program
 
         if (match == default)
         {
-            Console.Error.WriteLine($"Tool not found: {toolName}");
+            Log.Error("Tool not found: {ToolName}", toolName);
             return null;
         }
 
@@ -135,12 +150,14 @@ sealed class Program
 
     // ── status verb ───────────────────────────────────────────────────────────
 
-    private static void RunStatus(StatusOptions o)
+    private static int RunStatus(StatusOptions o)
     {
+        using var _ = Logging.Configure(o.Verbosity);
+
         var config = LoadConfig(o.OptionsPath);
         var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
         var found = FindTool(config, o.ToolName);
-        if (found is null) { Environment.Exit(1); return; }
+        if (found is null) { return 1; }
 
         var (def, toolDir) = found.Value;
         var request = new StatusScriptRequest(
@@ -155,25 +172,27 @@ sealed class Program
         var result = results[0];
 
         PythonRunner.Shutdown();
-        Console.WriteLine($"Status:  {result.Status}");
-        Console.WriteLine($"Message: {result.StatusText}");
+        Log.Information("Status: {Status}", result.Status);
+        Log.Information("Message: {Message}", result.StatusText);
 
-        Environment.Exit(result.Status == ToolStatus.OK ? 0 : 1);
+        return result.Status == ToolStatus.OK ? 0 : 1;
     }
 
     // ── run verb ──────────────────────────────────────────────────────────────
 
-    private static void RunTool(RunOptions o)
+    private static int RunTool(RunOptions o)
     {
+        using var _ = Logging.Configure(o.Verbosity);
+
         var config = LoadConfig(o.OptionsPath);
         var projectPath = o.ProjectPath ?? Directory.GetCurrentDirectory();
         var found = FindTool(config, o.ToolName);
-        if (found is null) { Environment.Exit(1); return; }
+        if (found is null) { return 1; }
 
         var (def, toolDir) = found.Value;
         var scriptPath = Path.Combine(toolDir, def.ToolScript);
 
-        Action<int> progress = n => Console.Write($"\rProgress: {n}%   ");
+        Action<int> progress = n => Log.Information("Progress: {Progress}%", n);
 
         PythonRunner.Initialize();
         var result = PythonRunner.RunToolScriptAsync(
@@ -182,12 +201,11 @@ sealed class Program
             config.ResultDirectory, GetSettings(def, config), progress)
             .GetAwaiter().GetResult();
 
-        Console.WriteLine();
         PythonRunner.Shutdown();
-        Console.WriteLine($"Status:  {result.Status}");
-        Console.WriteLine($"Message: {result.StatusText}");
+        Log.Information("Status: {Status}", result.Status);
+        Log.Information("Message: {Message}", result.StatusText);
 
-        Environment.Exit(result.Status == ToolStatus.OK ? 0 : 1);
+        return result.Status == ToolStatus.OK ? 0 : 1;
     }
 
     // ── Avalonia configuration ────────────────────────────────────────────────

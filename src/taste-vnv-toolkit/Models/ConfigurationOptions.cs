@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
+using Serilog;
 
 [DataContract(Namespace = "http://n7space.com/TVnVTK")]
 public class ToolSettingEntry
@@ -60,7 +61,7 @@ public class ConfigurationOptions
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine($"Configuration Options serialization failed {ex.ToString()}");
+            Log.Error(ex, "Configuration options serialization failed");
             return false;
         }
     }
@@ -75,7 +76,7 @@ public class ConfigurationOptions
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine($"Configuration Options deserialization failed {ex.ToString()}");
+            Log.Error(ex, "Configuration options deserialization failed");
             return null;
         }
     }

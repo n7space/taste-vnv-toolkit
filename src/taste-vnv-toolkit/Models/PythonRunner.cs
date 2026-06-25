@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Python.Runtime;
+using Serilog;
 
 namespace taste_vnv_toolkit.Models;
 
@@ -73,7 +74,7 @@ public static class PythonRunner
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Python initialisation failed: {ex.Message}");
+                Log.Error(ex, "Python initialisation failed");
             }
         });
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using Serilog;
 
 namespace taste_vnv_toolkit.Models;
 
@@ -37,7 +38,7 @@ public static class ToolLoader
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to load tool from {xmlPath}: {ex.Message}");
+                Log.Warning(ex, "Failed to load tool from {XmlPath}", xmlPath);
             }
         }
 

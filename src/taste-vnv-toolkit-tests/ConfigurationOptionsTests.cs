@@ -97,6 +97,7 @@ public class ConfigurationOptionsTests : IDisposable
         Assert.Equal("param1", loaded.ToolSettings[0].SettingName);
         Assert.Equal("value1", loaded.ToolSettings[0].Value);
         Assert.Equal("Other Tool", loaded.ToolSettings[1].ToolName);
+        Assert.Equal("count", loaded.ToolSettings[1].SettingName);
         Assert.Equal("42", loaded.ToolSettings[1].Value);
     }
 

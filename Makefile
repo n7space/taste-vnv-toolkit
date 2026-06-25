@@ -20,7 +20,7 @@ build:
 	dotnet build ${SOLUTION_FILE_PATH}
 
 test:
-	dotnet test ${TEST_PROJECT_FILE_PATH}
+	dotnet test ${TEST_PROJECT_FILE_PATH} -l:"console;verbosity=normal"
 	
 run-gui:
 	cd ${PROJECT_DIRECTORY} && \

@@ -9,6 +9,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
+using Serilog;
 using taste_vnv_toolkit.Models;
 using taste_vnv_toolkit.Views;
 
@@ -76,7 +77,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to save configuration: {ex.Message}");
+            Log.Error(ex, "Failed to save configuration");
         }
     }
 
