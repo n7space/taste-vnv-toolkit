@@ -67,8 +67,13 @@ else:
     
     candidate_paths = []
     if output_directory:
+        # Resolve output_directory relative to project_directory
+        if os.path.isabs(output_directory):
+            resolved_output = output_directory
+        else:
+            resolved_output = os.path.join(taste_project_directory, output_directory)
         candidate_paths.append(
-            os.path.join(output_directory, "ceedling-coverage-reports", html_filename)
+            os.path.join(resolved_output, "ceedling-coverage-reports", html_filename)
         )
     candidate_paths.append(
         os.path.join(taste_project_directory, build_root, "artifacts", gcov_context, html_filename)

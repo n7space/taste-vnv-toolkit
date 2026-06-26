@@ -67,7 +67,13 @@ def resolve_output_paths(project_directory, build_root, test_directory, html_fil
     if not output_directory:
         raise ValueError("Output directory is not configured")
     
-    target_directory = os.path.join(output_directory, "ceedling-coverage-reports")
+    # Resolve output_directory relative to project_directory
+    if os.path.isabs(output_directory):
+        resolved_output = output_directory
+    else:
+        resolved_output = os.path.join(project_directory, output_directory)
+    
+    target_directory = os.path.join(resolved_output, "ceedling-coverage-reports")
     html_target = os.path.join(target_directory, html_filename)
     
     return artifacts_directory, html_source, target_directory, html_target
@@ -145,7 +151,14 @@ else:
             )
 
         os.makedirs(target_directory, exist_ok=True)
-        shutil.copy2(html_source, html_target)
+        
+        # Copy all files from artifacts directory to preserve CSS, supporting HTML files, etc.
+        if os.path.isdir(artifacts_directory):
+            for item in os.listdir(artifacts_directory):
+                source_item = os.path.join(artifacts_directory, item)
+                target_item = os.path.join(target_directory, item)
+                if os.path.isfile(source_item):
+                    shutil.copy2(source_item, target_item)
 
         emit_progress(100)
 

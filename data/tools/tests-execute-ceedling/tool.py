@@ -90,7 +90,13 @@ def resolve_output_paths(project_directory, build_root, test_directory, junit_fi
     if not output_directory:
         raise ValueError("Output directory is not configured")
     
-    target_directory = os.path.join(output_directory, "ceedling-test-reports")
+    # Resolve output_directory relative to project_directory
+    if os.path.isabs(output_directory):
+        resolved_output = output_directory
+    else:
+        resolved_output = os.path.join(project_directory, output_directory)
+    
+    target_directory = os.path.join(resolved_output, "ceedling-test-reports")
     junit_target = os.path.join(target_directory, junit_filename)
     html_target = os.path.join(target_directory, html_filename)
     

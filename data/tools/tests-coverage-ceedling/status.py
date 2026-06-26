@@ -2,16 +2,12 @@ import os
 import shutil
 
 
-BUILD_ROOT = "build"
-GCOV_HTML_FILENAME = "GcovCoverageResults.html"
-
-
 def parse_build_root(project_yml_text):
     for line in project_yml_text.splitlines():
         stripped = line.strip()
         if stripped.startswith(":build_root:"):
-            return stripped.split(":build_root:", 1)[1].strip().strip("'\"") or BUILD_ROOT
-    return BUILD_ROOT
+            return stripped.split(":build_root:", 1)[1].strip().strip("'\"") or "build"
+    return "build"
 
 
 def parse_nested_list(project_yml_text, section_name, child_name):
@@ -66,32 +62,18 @@ def parse_gcov_html_filename(project_yml_text):
             continue
 
         if in_gcovr and line.startswith("    :html_artifact_filename:"):
-            return stripped.split(":html_artifact_filename:", 1)[1].strip().strip("'\"") or GCOV_HTML_FILENAME
+            return stripped.split(":html_artifact_filename:", 1)[1].strip().strip("'\"") or "GcovCoverageResults.html"
 
-    return GCOV_HTML_FILENAME
+    return "GcovCoverageResults.html"
 
 
 def validate_coverage_configuration(project_yml_text, project_yml_path):
     enabled_plugins = parse_nested_list(project_yml_text, "plugins", "enabled")
-    gcov_reports = parse_nested_list(project_yml_text, "gcov", "reports")
-    gcov_utilities = parse_nested_list(project_yml_text, "gcov", "utilities")
-    build_root = parse_build_root(project_yml_text)
-    html_filename = parse_gcov_html_filename(project_yml_text)
 
     issues = []
 
     if "gcov" not in enabled_plugins:
         issues.append("missing plugin ':plugins: :enabled: - gcov'")
-    if "HtmlBasic" not in gcov_reports:
-        issues.append("missing report ':gcov: :reports: - HtmlBasic'")
-    if gcov_utilities and "gcovr" not in gcov_utilities:
-        issues.append("unsupported ':gcov: :utilities:' configuration without 'gcovr'")
-    if build_root != BUILD_ROOT:
-        issues.append(f"unsupported ':build_root:' value '{build_root}' (expected '{BUILD_ROOT}')")
-    if html_filename != GCOV_HTML_FILENAME:
-        issues.append(
-            f"unsupported custom coverage HTML filename '{html_filename}' (expected '{GCOV_HTML_FILENAME}')"
-        )
 
     if issues:
         raise ValueError(
@@ -102,9 +84,13 @@ def validate_coverage_configuration(project_yml_text, project_yml_path):
 
 
 ceedling_command = "ceedling"
+html_filename = "GcovCoverageResults.html"
+
 for _name, _value in settings:
     if _name == "Ceedling command":
         ceedling_command = str(_value)
+    elif _name == "HTML coverage report filename":
+        html_filename = str(_value)
 
 project_yml_path = os.path.join(taste_project_directory, "project.yml") if taste_project_directory else ""
 ceedling_path = shutil.which(ceedling_command)
@@ -128,11 +114,13 @@ else:
             project_yml_text = handle.read()
 
         validate_coverage_configuration(project_yml_text, project_yml_path)
+        
+        build_root = parse_build_root(project_yml_text)
 
         status = "ok"
         status_text = (
             f"Ready to gather Ceedling coverage from {project_yml_path} and write HTML output to "
-            f"{os.path.join(taste_project_directory, BUILD_ROOT, 'artifacts', 'gcov', 'gcovr', GCOV_HTML_FILENAME)}"
+            f"{os.path.join(taste_project_directory, build_root, 'artifacts', 'gcov', 'gcovr', html_filename)}"
         )
     except Exception as exc:
         status = "error"

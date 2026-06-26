@@ -66,7 +66,12 @@ else:
     
     candidate_paths = []
     if output_directory:
-        candidate_paths.append(os.path.join(output_directory, "ceedling-test-reports", html_filename))
+        # Resolve output_directory relative to project_directory
+        if os.path.isabs(output_directory):
+            resolved_output = output_directory
+        else:
+            resolved_output = os.path.join(taste_project_directory, output_directory)
+        candidate_paths.append(os.path.join(resolved_output, "ceedling-test-reports", html_filename))
     candidate_paths.append(
         os.path.join(taste_project_directory, build_root, "artifacts", test_directory, html_filename)
     )
