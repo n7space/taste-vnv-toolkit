@@ -4,9 +4,8 @@ import subprocess
 
 
 BUILD_ROOT = "build"
-REPORT_CONTEXT = "test"
-JUNIT_FILENAME = "junit_tests_report.xml"
-HTML_FILENAME = "tests_report.html"
+GCOV_CONTEXT = os.path.join("gcov", "gcovr")
+GCOV_HTML_FILENAME = "GcovCoverageResults.html"
 
 
 def emit_progress(value):
@@ -35,11 +34,24 @@ def summarize_directory(directory_path):
     return preview
 
 
-def format_missing_report_error(report_label, expected_path, artifacts_directory, completed):
+def resolve_output_paths(project_directory):
+    artifacts_directory = os.path.join(project_directory, BUILD_ROOT, "artifacts", GCOV_CONTEXT)
+    html_source = os.path.join(artifacts_directory, GCOV_HTML_FILENAME)
+
+    if output_directory:
+        target_directory = os.path.join(output_directory, "ceedling-coverage-reports")
+    else:
+        target_directory = artifacts_directory
+
+    html_target = os.path.join(target_directory, GCOV_HTML_FILENAME)
+    return artifacts_directory, html_source, target_directory, html_target
+
+
+def format_missing_report_error(expected_path, artifacts_directory, completed):
     command_output = ((completed.stdout or "") + (completed.stderr or "")).strip()
     artifact_summary = summarize_directory(artifacts_directory)
     message = (
-        f"{report_label} was not generated at the expected path: {expected_path}. "
+        f"Coverage HTML report was not generated at the expected path: {expected_path}. "
         f"Checked artifacts directory: {artifacts_directory}. Contents: {artifact_summary}."
     )
 
@@ -47,30 +59,9 @@ def format_missing_report_error(report_label, expected_path, artifacts_directory
         message += f" Ceedling output: {command_output}"
 
     message += (
-        " If project.yml enables report_tests_log_factory with the expected report, "
-        "this may indicate Ceedling wrote the report under a different filename or context."
+        " This tool expects the default gcovr HTML artifact name and output location produced by the init tool."
     )
     return message
-
-
-def build_artifacts_directory(project_directory, build_root):
-    return os.path.join(project_directory, build_root, "artifacts", REPORT_CONTEXT)
-
-
-def resolve_output_paths(project_directory, build_root, junit_filename, html_filename):
-    artifacts_directory = build_artifacts_directory(project_directory, build_root)
-
-    junit_source = os.path.join(artifacts_directory, junit_filename)
-    html_source = os.path.join(artifacts_directory, html_filename)
-
-    if output_directory:
-        target_directory = os.path.join(output_directory, "ceedling-test-reports")
-    else:
-        target_directory = artifacts_directory
-
-    junit_target = os.path.join(target_directory, junit_filename)
-    html_target = os.path.join(target_directory, html_filename)
-    return artifacts_directory, junit_source, html_source, target_directory, junit_target, html_target
 
 
 ceedling_command = str(get_setting("Ceedling command", "ceedling"))
@@ -95,7 +86,7 @@ else:
         emit_progress(20)
 
         completed = subprocess.run(
-            [ceedling_command, "test:all"],
+            [ceedling_command, "gcov:all"],
             cwd=taste_project_directory,
             capture_output=True,
             text=True,
@@ -107,42 +98,28 @@ else:
         if completed.returncode != 0:
             command_output = (completed.stdout or "") + (completed.stderr or "")
             raise RuntimeError(
-                f"Ceedling test run failed with exit code {completed.returncode}\n{command_output.strip()}"
+                f"Ceedling coverage run failed with exit code {completed.returncode}\n{command_output.strip()}"
             )
 
-        (
-            artifacts_directory,
-            junit_source,
-            html_source,
-            target_directory,
-            junit_target,
-            html_target,
-        ) = resolve_output_paths(taste_project_directory, BUILD_ROOT, JUNIT_FILENAME, HTML_FILENAME)
+        artifacts_directory, html_source, target_directory, html_target = resolve_output_paths(
+            taste_project_directory
+        )
 
-        if not os.path.isfile(junit_source):
-            raise FileNotFoundError(
-                format_missing_report_error("JUnit XML report", junit_source, artifacts_directory, completed)
-            )
         if not os.path.isfile(html_source):
             raise FileNotFoundError(
-                format_missing_report_error("HTML report", html_source, artifacts_directory, completed)
+                format_missing_report_error(html_source, artifacts_directory, completed)
             )
 
         if output_directory:
             os.makedirs(target_directory, exist_ok=True)
-            shutil.copy2(junit_source, junit_target)
             shutil.copy2(html_source, html_target)
         else:
-            junit_target = junit_source
             html_target = html_source
 
         emit_progress(100)
 
         status = "ok"
-        status_text = (
-            "Executed Ceedling unit tests successfully. "
-            f"JUnit XML: {junit_target}; HTML: {html_target}"
-        )
+        status_text = f"Generated Ceedling coverage HTML report: {html_target}"
         show_status = True
 
     except FileNotFoundError as exc:

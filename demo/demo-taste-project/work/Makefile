@@ -13,7 +13,7 @@ DATAVIEW_AADLV1 := ${DATAVIEW_PATH}/dataview_aadlv1.aadl
 ASN1_POLICY_FLAGS ?= -typePrefix asn1Scc -renamePolicy 3 -equal -fp AUTO -c -ig -uPER -ACN
 #TASTE_SHARED_TYPES?=${TOOL_INST}/share/SharedTypes  # Ellidiss only
 
-# These languages are used in the system: C
+# These languages are used in the system: C, Timer_Manager
 # Project cache folder is used to speed up all ASN.1-related processing
 export PROJECT_CACHE=${HOME}/.taste_AST_cache
 export IV_FILE=$(shell readlink -f ../interfaceview.xml)
@@ -39,7 +39,7 @@ dataview:	${DATAVIEW_UNIQ} dataview/C/built
 	taste-cache-datamodel-for-sdl --toC
 
 # Generate the complete dataview, including Python bindings if there is a GUI
-${DATAVIEW_PATH}/built:  dataview/C/built dataview/Ada/built dataview
+${DATAVIEW_PATH}/built:  dataview/C/built dataview
 	touch $@
 
 ${DATAVIEW_AADLV1}: ${DATAVIEW_UNIQ}
@@ -89,12 +89,16 @@ build/system_config.h:	$(wildcard */*/wrappers/*_system_config.h)
 	cat $^ > $@
 
 #  Call DMT/aadl2glueC to generate glue code from the mini-cv.aadl files
-aadl2glueC:	controller/C/wrappers/aadl2glueC_built datapool/C/wrappers/aadl2glueC_built manager/SDL/wrappers/aadl2glueC_built utilities/C/wrappers/aadl2glueC_built
+aadl2glueC:	controller/C/wrappers/aadl2glueC_built datapool/C/wrappers/aadl2glueC_built demo_timer_manager/Timer_Manager/wrappers/aadl2glueC_built manager/SDL/wrappers/aadl2glueC_built utilities/C/wrappers/aadl2glueC_built
 
 controller/C/wrappers/aadl2glueC_built: controller/C/wrappers/controller_mini_cv.aadl ${DATAVIEW_AADLV1}
 	touch $@
 
 datapool/C/wrappers/aadl2glueC_built: datapool/C/wrappers/datapool_mini_cv.aadl ${DATAVIEW_AADLV1}
+	touch $@
+
+demo_timer_manager/Timer_Manager/wrappers/aadl2glueC_built: demo_timer_manager/Timer_Manager/wrappers/demo_timer_manager_mini_cv.aadl ${DATAVIEW_AADLV1}
+	aadl2glueC -allboards -o $(dir $@) $^
 	touch $@
 
 manager/SDL/wrappers/aadl2glueC_built: manager/SDL/wrappers/manager_mini_cv.aadl ${DATAVIEW_AADLV1}
@@ -115,12 +119,6 @@ dataview/C/built: ${DATAVIEW_UNIQ} ${DATAVIEW_ACN} ${CP_FILES}
 	touch $@
 
 
-dataview/Ada/built: ${DATAVIEW_UNIQ} ${CP_FILES}
-	$(info [-] Compiling the dataview in Ada)
-	mkdir -p $(dir $@)
-	asn2dataModel -allboards -o $(dir $@) -toAda $^
-	touch $@
-	cd dataview/Ada && rm -f gnat.cfg GPS_project.gpr IgnoredExaminerWarnings.wrn runSpark.sh
 
 simulink_skeletons:
 	# target required only for SIMULINK and VHDL, which use specific DMT paths

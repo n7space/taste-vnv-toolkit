@@ -12,21 +12,23 @@ extern "C" {
 
 
 typedef enum {
-    asn1Sccwait = 0
+    asn1Sccnominal = 0,
+    asn1Sccemergency = 1
 } asn1SccManager_States;
 
 // please use the following macros to avoid breaking code.
-#define asn1SccManager_States_wait asn1Sccwait
+#define asn1SccManager_States_nominal asn1Sccnominal
+#define asn1SccManager_States_emergency asn1Sccemergency
 
 flag asn1SccManager_States_Equal(const asn1SccManager_States* pVal1, const asn1SccManager_States* pVal2);
 
-#define ERR_MANAGER_STATES		1  /*wait*/
+#define ERR_MANAGER_STATES		1  /*nominal | emergency*/
 flag asn1SccManager_States_IsConstraintValid(const asn1SccManager_States* pVal, int* pErrCode);
 
 #ifdef __cplusplus
 extern const asn1SccManager_States asn1SccManager_States_constant;
 #else
-#define asn1SccManager_States_constant asn1Sccwait
+#define asn1SccManager_States_constant asn1Sccnominal
 #endif
 
 void asn1SccManager_States_Initialize(asn1SccManager_States* pVal);
@@ -51,7 +53,7 @@ flag asn1SccManager_Context_IsConstraintValid(const asn1SccManager_Context* pVal
 #ifdef __cplusplus
 extern const asn1SccManager_Context asn1SccManager_Context_constant;
 #else
-#define asn1SccManager_Context_constant {.state = asn1Sccwait, .init_done = FALSE, .sender = asn1Scccontroller, .offspring = asn1Scccontroller}
+#define asn1SccManager_Context_constant {.state = asn1Sccnominal, .init_done = FALSE, .sender = asn1Scccontroller, .offspring = asn1Scccontroller}
 #endif
 
 void asn1SccManager_Context_Initialize(asn1SccManager_Context* pVal);

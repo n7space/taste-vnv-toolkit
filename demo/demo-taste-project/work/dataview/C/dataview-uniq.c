@@ -1405,7 +1405,7 @@ flag asn1SccPID_Range_Equal(const asn1SccPID_Range* pVal1, const asn1SccPID_Rang
 flag asn1SccPID_Range_IsConstraintValid(const asn1SccPID_Range* pVal, int* pErrCode)
 {
     flag ret = TRUE;
-    ret = ((*(pVal)) <= 4UL);
+    ret = ((*(pVal)) <= 5UL);
     *pErrCode = ret ? 0 :  ERR_PID_RANGE;
 
 	return ret;
@@ -1431,7 +1431,7 @@ flag asn1SccPID_Range_Encode(const asn1SccPID_Range* pVal, BitStream* pBitStrm, 
 	*pErrCode = 0;
 	ret = bCheckConstraints ? asn1SccPID_Range_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret && *pErrCode == 0) {
-	    BitStream_EncodeConstraintPosWholeNumber(pBitStrm, (*(pVal)), 0, 4);
+	    BitStream_EncodeConstraintPosWholeNumber(pBitStrm, (*(pVal)), 0, 5);
     } /*COVERAGE_IGNORE*/
 
 
@@ -1444,7 +1444,7 @@ flag asn1SccPID_Range_Decode(asn1SccPID_Range* pVal, BitStream* pBitStrm, int* p
 	*pErrCode = 0;
 
 
-	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, pVal, 0, 4);
+	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, pVal, 0, 5);
 	*pErrCode = ret ? 0 : ERR_UPER_DECODE_PID_RANGE;
 
 	return ret  && asn1SccPID_Range_IsConstraintValid(pVal, pErrCode);
@@ -1457,7 +1457,7 @@ flag asn1SccPID_Range_ACN_Encode(const asn1SccPID_Range* pVal, BitStream* pBitSt
     *pErrCode = 0;
 	ret = bCheckConstraints ? asn1SccPID_Range_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret && *pErrCode == 0) {
-	    BitStream_EncodeConstraintPosWholeNumber(pBitStrm, (*(pVal)), 0, 4);
+	    BitStream_EncodeConstraintPosWholeNumber(pBitStrm, (*(pVal)), 0, 5);
     } /*COVERAGE_IGNORE*/
 
 
@@ -1470,7 +1470,7 @@ flag asn1SccPID_Range_ACN_Decode(asn1SccPID_Range* pVal, BitStream* pBitStrm, in
 	*pErrCode = 0;
 
 
-	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, pVal, 0, 4);
+	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, pVal, 0, 5);
 	*pErrCode = ret ? 0 : ERR_ACN_DECODE_PID_RANGE;
 
     return ret && asn1SccPID_Range_IsConstraintValid(pVal, pErrCode);
@@ -1486,7 +1486,7 @@ flag asn1SccPID_Equal(const asn1SccPID* pVal1, const asn1SccPID* pVal2)
 flag asn1SccPID_IsConstraintValid(const asn1SccPID* pVal, int* pErrCode)
 {
     flag ret = TRUE;
-    ret = ((((((((((*(pVal)) == PID_controller)) || (((*(pVal)) == PID_datapool)))) || (((*(pVal)) == PID_manager)))) || (((*(pVal)) == PID_utilities)))) || (((*(pVal)) == PID_env)));
+    ret = ((((((((((((*(pVal)) == PID_controller)) || (((*(pVal)) == PID_datapool)))) || (((*(pVal)) == PID_manager)))) || (((*(pVal)) == PID_utilities)))) || (((*(pVal)) == PID_demo_timer_manager)))) || (((*(pVal)) == PID_env)));
     *pErrCode = ret ? 0 :  ERR_PID;
 
 	return ret;
@@ -1515,19 +1515,22 @@ flag asn1SccPID_Encode(const asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCod
 	    switch((*(pVal)))
 	    {
 	        case PID_controller:
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 0, 0, 4);
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 0, 0, 5);
 	        	break;
 	        case PID_datapool:
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 1, 0, 4);
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 1, 0, 5);
 	        	break;
 	        case PID_manager:
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 2, 0, 4);
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 2, 0, 5);
 	        	break;
 	        case PID_utilities:
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 3, 0, 4);
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 3, 0, 5);
+	        	break;
+	        case PID_demo_timer_manager:
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 4, 0, 5);
 	        	break;
 	        case PID_env:
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 4, 0, 4);
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 5, 0, 5);
 	        	break;
 	        default:                    /*COVERAGE_IGNORE*/
 	    	    *pErrCode = ERR_UPER_ENCODE_PID; /*COVERAGE_IGNORE*/
@@ -1547,7 +1550,7 @@ flag asn1SccPID_Decode(asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCode)
 
 	{
 	    asn1SccSint enumIndex;
-	    ret = BitStream_DecodeConstraintWholeNumber(pBitStrm, &enumIndex, 0, 4);
+	    ret = BitStream_DecodeConstraintWholeNumber(pBitStrm, &enumIndex, 0, 5);
 	    *pErrCode = ret ? 0 : ERR_UPER_DECODE_PID;
 	    if (ret) {
 	        switch(enumIndex)
@@ -1565,6 +1568,9 @@ flag asn1SccPID_Decode(asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCode)
 	                (*(pVal)) = PID_utilities;
 	                break;
 	            case 4:
+	                (*(pVal)) = PID_demo_timer_manager;
+	                break;
+	            case 5:
 	                (*(pVal)) = PID_env;
 	                break;
 	            default:                        /*COVERAGE_IGNORE*/
@@ -1600,15 +1606,18 @@ flag asn1SccPID_ACN_Encode(const asn1SccPID* pVal, BitStream* pBitStrm, int* pEr
 	        case PID_utilities:
 	            intVal_pVal = 3UL;
 	            break;
-	        case PID_env:
+	        case PID_demo_timer_manager:
 	            intVal_pVal = 4UL;
+	            break;
+	        case PID_env:
+	            intVal_pVal = 5UL;
 	            break;
 	        default:                                    /*COVERAGE_IGNORE*/
 	            ret = FALSE;                            /*COVERAGE_IGNORE*/
 	            *pErrCode = ERR_ACN_ENCODE_PID;                 /*COVERAGE_IGNORE*/
 	    }
 	    if (ret) {
-	    	BitStream_EncodeConstraintPosWholeNumber(pBitStrm, intVal_pVal, 0, 4);
+	    	BitStream_EncodeConstraintPosWholeNumber(pBitStrm, intVal_pVal, 0, 5);
 	    }
     } /*COVERAGE_IGNORE*/
 
@@ -1623,7 +1632,7 @@ flag asn1SccPID_ACN_Decode(asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCode)
 
 	asn1SccUint intVal_pVal;
 
-	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, (&(intVal_pVal)), 0, 4);
+	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, (&(intVal_pVal)), 0, 5);
 	*pErrCode = ret ? 0 : ERR_ACN_DECODE_PID;
 	if (ret) {
 	    switch (intVal_pVal) {
@@ -1640,6 +1649,9 @@ flag asn1SccPID_ACN_Decode(asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCode)
 	            (*(pVal)) = PID_utilities;
 	            break;
 	        case 4:
+	            (*(pVal)) = PID_demo_timer_manager;
+	            break;
+	        case 5:
 	            (*(pVal)) = PID_env;
 	            break;
 	    default:                                    /*COVERAGE_IGNORE*/

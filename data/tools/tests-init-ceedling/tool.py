@@ -28,6 +28,58 @@ def to_project_relative(base_directory, target_directory):
 	return relative_path.replace(os.sep, "/")
 
 
+def collect_language_paths(root_directory):
+	source_directories = []
+	include_directories = []
+
+	for child_name in sorted(os.listdir(root_directory)):
+		child_path = os.path.join(root_directory, child_name)
+		if not os.path.isdir(child_path):
+			continue
+
+		src_directory = os.path.join(child_path, "src")
+		wrappers_directory = os.path.join(child_path, "wrappers")
+
+		if os.path.isdir(src_directory):
+			source_directories.append(src_directory)
+			include_directories.append(src_directory)
+
+		if os.path.isdir(wrappers_directory):
+			source_directories.append(wrappers_directory)
+			include_directories.append(wrappers_directory)
+
+	return deduplicate(source_directories), deduplicate(include_directories)
+
+
+def collect_source_files(source_directories):
+	source_files = []
+
+	for source_directory in source_directories:
+		for child_name in sorted(os.listdir(source_directory)):
+			child_path = os.path.join(source_directory, child_name)
+			if os.path.isfile(child_path) and child_name.endswith(".c"):
+				source_files.append(child_path)
+
+	return deduplicate(source_files)
+
+
+def collect_support_files(source_directories):
+	"""Collect source files for :support section - implementation files and dataview files only, no wrappers."""
+	support_files = []
+
+	for source_directory in source_directories:
+		# Skip wrapper directories
+		if source_directory.endswith("wrappers") or "/wrappers/" in source_directory.replace(os.sep, "/"):
+			continue
+
+		for child_name in sorted(os.listdir(source_directory)):
+			child_path = os.path.join(source_directory, child_name)
+			if os.path.isfile(child_path) and child_name.endswith(".c"):
+				support_files.append(child_path)
+
+	return deduplicate(support_files)
+
+
 def get_tests_root():
 	tests_folder = "test"
 	for setting_name, setting_value in settings:
@@ -57,44 +109,59 @@ def collect_function_paths(project_directory, function_name):
 
 	source_directories = []
 	include_directories = []
+	implementation_languages = set()
 
 	implem_directory = os.path.join(function_root, "implem", "default")
 	if os.path.isdir(implem_directory):
-		source_directories.append(implem_directory)
-		include_directories.append(implem_directory)
+		implem_sources, implem_includes = collect_language_paths(implem_directory)
+		source_directories.extend(implem_sources)
+		include_directories.extend(implem_includes)
+
+		for child_name in sorted(os.listdir(implem_directory)):
+			child_path = os.path.join(implem_directory, child_name)
+			if os.path.isdir(child_path):
+				implementation_languages.add(child_name)
 
 	for child_name in sorted(os.listdir(function_root)):
+		if child_name == "implem" or child_name in implementation_languages:
+			continue
+
 		child_path = os.path.join(function_root, child_name)
 		if not os.path.isdir(child_path):
 			continue
 
-		src_directory = os.path.join(child_path, "src")
-		wrappers_directory = os.path.join(child_path, "wrappers")
-
-		if os.path.isdir(src_directory):
-			source_directories.append(src_directory)
-			include_directories.append(src_directory)
-
-		if os.path.isdir(wrappers_directory):
-			source_directories.append(wrappers_directory)
-			include_directories.append(wrappers_directory)
+		child_sources, child_includes = collect_language_paths(function_root)
+		source_directories.extend(child_sources)
+		include_directories.extend(child_includes)
+		break
 
 	return deduplicate(source_directories), deduplicate(include_directories)
 
 
 def write_project_configuration(project_yml_path, project_directory, tests_folder, source_directories, include_directories):
-	if os.path.exists(project_yml_path):
-		return False
-
 	source_lines = [
 		f"    - +:{to_project_relative(project_directory, source_directory)}/**"
 		for source_directory in source_directories
+	]
+	support_file_lines = [
+		f"    - {to_project_relative(project_directory, support_file)}"
+		for support_file in collect_support_files(source_directories)
 	]
 	include_lines = [
 		f"    - {to_project_relative(project_directory, include_directory)}"
 		for include_directory in include_directories
 	]
 	tests_path = tests_folder.replace(os.sep, "/")
+
+	# Build :files: section only if there are support files
+	files_section = []
+	if support_file_lines:
+		files_section = [
+			"",
+			":files:",
+			"  :support:",
+			*support_file_lines,
+		]
 
 	project_yml = "\n".join([
 		":project:",
@@ -110,6 +177,7 @@ def write_project_configuration(project_yml_path, project_directory, tests_folde
 		*source_lines,
 		"  :include:",
 		*include_lines,
+		*files_section,
 		"",
 		":defines:",
 		"  :test:",
@@ -135,10 +203,18 @@ def write_project_configuration(project_yml_path, project_directory, tests_folde
 		"",
 	])
 
+	project_state = "created"
+	if os.path.exists(project_yml_path):
+		with open(project_yml_path, "r", encoding="utf-8") as handle:
+			existing_project_yml = handle.read()
+		if existing_project_yml == project_yml:
+			return "unchanged"
+		project_state = "updated"
+
 	with open(project_yml_path, "w", encoding="utf-8") as handle:
 		handle.write(project_yml)
 
-	return True
+	return project_state
 
 
 def ensure_test_stub(tests_root, function_name):
@@ -222,7 +298,7 @@ else:
 
 		os.makedirs(tests_root, exist_ok=True)
 		project_yml_path = os.path.join(taste_project_directory, "project.yml")
-		project_created = write_project_configuration(
+		project_state = write_project_configuration(
 			project_yml_path,
 			taste_project_directory,
 			tests_folder,
@@ -240,7 +316,11 @@ else:
 		emit_progress(100)
 
 		status = "ok"
-		project_message = "created project.yml" if project_created else "kept existing project.yml"
+		project_message = {
+			"created": "created project.yml",
+			"updated": "updated project.yml",
+			"unchanged": "kept project.yml unchanged",
+		}[project_state]
 		status_text = (
 			f"Initialized Ceedling tests in {tests_root}: {project_message}; "
 			f"created {created_count} function folders, skipped {len(function_names) - created_count} existing folders"

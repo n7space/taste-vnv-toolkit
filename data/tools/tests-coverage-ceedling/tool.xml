@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Gather unit test coverage [ceedling]</Name>
+  <Group>Tests</Group>
+  <Hint>Run Ceedling gcov coverage and export an HTML report</Hint>
+  <Description>Executes Ceedling coverage for the project's unit tests and produces an HTML coverage report.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <Settings>
+    <Setting>
+      <Name>Ceedling command</Name>
+      <Type>String</Type>
+      <Default>ceedling</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

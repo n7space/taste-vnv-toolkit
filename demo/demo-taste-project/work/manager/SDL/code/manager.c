@@ -82,9 +82,9 @@ void manager_PI_cooldowntimer()
 // CONNECTION Startup_Transition
 static enum Manager_Branches branch_startup_transition(void)
 {
-   // activate (19,15)
+   // activate (15,15)
    manager_RI_activate();
-   // NEXT_STATE Nominal (22,18) at 130572715848576, 115
+   // NEXT_STATE Nominal (17,18) at 318, 115
    ctxt.state = asn1SccManager_States_nominal;
    return continuous_signals;
 }
@@ -93,28 +93,28 @@ static enum Manager_Branches branch_state_emergency_input_cooldowntimer(void)
 {
    // get_sender(sender) (1,5)
    manager_RI_get_sender(&ctxt.sender);
-   // Reset_timer(cooldowntimer) (32,17)
+   // Reset_timer(cooldowntimer) (24,17)
    RESET_cooldowntimer();
-   // activate (35,19)
+   // activate (26,19)
    manager_RI_activate();
-   // NEXT_STATE Nominal (38,22) at 130572716586560, 605
+   // NEXT_STATE Nominal (28,22) at 318, 605
    ctxt.state = asn1SccManager_States_nominal;
    return continuous_signals;
 }
 // CONNECTION STATE_nominal_INPUT_report_oor
 static enum Manager_Branches branch_state_nominal_input_report_oor(void)
 {
-   asn1SccT_UInt32 tmp106;
+   asn1SccT_UInt32 tmp12;
    // get_sender(sender) (1,5)
    manager_RI_get_sender(&ctxt.sender);
-   // RESET_timer(cooldowntimer) (49,17)
+   // RESET_timer(cooldowntimer) (36,17)
    RESET_cooldowntimer();
-   // Set_timer(1000,cooldowntimer) (52,17)
-   tmp106 = 1000;
-   SET_cooldowntimer(&tmp106);
-   // deactivate (55,19)
+   // Set_timer(1000,cooldowntimer) (38,17)
+   tmp12 = 1000;
+   SET_cooldowntimer(&tmp12);
+   // deactivate (40,19)
    manager_RI_deactivate();
-   // NEXT_STATE Emergency (58,22) at 130572862683328, 385
+   // NEXT_STATE Emergency (42,22) at 310, 385
    ctxt.state = asn1SccManager_States_emergency;
    return continuous_signals;
 }

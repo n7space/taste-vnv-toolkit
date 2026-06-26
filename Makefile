@@ -36,4 +36,10 @@ demo-run:
 
 demo-clean:
 	rm -r -f ${DEMO_PROJECT_DIR}/test
+	rm -r -f ${DEMO_PROJECT_DIR}/build
 	rm -f ${DEMO_PROJECT_DIR}/project.yml
+
+demo-coverage:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Gather unit test coverage [ceedling]" || true) && \
+	cd ${CURRENT_DIRECTORY}

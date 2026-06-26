@@ -544,7 +544,7 @@ typedef asn1SccUint asn1SccPID_Range;
 
 flag asn1SccPID_Range_Equal(const asn1SccPID_Range* pVal1, const asn1SccPID_Range* pVal2);
 
-#define ERR_PID_RANGE		124  /*(0..4)*/
+#define ERR_PID_RANGE		124  /*(0..5)*/
 flag asn1SccPID_Range_IsConstraintValid(const asn1SccPID_Range* pVal, int* pErrCode);
 
 #ifdef __cplusplus
@@ -578,7 +578,8 @@ typedef enum {
     PID_datapool = 1,
     PID_manager = 2,
     PID_utilities = 3,
-    PID_env = 4
+    PID_demo_timer_manager = 4,
+    PID_env = 5
 } asn1SccPID;
 
 // please use the following macros to avoid breaking code.
@@ -586,11 +587,12 @@ typedef enum {
 #define asn1SccPID_datapool PID_datapool
 #define asn1SccPID_manager PID_manager
 #define asn1SccPID_utilities PID_utilities
+#define asn1SccPID_demo_timer_manager PID_demo_timer_manager
 #define asn1SccPID_env PID_env
 
 flag asn1SccPID_Equal(const asn1SccPID* pVal1, const asn1SccPID* pVal2);
 
-#define ERR_PID		129  /*controller | datapool | manager | utilities | env*/
+#define ERR_PID		129  /*controller | datapool | manager | utilities | demo-timer-manager | env*/
 flag asn1SccPID_IsConstraintValid(const asn1SccPID* pVal, int* pErrCode);
 
 #ifdef __cplusplus
