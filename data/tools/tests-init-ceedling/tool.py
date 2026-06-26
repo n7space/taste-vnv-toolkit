@@ -83,6 +83,9 @@ def collect_function_paths(project_directory, function_name):
 
 
 def write_project_configuration(project_yml_path, project_directory, tests_folder, source_directories, include_directories):
+	if os.path.exists(project_yml_path):
+		return False
+
 	source_lines = [
 		f"    - +:{to_project_relative(project_directory, source_directory)}/**"
 		for source_directory in source_directories
@@ -129,15 +132,17 @@ def write_project_configuration(project_yml_path, project_directory, tests_folde
 	with open(project_yml_path, "w", encoding="utf-8") as handle:
 		handle.write(project_yml)
 
+	return True
+
 
 def ensure_test_stub(tests_root, function_name):
 	function_test_directory = os.path.join(tests_root, function_name)
+	if os.path.exists(function_test_directory):
+		return False
+
 	os.makedirs(function_test_directory, exist_ok=True)
 
 	test_file_path = os.path.join(function_test_directory, f"test_{function_name}.c")
-	if os.path.exists(test_file_path):
-		return
-
 	test_stub = "\n".join([
 		'#include "unity.h"',
 		"",
@@ -158,6 +163,8 @@ def ensure_test_stub(tests_root, function_name):
 
 	with open(test_file_path, "w", encoding="utf-8") as handle:
 		handle.write(test_stub)
+
+	return True
 
 
 tests_folder = get_tests_root()
@@ -209,7 +216,7 @@ else:
 
 		os.makedirs(tests_root, exist_ok=True)
 		project_yml_path = os.path.join(taste_project_directory, "project.yml")
-		write_project_configuration(
+		project_created = write_project_configuration(
 			project_yml_path,
 			taste_project_directory,
 			tests_folder,
@@ -219,13 +226,19 @@ else:
 
 		emit_progress(75)
 
+		created_count = 0
 		for function_name in function_names:
-			ensure_test_stub(tests_root, function_name)
+			if ensure_test_stub(tests_root, function_name):
+				created_count += 1
 
 		emit_progress(100)
 
 		status = "ok"
-		status_text = f"Initialized Ceedling tests in {tests_root} for {len(function_names)} functions"
+		project_message = "created project.yml" if project_created else "kept existing project.yml"
+		status_text = (
+			f"Initialized Ceedling tests in {tests_root}: {project_message}; "
+			f"created {created_count} function folders, skipped {len(function_names) - created_count} existing folders"
+		)
 		show_status = True
 
 	except FileNotFoundError as exc:
