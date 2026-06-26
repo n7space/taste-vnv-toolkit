@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Initialize unit tests [ceedling]</Name>
+  <Group>Tests</Group>
+  <Hint>Initialize tests directory using Ceedling</Hint>
+  <Description>Initializes unit tests for the project's functions using ceedling and unity c unit-testing framework.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <Settings>
+    <Setting>
+      <Name>Tests folder</Name>
+      <Type>String</Type>
+      <Default>test</Default>
+    </Setting>
+    <Setting>
+      <Name>Ceedling command</Name>
+      <Type>String</Type>
+      <Default>ceedling</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

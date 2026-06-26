@@ -33,3 +33,6 @@ run-demo:
 	cd ${PROJECT_DIRECTORY} && \
 	(dotnet run --no-restore -- gui -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} || true) && \
 	cd ${CURRENT_DIRECTORY}
+
+clean-demo:
+	rm -r ${DEMO_PROJECT_DIR}/test
