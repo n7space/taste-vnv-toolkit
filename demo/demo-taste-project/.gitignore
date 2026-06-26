@@ -5,6 +5,7 @@
 *.pro.user
 *.pro.user.*
 .qtc_clangd/*
+build/*
 work/binaries/*
 work/Dump/*
 work/build/*

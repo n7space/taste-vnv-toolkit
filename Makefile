@@ -29,10 +29,11 @@ run-gui:
 	(dotnet run --no-restore gui -c ${DEFAULT_CONFIG_FILE} || true) && \
 	cd ${CURRENT_DIRECTORY}
 
-run-demo:
+demo-run:
 	cd ${PROJECT_DIRECTORY} && \
 	(dotnet run --no-restore -- gui -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} || true) && \
 	cd ${CURRENT_DIRECTORY}
 
-clean-demo:
-	rm -r ${DEMO_PROJECT_DIR}/test
+demo-clean:
+	rm -r -f ${DEMO_PROJECT_DIR}/test
+	rm -f ${DEMO_PROJECT_DIR}/project.yml
