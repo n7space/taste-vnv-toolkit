@@ -1,0 +1,16 @@
+# The project is to serve examples executed outside of TASTE environment.
+# Threrefore, much of the generated code is retained in repository.
+
+*.aadl
+*.pro.user
+*.pro.user.*
+.qtc_clangd/*
+work/binaries/*
+work/Dump/*
+work/build/*
+work/glue_debug
+work/Debug/*
+**/__pycache__/*
+*.py
+*.ini
+*.autosave

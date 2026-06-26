@@ -1,0 +1,44 @@
+/* CIF PROCESS (250, 150), (150, 75) */
+/* CIF Keep Specific Geode _REQSERVER_ 'https://gitlab.esa.int/taste/demo' */
+process Manager;
+    /* CIF Keep Specific Geode Partition 'default' */
+    /* CIF TEXT (10, 10), (252, 140) */
+    -- Timers defined in the interface view
+    -- Use SET_TIMER (value, timer name)
+    -- and RESET_TIMER (timer name) in a
+    -- PROCEDURE CALL symbol to use them
+    timer cooldowntimer;
+    /* CIF ENDTEXT */
+    /* CIF START (320, 10), (70, 35) */
+    START;
+        /* CIF output (320, 65), (70, 35) */
+        output activate;
+        /* CIF NEXTSTATE (318, 115), (72, 35) */
+        NEXTSTATE Nominal;
+    /* CIF state (310, 385), (89, 35) */
+    /* CIF Keep Specific Geode Partition 'default' */
+    state Emergency;
+        /* CIF input (298, 440), (112, 35) */
+        input cooldowntimer;
+            /* CIF PROCEDURECALL (256, 495), (196, 35) */
+            call Reset_timer(cooldowntimer);
+            /* CIF output (320, 550), (70, 35) */
+            output activate;
+            /* CIF NEXTSTATE (318, 605), (72, 35) */
+            NEXTSTATE Nominal;
+    endstate;
+    /* CIF state (318, 115), (72, 35) */
+    /* CIF Keep Specific Geode Partition 'default' */
+    state Nominal;
+        /* CIF input (311, 170), (87, 35) */
+        input report_oor;
+            /* CIF PROCEDURECALL (254, 225), (201, 35) */
+            call RESET_timer(cooldowntimer);
+            /* CIF PROCEDURECALL (247, 280), (214, 35) */
+            call Set_timer(1000,cooldowntimer);
+            /* CIF output (312, 335), (84, 35) */
+            output deactivate;
+            /* CIF NEXTSTATE (310, 385), (89, 35) */
+            NEXTSTATE Emergency;
+    endstate;
+endprocess Manager;

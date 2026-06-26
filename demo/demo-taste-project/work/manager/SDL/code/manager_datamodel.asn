@@ -1,0 +1,20 @@
+Manager-Datamodel DEFINITIONS ::=
+BEGIN
+--  This file was generated automatically by OpenGEODE
+IMPORTS
+   UInt8T, UInt16T, Float32, Flag8, ParameterID, ParameterValue FROM DEMO-TASTE-PROJECT-DATAVIEW
+   T-Int32, T-UInt32, T-Int8, T-UInt8, T-Boolean, T-Null-Record, T-Runtime-Error FROM TASTE-BasicTypes
+   PID-Range, PID FROM System-Dataview;
+
+Manager-States ::= ENUMERATED {nominal, emergency}
+
+Manager-Context ::= SEQUENCE {
+   state Manager-States,
+   init-done BOOLEAN,
+   sender PID,
+   offspring PID
+}
+
+Manager-Parametervalue-Val-Selection ::= ENUMERATED {paramU8-present(1), paramF-present(2)}
+Manager-T-Runtime-Error-Selection ::= ENUMERATED {noerror-present(1), encodeerror-present(2), decodeerror-present(3)}
+END

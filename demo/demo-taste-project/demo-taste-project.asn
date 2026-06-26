@@ -1,0 +1,24 @@
+DEMO-TASTE-PROJECT-DATAVIEW DEFINITIONS ::=
+BEGIN
+
+   UInt8T ::= INTEGER(0..255)
+   UInt16T ::= INTEGER(0..65535)
+   Float32 ::= REAL (-1000..1000)
+   Flag8 ::= BOOLEAN
+
+   ParameterID ::= ENUMERATED
+   {
+      paramU8 (1),
+      paramF (2)
+   }
+
+   ParameterValue ::= SEQUENCE {
+      val CHOICE {
+         paramU8 UInt8T,
+         paramF Float32
+      }
+   }
+
+
+END
+
