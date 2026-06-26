@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:taste_vnv_toolkit.ViewModels"
+        x:Class="taste_vnv_toolkit.Views.ProgressWindow"
+        x:DataType="vm:ProgressViewModel"
+        Title="Running…"
+        Width="380"
+        Height="130"
+        Background="#2D2D2D"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid RowDefinitions="*,Auto" Margin="20">
+        <TextBlock Grid.Row="0"
+                   Text="{Binding ToolName, StringFormat='Running: {0}'}"
+                   Foreground="#CCCCCC"
+                   FontSize="13"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"/>
+
+        <ProgressBar Grid.Row="1"
+                     Minimum="0"
+                     Maximum="100"
+                     Value="{Binding Progress}"
+                     Height="20"/>
+    </Grid>
+</Window>

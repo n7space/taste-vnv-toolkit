@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:taste_vnv_toolkit.ViewModels"
+        x:Class="taste_vnv_toolkit.Views.ToolConfigWindow"
+        x:DataType="vm:ToolConfigViewModel"
+        Title="Configure Tool"
+        Width="480"
+        Height="400"
+        Background="#2D2D2D"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="16">
+
+        <!-- Tool Name -->
+        <TextBlock Grid.Row="0"
+                   Text="{Binding ToolName}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   Margin="0,0,0,12"/>
+
+        <!-- Settings list -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Settings}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ToolSettingViewModel">
+                        <Grid ColumnDefinitions="*,*" Margin="0,4">
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       VerticalAlignment="Center"
+                                       Foreground="#CCCCCC"
+                                       FontSize="13"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding StringValue}"
+                                     IsVisible="{Binding IsTextType}"
+                                     FontSize="13"/>
+                            <CheckBox Grid.Column="1"
+                                      IsChecked="{Binding BoolValue}"
+                                      IsVisible="{Binding IsBoolType}"
+                                      HorizontalAlignment="Left"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,12,0,0">
+            <Button Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    Padding="16,6"/>
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}"
+                    Padding="16,6"/>
+        </StackPanel>
+    </Grid>
+</Window>

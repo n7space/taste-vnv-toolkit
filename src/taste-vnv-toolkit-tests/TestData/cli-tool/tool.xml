@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>CLI Test Tool</Name>
+  <Group>Test</Group>
+  <Hint>Tool used in CLI integration tests</Hint>
+  <Description>A minimal tool for verifying CLI status and run verbs.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>status.py</ViewScript>
+</ToolDefinition>
