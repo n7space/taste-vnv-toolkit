@@ -8,7 +8,11 @@
     !! file. The up-to-date signatures can be found in the header file. !!
 */
 #include "utilities.h"
-//#include <stdio.h>
+
+/**
+ * @file Utilities
+ * 
+ */
 
 
 void utilities_startup(void)
@@ -16,6 +20,17 @@ void utilities_startup(void)
 
 }
 
+/**
+ * @brief Calculates the nth Fibonacci number
+ * @param IN_p Pointer to input parameter (n-th position in Fibonacci sequence)
+ * @param OUT_r Pointer to output parameter (result of Fibonacci calculation)
+ * @return void
+ * 
+ * @satisfies DEMO-FUN-UTILS-001
+ * 
+ * Computes the Fibonacci number at position n using an iterative approach.
+ * Base cases: fib(0) = 0, fib(1) = 1
+ */
 void utilities_PI_fib
       (const asn1SccT_UInt32 *IN_p,
        asn1SccT_UInt32 *OUT_r)
@@ -46,6 +61,18 @@ void utilities_PI_fib
 }
 
 
+
+/**
+ * @brief Multiplies two floating-point numbers
+ * @param IN_a Pointer to first input parameter (multiplicand)
+ * @param IN_b Pointer to second input parameter (multiplier)
+ * @param OUT_r Pointer to output parameter (result of multiplication)
+ * @return void
+ * 
+ * @satisfies DEMO-FUN-UTILS-002
+ * 
+ * Performs multiplication of two 32-bit floating-point values.
+ */
 void utilities_PI_mulf
       (const asn1SccFloat32 *IN_a,
        const asn1SccFloat32 *IN_b,

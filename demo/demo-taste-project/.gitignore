@@ -1,6 +1,7 @@
 # The project is to serve examples executed outside of TASTE environment.
 # Threrefore, much of the generated code is retained in repository.
 
+Doxyfile
 *.aadl
 *.pro.user
 *.pro.user.*
@@ -16,4 +17,7 @@ work/Debug/*
 *.ini
 *.autosave
 test/*
+tests/*
+doc/*
+docs/*
 *.yml

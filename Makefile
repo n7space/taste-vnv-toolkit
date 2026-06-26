@@ -44,7 +44,7 @@ demo-clean:
 	rm -r -f ${DEMO_PROJECT_DIR}/build
 	rm -f ${DEMO_PROJECT_DIR}/project.yml
 
-demo-init:
+demo-test-init:
 	cd ${PROJECT_DIRECTORY} && \
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Initialize unit tests [ceedling]" || true) && \
 	cd ${CURRENT_DIRECTORY}
@@ -54,7 +54,17 @@ demo-test:
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Execute unit tests [ceedling]" || true) && \
 	cd ${CURRENT_DIRECTORY}
 
-demo-coverage:
+demo-test-coverage:
 	cd ${PROJECT_DIRECTORY} && \
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Gather unit test coverage [ceedling]" || true) && \
+	cd ${CURRENT_DIRECTORY}
+
+demo-doxy-init:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Initialize Doxygen configuration" || true) && \
+	cd ${CURRENT_DIRECTORY}
+
+demo-doxy-run:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Generate Doxygen documentation" || true) && \
 	cd ${CURRENT_DIRECTORY}
