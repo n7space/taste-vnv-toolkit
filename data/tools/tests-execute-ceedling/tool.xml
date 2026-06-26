@@ -13,5 +13,15 @@
       <Type>String</Type>
       <Default>ceedling</Default>
     </Setting>
+    <Setting>
+      <Name>JUnit report filename</Name>
+      <Type>String</Type>
+      <Default>junit_tests_report.xml</Default>
+    </Setting>
+    <Setting>
+      <Name>HTML report filename</Name>
+      <Type>String</Type>
+      <Default>tests_report.html</Default>
+    </Setting>
   </Settings>
 </ToolDefinition>

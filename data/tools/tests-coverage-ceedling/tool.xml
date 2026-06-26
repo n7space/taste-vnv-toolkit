@@ -13,5 +13,10 @@
       <Type>String</Type>
       <Default>ceedling</Default>
     </Setting>
+    <Setting>
+      <Name>HTML coverage report filename</Name>
+      <Type>String</Type>
+      <Default>GcovCoverageResults.html</Default>
+    </Setting>
   </Settings>
 </ToolDefinition>
