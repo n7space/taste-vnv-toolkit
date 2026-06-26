@@ -19,3 +19,11 @@ void test_utilities_fib_returns_0_for_0(void)
     utilities_PI_fib(&input, &result);
     TEST_ASSERT_EQUAL_UINT(0, result);
 }
+
+void test_utilities_fib_returns_55_for_10(void)
+{
+    asn1SccT_UInt32 input = 10;
+    asn1SccT_UInt32 result = 0xdeadbeef;
+    utilities_PI_fib(&input, &result);
+    TEST_ASSERT_EQUAL_UINT(55, result);
+}
