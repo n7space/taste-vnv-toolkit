@@ -1,6 +1,8 @@
 import os
 import shutil
 
+from testsharedceedling import get_setting, parse_project_yml
+
 
 def parse_build_root(project_yml_text):
     for line in project_yml_text.splitlines():
@@ -83,14 +85,8 @@ def validate_coverage_configuration(project_yml_text, project_yml_path):
         )
 
 
-ceedling_command = "ceedling"
-html_filename = "GcovCoverageResults.html"
-
-for _name, _value in settings:
-    if _name == "Ceedling command":
-        ceedling_command = str(_value)
-    elif _name == "HTML coverage report filename":
-        html_filename = str(_value)
+ceedling_command = get_setting(settings, "Ceedling command", "ceedling")
+html_filename = get_setting(settings, "HTML coverage report filename", "GcovCoverageResults.html")
 
 project_yml_path = os.path.join(taste_project_directory, "project.yml") if taste_project_directory else ""
 ceedling_path = shutil.which(ceedling_command)

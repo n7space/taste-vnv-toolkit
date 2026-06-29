@@ -1,27 +1,11 @@
 import os
-import subprocess
-import sys
 
+from testsharedceedling import get_setting, open_directory
 
-def open_directory(directory_path):
-    if sys.platform.startswith("win"):
-        os.startfile(directory_path)
-        return
-
-    command = ["open", directory_path] if sys.platform == "darwin" else ["xdg-open", directory_path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
 
 # ── resolve settings ──────────────────────────────────────────────────────────
 
-tests_folder = "test"
-for _name, _value in settings:
-    if _name == "Tests folder":
-        tests_folder = str(_value)
+tests_folder = str(get_setting(settings, "Tests folder", "test"))
 
 # ── validate output directory ─────────────────────────────────────────────────
 

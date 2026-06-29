@@ -1,6 +1,7 @@
 import os
 import shutil
 
+from testsharedceedling import get_setting, parse_project_yml
 
 BUILD_ROOT = "build"
 JUNIT_FILENAME = "junit_tests_report.xml"
@@ -106,10 +107,7 @@ def validate_execute_configuration(project_yml_text, project_yml_path):
         )
 
 
-ceedling_command = "ceedling"
-for _name, _value in settings:
-    if _name == "Ceedling command":
-        ceedling_command = str(_value)
+ceedling_command = get_setting(settings, "Ceedling command", "ceedling")
 
 project_yml_path = os.path.join(taste_project_directory, "project.yml") if taste_project_directory else ""
 ceedling_path = shutil.which(ceedling_command)

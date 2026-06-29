@@ -7,6 +7,9 @@
   <StatusScript>status.py</StatusScript>
   <ToolScript>tool.py</ToolScript>
   <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../tests-shared-ceedling</Path>
+  </ImportPaths>
   <Settings>
     <Setting>
       <Name>Tests folder</Name>

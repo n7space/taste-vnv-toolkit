@@ -1,15 +1,4 @@
-import shutil
+from testsharedceedling import get_ceedling_command, check_ceedling_available
 
-ceedling_command = "ceedling"
-for _name, _value in settings:
-    if _name == "Ceedling command":
-        ceedling_command = str(_value)
-
-path = shutil.which(ceedling_command)
-
-if path is not None:
-    status = "ok"
-    status_text = f"{ceedling_command} found at {path}"
-else:
-    status = "error"
-    status_text = f"{ceedling_command} not found in PATH"
+ceedling_command = get_ceedling_command(settings)
+status, status_text = check_ceedling_available(ceedling_command)

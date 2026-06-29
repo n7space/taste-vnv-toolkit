@@ -1,60 +1,9 @@
 import os
-import re
-import subprocess
-import sys
+
+from testsharedceedling import get_setting, parse_project_yml, open_path
 
 
-def get_setting(name, default_value):
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
-
-
-def parse_project_yml(project_yml_path):
-    """Parse project.yml to extract build_root and test directory."""
-    build_root = "build"
-    test_directory = "test"
-    
-    if not os.path.isfile(project_yml_path):
-        return build_root, test_directory
-    
-    try:
-        with open(project_yml_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        # Extract :build_root: value
-        build_root_match = re.search(r'^\s*:build_root:\s*(.+?)\s*$', content, re.MULTILINE)
-        if build_root_match:
-            build_root = build_root_match.group(1).strip()
-        
-        # Extract first :test: path (format: - +:test/** or - test/**)
-        test_path_match = re.search(r'^\s*:test:\s*$\s*^\s*-\s*\+?:?(.+?)(?:/\*\*)?(?:\s|$)', content, re.MULTILINE)
-        if test_path_match:
-            test_directory = test_path_match.group(1).strip()
-    
-    except Exception:
-        # If parsing fails, use defaults
-        pass
-    
-    return build_root, test_directory
-
-
-def open_path(path):
-    if sys.platform.startswith("win"):
-        os.startfile(path)
-        return
-
-    command = ["open", path] if sys.platform == "darwin" else ["xdg-open", path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-
-html_filename = str(get_setting("HTML coverage report filename", "GcovCoverageResults.html"))
+html_filename = str(get_setting(settings, "HTML coverage report filename", "GcovCoverageResults.html"))
 project_yml_path = os.path.join(taste_project_directory, "project.yml") if taste_project_directory else ""
 
 if not taste_project_directory:
