@@ -68,3 +68,9 @@ demo-doxy-run:
 	cd ${PROJECT_DIRECTORY} && \
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Generate Doxygen documentation" || true) && \
 	cd ${CURRENT_DIRECTORY}
+
+demo-doxy-xls:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Extract requirements from Excel to Doxygen tag file" || true) && \
+	cd ${CURRENT_DIRECTORY}
+
