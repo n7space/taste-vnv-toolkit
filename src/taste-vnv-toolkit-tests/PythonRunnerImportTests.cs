@@ -101,4 +101,35 @@ public class PythonRunnerImportTests
         Assert.Contains("Parsed: view data", result.StatusText);
         Assert.True(result.ShowStatus);
     }
+
+    [Fact]
+    public async Task StatusScript_CanImportFromCustomImportPath()
+    {
+        // Arrange - Load tool definition to get custom import paths
+        var toolDir = Path.Combine(ScriptsDir, "with_custom_import");
+        var toolXmlPath = Path.Combine(toolDir, "tool.xml");
+
+        ToolDefinition? toolDef = null;
+        using (var stream = new FileStream(toolXmlPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(ToolDefinition));
+            toolDef = serializer.Deserialize(stream) as ToolDefinition;
+        }
+
+        Assert.NotNull(toolDef);
+        Assert.Single(toolDef.ImportPaths);
+        Assert.Equal("lib", toolDef.ImportPaths[0]);
+
+        var scriptPath = Path.Combine(toolDir, "status_custom_import.py");
+        var request = new StatusScriptRequest(
+            scriptPath, toolDir, null, null, null, [], toolDef.ImportPaths);
+
+        // Act
+        var results = await PythonRunner.RunStatusBatchAsync([request]);
+
+        // Assert
+        Assert.Single(results);
+        Assert.Equal(ToolStatus.OK, results[0].Status);
+        Assert.Equal("Loaded from custom import path", results[0].StatusText);
+    }
 }

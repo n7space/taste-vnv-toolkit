@@ -27,6 +27,10 @@ public class ToolDefinition
     [XmlElement("ViewScript")]
     public string ViewScript { get; set; } = string.Empty;
 
+    [XmlArray("ImportPaths")]
+    [XmlArrayItem("Path")]
+    public List<string> ImportPaths { get; set; } = new();
+
     [XmlArray("Settings")]
     [XmlArrayItem("Setting")]
     public List<ToolSetting> Settings { get; set; } = new();

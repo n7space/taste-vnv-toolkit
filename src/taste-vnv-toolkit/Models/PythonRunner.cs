@@ -18,7 +18,8 @@ public record StatusScriptRequest(
     string? ProjectDirectory,
     string? IntermediateDirectory,
     string? OutputDirectory,
-    IEnumerable<(string Name, object Value)> Settings);
+    IEnumerable<(string Name, object Value)> Settings,
+    IEnumerable<string>? ImportPaths = null);
 
 /// <summary>
 /// Runs Python scripts via pythonnet.
@@ -120,7 +121,8 @@ public static class PythonRunner
         string? projectDirectory,
         string? intermediateDirectory,
         string? outputDirectory,
-        IEnumerable<(string Name, object Value)> settings)
+        IEnumerable<(string Name, object Value)> settings,
+        IEnumerable<string>? importPaths = null)
     {
         if (!_initialized)
             return Task.FromResult(
@@ -128,7 +130,7 @@ public static class PythonRunner
 
         return DispatchAsync(() =>
             RunToolOrViewScriptCore(scriptPath, toolDirectory, projectDirectory,
-                intermediateDirectory, outputDirectory, settings, null));
+                intermediateDirectory, outputDirectory, settings, null, importPaths));
     }
 
     /// <summary>Runs a single tool script on the Python worker thread.</summary>
@@ -139,7 +141,8 @@ public static class PythonRunner
         string? intermediateDirectory,
         string? outputDirectory,
         IEnumerable<(string Name, object Value)> settings,
-        Action<int>? reportProgress)
+        Action<int>? reportProgress,
+        IEnumerable<string>? importPaths = null)
     {
         if (!_initialized)
             return Task.FromResult(
@@ -147,7 +150,7 @@ public static class PythonRunner
 
         return DispatchAsync(() =>
             RunToolOrViewScriptCore(scriptPath, toolDirectory, projectDirectory,
-                intermediateDirectory, outputDirectory, settings, reportProgress));
+                intermediateDirectory, outputDirectory, settings, reportProgress, importPaths));
     }
 
     // ── Worker-thread dispatch ────────────────────────────────────────────────
@@ -217,7 +220,7 @@ public static class PythonRunner
                     req.IntermediateDirectory, req.OutputDirectory, req.Settings, null);
 
                 // Add tool directory to sys.path for imports
-                AddToolDirectoryToSysPath(scope, req.ToolDirectory);
+                AddToolDirectoryToSysPath(scope, req.ToolDirectory, req.ImportPaths);
 
                 scope.Exec(File.ReadAllText(req.ScriptPath));
 
@@ -239,7 +242,8 @@ public static class PythonRunner
         string? intermediateDirectory,
         string? outputDirectory,
         IEnumerable<(string Name, object Value)> settings,
-        Action<int>? reportProgress)
+        Action<int>? reportProgress,
+        IEnumerable<string>? importPaths = null)
     {
         if (!File.Exists(scriptPath))
             return new ToolScriptResult(ToolStatus.Error, $"Script not found: {scriptPath}", true);
@@ -253,7 +257,7 @@ public static class PythonRunner
                     intermediateDirectory, outputDirectory, settings, reportProgress);
 
                 // Add tool directory to sys.path for imports
-                AddToolDirectoryToSysPath(scope, toolDirectory);
+                AddToolDirectoryToSysPath(scope, toolDirectory, importPaths);
 
                 scope.Exec(File.ReadAllText(scriptPath));
 
@@ -298,15 +302,35 @@ public static class PythonRunner
     }
 
     /// <summary>
-    /// Adds the tool directory to sys.path to enable imports from that directory.
+    /// Adds the tool directory and custom import paths to sys.path to enable imports.
     /// The scope is disposed after script execution, which naturally cleans up sys.path.
     /// </summary>
-    private static void AddToolDirectoryToSysPath(PyModule scope, string toolDirectory)
+    /// <param name="scope">The Python scope to modify.</param>
+    /// <param name="toolDirectory">The tool directory (always added).</param>
+    /// <param name="importPaths">Optional additional paths relative to tool directory.</param>
+    private static void AddToolDirectoryToSysPath(PyModule scope, string toolDirectory, IEnumerable<string>? importPaths = null)
     {
-        scope.Exec($@"
-import sys
-if r'{toolDirectory.Replace("\\", "\\\\")}' not in sys.path:
-    sys.path.insert(0, r'{toolDirectory.Replace("\\", "\\\\")}')
-");
+        var pathsToAdd = new List<string> { toolDirectory };
+
+        if (importPaths != null)
+        {
+            foreach (var relativePath in importPaths)
+            {
+                var absolutePath = Path.Combine(toolDirectory, relativePath);
+                if (Directory.Exists(absolutePath))
+                {
+                    pathsToAdd.Add(absolutePath);
+                }
+            }
+        }
+
+        var pythonCode = "import sys\n";
+        foreach (var path in pathsToAdd)
+        {
+            var escapedPath = path.Replace("\\", "\\\\");
+            pythonCode += $"if r'{escapedPath}' not in sys.path:\n    sys.path.insert(0, r'{escapedPath}')\n";
+        }
+
+        scope.Exec(pythonCode);
     }
 }

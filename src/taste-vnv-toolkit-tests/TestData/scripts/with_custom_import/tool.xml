@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Test Tool With Custom Import</Name>
+  <Group>Test</Group>
+  <Hint>Test tool with custom import paths</Hint>
+  <Description>This tool tests custom import paths functionality.</Description>
+  <StatusScript>status_custom_import.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>lib</Path>
+  </ImportPaths>
+  <Settings>
+  </Settings>
+</ToolDefinition>

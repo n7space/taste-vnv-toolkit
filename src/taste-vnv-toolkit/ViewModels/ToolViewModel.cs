@@ -58,7 +58,8 @@ public partial class ToolViewModel : ViewModelBase
         _tasteProjectDirectory,
         _config.IntermediateDirectory,
         _config.ResultDirectory,
-        GetCurrentSettings());
+        GetCurrentSettings(),
+        _definition.ImportPaths);
 
     /// <summary>Applies a status-script result to the observable properties.</summary>
     public void ApplyStatusResult(StatusScriptResult result)
@@ -113,7 +114,7 @@ public partial class ToolViewModel : ViewModelBase
         var result = await PythonRunner.RunViewScriptAsync(
             scriptPath, _toolDirectory,
             _tasteProjectDirectory, _config.IntermediateDirectory,
-            _config.ResultDirectory, GetCurrentSettings());
+            _config.ResultDirectory, GetCurrentSettings(), _definition.ImportPaths);
 
         if (result.ShowStatus)
             await ShowStatusResultAsync(result.Status, result.StatusText);
@@ -143,7 +144,7 @@ public partial class ToolViewModel : ViewModelBase
         var result = await PythonRunner.RunToolScriptAsync(
             scriptPath, _toolDirectory,
             _tasteProjectDirectory, _config.IntermediateDirectory,
-            _config.ResultDirectory, GetCurrentSettings(), progressCallback);
+            _config.ResultDirectory, GetCurrentSettings(), progressCallback, _definition.ImportPaths);
 
         if (progressWindowShown)
             progressWindow.Close();
