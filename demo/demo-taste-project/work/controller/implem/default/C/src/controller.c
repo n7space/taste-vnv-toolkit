@@ -29,10 +29,26 @@ void controller_PI_deactivate(void)
    // Write your code here
 }
 
+#define COUNT (32)
 
 void controller_PI_pps(void)
 {
-   // Write your code here
+   static asn1SccT_UInt32 x = 0;
+   asn1SccT_UInt32 accu;
+   asn1SccT_UInt32 rs[COUNT];
+
+   for (int i = 0; i < COUNT; i++)
+   {
+      controller_RI_fib(&x, &(rs[i]));
+   }
+   accu = 0;
+   for (int i = COUNT - 1; i >= 0;i--)
+   {
+      accu += rs[i];
+   }
+
+   // Dummy write to avoid inlining
+   *((uint32_t*)(0x12345678)) = accu;
 }
 
 

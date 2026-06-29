@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Check TASTE stack usage</Name>
+  <Group>Analysis</Group>
+  <Hint>Analyze stack usage for all TASTE functions</Hint>
+  <Description>Runs the TASTE stack analysis command and generates an HTML report showing stack usage for each function with visual indicators for utilization levels.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <Settings>
+    <Setting>
+      <Name>Report filename</Name>
+      <Type>String</Type>
+      <Default>stack-usage-report.html</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>
