@@ -39,7 +39,8 @@ def open_path(path):
 def parse_stack_usage_line(line):
     """
     Parse a stack usage line from the TASTE output.
-    Expected format: [-] Stack usage of <function_name> is <used> / <max>
+    Expected format: [-] Stack usage of <function_name> is <used> /<max>
+    or [-] Stack usage of <function_name> is <used> / <max>
     Returns tuple: (function_name, used, max) or None if not matched
     
     Note: Strips ANSI color codes from the line first.
@@ -48,7 +49,8 @@ def parse_stack_usage_line(line):
     ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
     line = ansi_escape.sub('', line)
     
-    pattern = r'\[-\]\s+Stack usage of\s+(\S+)\s+is\s+(\d+)\s+/\s+(\d+)'
+    # Pattern allows optional spaces around the slash to handle both formats
+    pattern = r'\[-\]\s+Stack usage of\s+(\S+)\s+is\s+(\d+)\s*/\s*(\d+)'
     match = re.search(pattern, line)
     if match:
         function_name = match.group(1)
