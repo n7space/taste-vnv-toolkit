@@ -29,7 +29,10 @@ void controller_PI_deactivate(void)
    // Write your code here
 }
 
-#define COUNT (32)
+#define COUNT (4)
+
+// Volatile variable to prevent compiler from optimizing away unused results
+static volatile asn1SccT_UInt32 dummy_sink = 0;
 
 void controller_PI_pps(void)
 {
@@ -47,8 +50,8 @@ void controller_PI_pps(void)
       accu += rs[i];
    }
 
-   // Dummy write to avoid inlining
-   *((uint32_t*)(0x12345678)) = accu;
+   // Write to volatile variable to avoid optimization
+   dummy_sink = accu;
 }
 
 
