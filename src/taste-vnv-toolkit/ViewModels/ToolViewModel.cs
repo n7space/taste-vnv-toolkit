@@ -20,6 +20,7 @@ public partial class ToolViewModel : ViewModelBase
     private readonly string _tasteProjectDirectory;
     private readonly ConfigurationOptions _config;
     private readonly Action _saveConfig;
+    private readonly Func<string, Task> _reloadGroupStatus;
 
     public string Name => _definition.Name;
     public string Hint => _definition.Hint;
@@ -37,13 +38,15 @@ public partial class ToolViewModel : ViewModelBase
     public string StatusColor => ToolStatusHelper.ToColor(Status);
 
     public ToolViewModel(ToolDefinition definition, string toolDirectory,
-        string tasteProjectDirectory, ConfigurationOptions config, Action saveConfig)
+        string tasteProjectDirectory, ConfigurationOptions config, Action saveConfig,
+        Func<string, Task> reloadGroupStatus)
     {
         _definition = definition;
         _toolDirectory = toolDirectory;
         _tasteProjectDirectory = tasteProjectDirectory;
         _config = config;
         _saveConfig = saveConfig;
+        _reloadGroupStatus = reloadGroupStatus;
     }
 
     // ── Status helpers used by MainWindowViewModel for batch loading ──────────
@@ -95,7 +98,12 @@ public partial class ToolViewModel : ViewModelBase
     {
         var configVm = new ToolConfigViewModel(_definition, _config, _saveConfig);
         var window = new ToolConfigWindow(configVm);
-        await window.ShowDialog(GetMainWindow());
+        var saved = await window.ShowDialog<bool>(GetMainWindow());
+        
+        if (saved)
+        {
+            await LoadStatusAsync();
+        }
     }
 
     [RelayCommand]
@@ -142,6 +150,9 @@ public partial class ToolViewModel : ViewModelBase
 
         if (result.ShowStatus)
             await ShowStatusResultAsync(result.Status, result.StatusText);
+        
+        // Re-evaluate status for all tools in the same group
+        await _reloadGroupStatus(_definition.Group);
     }
 
     private static async Task ShowStatusResultAsync(ToolStatus status, string statusText)

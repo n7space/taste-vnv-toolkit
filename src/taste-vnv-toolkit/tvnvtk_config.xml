@@ -9,5 +9,20 @@
       <ToolName>GCC Help</ToolName>
       <Value>gcc_help.txt</Value>
     </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Doxygen command</SettingName>
+      <ToolName>Initialize Doxygen configuration</ToolName>
+      <Value>doxygen</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Requirements tag file</SettingName>
+      <ToolName>Initialize Doxygen configuration</ToolName>
+      <Value>doxygen-requirements.tag</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Output directory</SettingName>
+      <ToolName>Initialize Doxygen configuration</ToolName>
+      <Value>docs</Value>
+    </ToolSettingEntry>
   </toolSettings>
 </ConfigurationOptions>
