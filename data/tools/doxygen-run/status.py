@@ -1,23 +1,27 @@
-import os
-import shutil
-
-doxygen_command = "doxygen"
-for _name, _value in settings:
-    if _name == "Doxygen command":
-        doxygen_command = str(_value)
-
-doxygen_path = shutil.which(doxygen_command)
-project_yml_path = os.path.join(taste_project_directory, "Doxyfile") if taste_project_directory else ""
+from doxygenshared import (
+    get_doxygen_command,
+    check_doxygen_available,
+    get_doxyfile_path,
+    check_doxyfile_exists,
+)
 
 if not taste_project_directory:
     status = "error"
     status_text = "Project directory is not configured"
-elif doxygen_path is None:
-    status = "error"
-    status_text = f"{doxygen_command} not found in PATH"
-elif not os.path.isfile(project_yml_path):
-    status = "error"
-    status_text = f"Doxyfile not found: {project_yml_path}\nRun the 'Initialize Doxygen configuration' tool first."
 else:
-    status = "ok"
-    status_text = f"Ready to generate documentation using {project_yml_path}"
+    doxygen_command = get_doxygen_command(settings)
+    doxygen_status, doxygen_message = check_doxygen_available(doxygen_command)
+    
+    if doxygen_status == "error":
+        status = "error"
+        status_text = doxygen_message
+    else:
+        doxyfile_path = get_doxyfile_path(taste_project_directory)
+        exists, error_message = check_doxyfile_exists(doxyfile_path)
+        
+        if not exists:
+            status = "error"
+            status_text = error_message
+        else:
+            status = "ok"
+            status_text = f"Ready to generate documentation using {doxyfile_path}"

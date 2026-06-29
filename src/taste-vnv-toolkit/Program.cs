@@ -166,7 +166,7 @@ sealed class Program
             Path.Combine(toolDir, def.StatusScript),
             toolDir, projectPath,
             config.IntermediateDirectory, config.ResultDirectory,
-            GetSettings(def, config));
+            GetSettings(def, config), def.ImportPaths);
 
         PythonRunner.Initialize();
         var results = PythonRunner.RunStatusBatchAsync([request])
@@ -200,7 +200,7 @@ sealed class Program
         var result = PythonRunner.RunToolScriptAsync(
             scriptPath, toolDir,
             projectPath, config.IntermediateDirectory,
-            config.ResultDirectory, GetSettings(def, config), progress)
+            config.ResultDirectory, GetSettings(def, config), progress, def.ImportPaths)
             .GetAwaiter().GetResult();
 
         PythonRunner.Shutdown();

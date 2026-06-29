@@ -1,15 +1,16 @@
-import os
+from doxygenshared import get_doxyfile_path, check_doxyfile_exists
 
 if not taste_project_directory:
     status = "error"
     status_text = "Project directory is not configured"
     show_status = True
 else:
-    doxyfile_path = os.path.join(taste_project_directory, "Doxyfile")
+    doxyfile_path = get_doxyfile_path(taste_project_directory)
+    exists, error_message = check_doxyfile_exists(doxyfile_path)
 
-    if not os.path.isfile(doxyfile_path):
+    if not exists:
         status = "error"
-        status_text = f"Doxyfile not found: {doxyfile_path}\nRun the tool first to initialize it."
+        status_text = f"{error_message}\nRun the tool first to initialize it."
         show_status = True
     else:
         try:

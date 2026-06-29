@@ -310,13 +310,16 @@ public static class PythonRunner
     /// <param name="importPaths">Optional additional paths relative to tool directory.</param>
     private static void AddToolDirectoryToSysPath(PyModule scope, string toolDirectory, IEnumerable<string>? importPaths = null)
     {
-        var pathsToAdd = new List<string> { toolDirectory };
+        // Ensure tool directory is absolute
+        var absoluteToolDirectory = Path.GetFullPath(toolDirectory);
+        var pathsToAdd = new List<string> { absoluteToolDirectory };
 
         if (importPaths != null)
         {
             foreach (var relativePath in importPaths)
             {
-                var absolutePath = Path.Combine(toolDirectory, relativePath);
+                var combinedPath = Path.Combine(absoluteToolDirectory, relativePath);
+                var absolutePath = Path.GetFullPath(combinedPath);
                 if (Directory.Exists(absolutePath))
                 {
                     pathsToAdd.Add(absolutePath);

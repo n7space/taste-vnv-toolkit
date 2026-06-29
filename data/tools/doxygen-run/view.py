@@ -1,44 +1,12 @@
+from doxygenshared import (
+    get_output_directory,
+    get_documentation_paths,
+    open_directory,
+    open_html_file,
+)
 import os
-import subprocess
-import sys
 
-
-def open_directory(directory_path):
-    if sys.platform.startswith("win"):
-        os.startfile(directory_path)
-        return
-
-    command = ["open", directory_path] if sys.platform == "darwin" else ["xdg-open", directory_path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-
-def open_html_file(file_path):
-    if sys.platform.startswith("win"):
-        os.startfile(file_path)
-        return
-
-    command = ["open", file_path] if sys.platform == "darwin" else ["xdg-open", file_path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-
-# ── resolve settings ──────────────────────────────────────────────────────────
-
-output_dir = "docs"
-for _name, _value in settings:
-    if _name == "Output directory":
-        output_dir = str(_value)
-
-# ── validate output directory ─────────────────────────────────────────────────
+output_dir = get_output_directory(settings)
 
 if not output_dir:
     status = "error"
@@ -49,14 +17,9 @@ elif not taste_project_directory:
     status_text = "Project directory is not configured"
     show_status = True
 else:
-    # Handle both absolute and relative paths
-    if os.path.isabs(output_dir):
-        docs_path = output_dir
-    else:
-        docs_path = os.path.join(taste_project_directory, output_dir)
-    
-    html_path = os.path.join(docs_path, "html")
-    index_path = os.path.join(html_path, "index.html")
+    docs_path, html_path, index_path = get_documentation_paths(
+        taste_project_directory, output_dir
+    )
 
     if not os.path.isdir(html_path):
         status = "error"

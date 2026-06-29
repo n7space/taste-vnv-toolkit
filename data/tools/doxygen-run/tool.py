@@ -1,3 +1,10 @@
+from doxygenshared import (
+    get_doxygen_command,
+    get_output_directory,
+    get_doxyfile_path,
+    check_doxyfile_exists,
+    get_documentation_paths,
+)
 import os
 import subprocess
 
@@ -7,26 +14,20 @@ def emit_progress(value):
         report_progress(value)
 
 
-def get_setting(name, default_value):
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
-
-
-doxygen_command = str(get_setting("Doxygen command", "doxygen"))
-output_dir = str(get_setting("Output directory", "docs"))
+doxygen_command = get_doxygen_command(settings)
+output_dir = get_output_directory(settings)
 
 if not taste_project_directory:
     status = "error"
     status_text = "Project directory is not configured"
     show_status = True
 else:
-    doxyfile_path = os.path.join(taste_project_directory, "Doxyfile")
+    doxyfile_path = get_doxyfile_path(taste_project_directory)
+    exists, error_message = check_doxyfile_exists(doxyfile_path)
     
-    if not os.path.isfile(doxyfile_path):
+    if not exists:
         status = "error"
-        status_text = f"Doxyfile not found: {doxyfile_path}\nRun the 'Initialize Doxygen configuration' tool first."
+        status_text = error_message
         show_status = True
     else:
         try:
@@ -49,14 +50,10 @@ else:
                     f"Doxygen failed with exit code {completed.returncode}\n{command_output.strip()}"
                 )
             
-            # Determine output path
-            if os.path.isabs(output_dir):
-                docs_path = output_dir
-            else:
-                docs_path = os.path.join(taste_project_directory, output_dir)
-            
-            html_path = os.path.join(docs_path, "html")
-            index_path = os.path.join(html_path, "index.html")
+            # Get documentation paths
+            docs_path, html_path, index_path = get_documentation_paths(
+                taste_project_directory, output_dir
+            )
             
             emit_progress(100)
             
