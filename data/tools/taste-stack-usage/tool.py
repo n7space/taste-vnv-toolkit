@@ -60,7 +60,14 @@ def parse_stack_usage_line(line):
     return None
 
 
-def generate_html_report(stack_data, output_path):
+def get_project_name(project_directory):
+    """Extract project name from the directory path."""
+    if not project_directory:
+        return "TASTE"
+    return os.path.basename(os.path.abspath(project_directory))
+
+
+def generate_html_report(stack_data, output_path, project_name="TASTE"):
     """Generate an HTML report with embedded CSS for stack usage data."""
     
     html_template = """<!DOCTYPE html>
@@ -68,7 +75,7 @@ def generate_html_report(stack_data, output_path):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TASTE Stack Usage Report</title>
+    <title>{project_name} Stack Usage Report</title>
     <style>
         * {{
             margin: 0;
@@ -77,9 +84,9 @@ def generate_html_report(stack_data, output_path):
         }}
         
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: sans-serif;
+            background-color: #FFFFFF;
+            color: #000000;
             padding: 40px 20px;
         }}
         
@@ -87,33 +94,35 @@ def generate_html_report(stack_data, output_path):
             max-width: 1200px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            border: 1px solid #ddd;
         }}
         
         header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background-color: white;
+            color: #000000;
             padding: 40px;
             text-align: center;
+            border-bottom: 2px solid navy;
         }}
         
         h1 {{
-            font-size: 2.5em;
-            font-weight: 700;
+            font-size: 20pt;
+            font-weight: bold;
             margin-bottom: 10px;
         }}
         
         .subtitle {{
             font-size: 1.1em;
-            opacity: 0.9;
+            color: #666;
         }}
         
         .timestamp {{
             margin-top: 15px;
             font-size: 0.9em;
-            opacity: 0.8;
+            color: #666;
         }}
         
         .content {{
@@ -121,52 +130,53 @@ def generate_html_report(stack_data, output_path):
         }}
         
         .summary {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            display: flex;
+            flex-flow: row wrap;
+            max-width: 100%;
+            justify-content: flex-start;
             margin-bottom: 40px;
+            gap: 20px;
         }}
         
         .summary-card {{
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            flex: 1 0 7em;
+            background-color: LightSteelBlue;
             padding: 25px;
-            border-radius: 8px;
+            border-radius: 4px;
             text-align: center;
         }}
         
         .summary-card h3 {{
             font-size: 0.9em;
-            color: #666;
+            color: #000000;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 10px;
+            font-weight: normal;
         }}
         
         .summary-card .value {{
             font-size: 2em;
-            font-weight: 700;
-            color: #333;
+            font-weight: normal;
+            color: #000000;
         }}
         
         table {{
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }}
         
         thead {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background-color: LightSteelBlue;
+            color: #000000;
         }}
         
         th {{
             padding: 15px;
             text-align: left;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 0.5px;
+            font-weight: normal;
+            font-size: 1em;
         }}
         
         th:last-child {{
@@ -175,7 +185,6 @@ def generate_html_report(stack_data, output_path):
         
         tbody tr {{
             border-bottom: 1px solid #eee;
-            transition: background-color 0.2s;
         }}
         
         tbody tr:hover {{
@@ -188,17 +197,16 @@ def generate_html_report(stack_data, output_path):
         
         td {{
             padding: 15px;
+            color: #000000;
         }}
         
         .function-name {{
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-            color: #333;
+            font-family: monospace;
+            font-weight: normal;
         }}
         
         .stack-numbers {{
-            font-family: 'Courier New', monospace;
-            color: #666;
+            font-family: monospace;
         }}
         
         .usage-bar {{
@@ -207,9 +215,8 @@ def generate_html_report(stack_data, output_path):
         
         .bar-container {{
             background: #e0e0e0;
-            border-radius: 10px;
+            border-radius: 4px;
             height: 24px;
-            overflow: hidden;
             position: relative;
             display: inline-block;
             width: 200px;
@@ -217,27 +224,38 @@ def generate_html_report(stack_data, output_path):
         
         .bar-fill {{
             height: 100%;
-            border-radius: 10px;
+            border-radius: 4px;
             transition: width 0.3s ease;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }}
+        
+        .bar-text {{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.75em;
-            font-weight: 700;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            color: #000000;
+            z-index: 1;
         }}
         
         .bar-low {{
-            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+            background-color: #85E485;
         }}
         
         .bar-medium {{
-            background: linear-gradient(90deg, #FF9800 0%, #FFC107 100%);
+            background-color: #F9FD63;
         }}
         
         .bar-high {{
-            background: linear-gradient(90deg, #F44336 0%, #E91E63 100%);
+            background-color: #FF6666;
         }}
         
         .footer {{
@@ -246,13 +264,14 @@ def generate_html_report(stack_data, output_path):
             text-align: center;
             color: #666;
             font-size: 0.9em;
+            border-top: 2px solid navy;
         }}
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>TASTE Stack Usage Report</h1>
+            <h1>{project_name} Stack Usage Report</h1>
             <div class="subtitle">Function Stack Analysis</div>
             <div class="timestamp">Generated: {timestamp}</div>
         </header>
@@ -298,6 +317,7 @@ def generate_html_report(stack_data, output_path):
     if not stack_data:
         # No data to report
         html = html_template.format(
+            project_name=project_name,
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             total_functions=0,
             max_usage=0,
@@ -313,22 +333,21 @@ def generate_html_report(stack_data, output_path):
             percentage = (used / max_stack * 100) if max_stack > 0 else 0
             percentages.append(percentage)
             
-            # Determine bar color class based on usage
-            if percentage < 50:
-                bar_class = "bar-low"
-            elif percentage < 80:
-                bar_class = "bar-medium"
+            # Determine bar color class based on usage (matching GcovCoverageResults)
+            if percentage < 75:
+                bar_class = "bar-low"      # Green: < 75%
+            elif percentage < 90:
+                bar_class = "bar-medium"   # Yellow: 75-90%
             else:
-                bar_class = "bar-high"
+                bar_class = "bar-high"     # Red: >= 90%
             
             row = f"""                    <tr>
                         <td class="function-name">{func_name}</td>
                         <td class="stack-numbers">{used} / {max_stack} bytes</td>
                         <td class="usage-bar">
                             <div class="bar-container">
-                                <div class="bar-fill {bar_class}" style="width: {percentage:.1f}%">
-                                    {percentage:.1f}%
-                                </div>
+                                <div class="bar-fill {bar_class}" style="width: {percentage:.1f}%"></div>
+                                <div class="bar-text">{percentage:.1f}%</div>
                             </div>
                         </td>
                     </tr>"""
@@ -340,6 +359,7 @@ def generate_html_report(stack_data, output_path):
         avg_usage = sum(percentages) / len(percentages) if percentages else 0
         
         html = html_template.format(
+            project_name=project_name,
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             total_functions=total_functions,
             max_usage=f"{max_usage:.1f}",
@@ -415,8 +435,11 @@ else:
                 
                 emit_progress(80)
                 
+                # Get project name from directory
+                project_name = get_project_name(taste_project_directory)
+                
                 # Generate HTML report
-                generate_html_report(stack_data, output_path)
+                generate_html_report(stack_data, output_path, project_name)
                 
                 emit_progress(100)
                 
