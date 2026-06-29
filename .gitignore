@@ -10,6 +10,7 @@
 # General
 .vscode/
 output/
+docs/
 **/__pycache__/*
 
 # Build results

@@ -13,7 +13,7 @@ all: build
 
 clean:
 	rm -r -f output/*
-	dotnet clean --no-restore ${SOLUTION_FILE_PATH}
+	dotnet clean ${SOLUTION_FILE_PATH}
 
 format:
 	dotnet format --no-restore ${SOLUTION_FILE_PATH}

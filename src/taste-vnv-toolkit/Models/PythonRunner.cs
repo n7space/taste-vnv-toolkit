@@ -215,6 +215,10 @@ public static class PythonRunner
                 using var scope = Py.CreateScope();
                 SetCommonVariables(scope, req.ToolDirectory, req.ProjectDirectory,
                     req.IntermediateDirectory, req.OutputDirectory, req.Settings, null);
+
+                // Add tool directory to sys.path for imports
+                AddToolDirectoryToSysPath(scope, req.ToolDirectory);
+
                 scope.Exec(File.ReadAllText(req.ScriptPath));
 
                 var statusStr = scope.Contains("status") ? scope.Get<string>("status") : "error";
@@ -247,6 +251,10 @@ public static class PythonRunner
                 using var scope = Py.CreateScope();
                 SetCommonVariables(scope, toolDirectory, projectDirectory,
                     intermediateDirectory, outputDirectory, settings, reportProgress);
+
+                // Add tool directory to sys.path for imports
+                AddToolDirectoryToSysPath(scope, toolDirectory);
+
                 scope.Exec(File.ReadAllText(scriptPath));
 
                 var statusStr = scope.Contains("status") ? scope.Get<string>("status") : "error";
@@ -287,5 +295,18 @@ public static class PythonRunner
 
         if (reportProgress != null)
             scope.Set("report_progress", reportProgress);
+    }
+
+    /// <summary>
+    /// Adds the tool directory to sys.path to enable imports from that directory.
+    /// The scope is disposed after script execution, which naturally cleans up sys.path.
+    /// </summary>
+    private static void AddToolDirectoryToSysPath(PyModule scope, string toolDirectory)
+    {
+        scope.Exec($@"
+import sys
+if r'{toolDirectory.Replace("\\", "\\\\")}' not in sys.path:
+    sys.path.insert(0, r'{toolDirectory.Replace("\\", "\\\\")}')
+");
     }
 }

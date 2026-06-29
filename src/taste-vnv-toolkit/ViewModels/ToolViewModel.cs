@@ -99,7 +99,7 @@ public partial class ToolViewModel : ViewModelBase
         var configVm = new ToolConfigViewModel(_definition, _config, _saveConfig);
         var window = new ToolConfigWindow(configVm);
         var saved = await window.ShowDialog<bool>(GetMainWindow());
-        
+
         if (saved)
         {
             await LoadStatusAsync();
@@ -150,7 +150,7 @@ public partial class ToolViewModel : ViewModelBase
 
         if (result.ShowStatus)
             await ShowStatusResultAsync(result.Status, result.StatusText);
-        
+
         // Re-evaluate status for all tools in the same group
         await _reloadGroupStatus(_definition.Group);
     }
