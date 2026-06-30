@@ -8,31 +8,28 @@
     !! file. The up-to-date signatures can be found in the header file. !!
 */
 #include "controller.h"
-//#include <stdio.h>
 
 
 void controller_startup(void)
 {
-   // Write your initialisation code
-   // You may call sporadic required interfaces and start timers
-   // puts ("[Controller] Startup");
+   // NOP
 }
 
 void controller_PI_activate(void)
 {
-   // Write your code here
+   // NOP
 }
 
 
 void controller_PI_deactivate(void)
 {
-   // Write your code here
+   // NOP
 }
 
 
 void controller_PI_pps(void)
 {
-   // Write your code here
+   // NOP
 }
 
 

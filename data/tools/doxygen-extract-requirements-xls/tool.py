@@ -5,6 +5,7 @@ import os
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+ISO_LATIN_LETTER_COUNT = 26
 
 def emit_progress(value):
     """Report progress if the function is available."""
@@ -17,7 +18,7 @@ def column_letter_to_index(col_letter):
     col_letter = col_letter.upper().strip()
     index = 0
     for char in col_letter:
-        index = index * 26 + (ord(char) - ord('A') + 1)
+        index = index * ISO_LATIN_LETTER_COUNT + (ord(char) - ord('A') + 1)
     return index - 1
 
 
