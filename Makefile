@@ -7,7 +7,7 @@ DEFAULT_CONFIG_FILE=tvnvtk_config.xml
 DEMO_PROJECT_DIR=demo/demo-taste-project
 ABSOLUTE_DEMO_PROJECT_DIR=$(abspath ${DEMO_PROJECT_DIR})
 
-.PHONY: all test clean build build-release build-debug run-gui format
+.PHONY: all test clean build build-release build-debug run-gui format demo-regenerate-trace
 
 all: build
 
@@ -79,3 +79,5 @@ demo-stack:
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Check TASTE stack usage" || true) && \
 	cd ${CURRENT_DIRECTORY}
 
+demo-regenerate-trace:
+	python3 demo/scripts/generate_trace.py demo/demo-taste-project/dummy-trace.miab

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Performance Analysis</Name>
+  <Group>Analysis</Group>
+  <Hint>Analyze interface performance from MIAB trace file</Hint>
+  <Description>Parses a MIAB trace file containing interface activations/deactivations and generates an HTML report with timing statistics.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <Settings>
+    <Setting>
+      <Name>MIAB file path</Name>
+      <Type>String</Type>
+      <Default>trace.miab</Default>
+    </Setting>
+    <Setting>
+      <Name>Interface size (bytes)</Name>
+      <Type>Int</Type>
+      <Default>4</Default>
+    </Setting>
+    <Setting>
+      <Name>Entry type size (bytes)</Name>
+      <Type>Int</Type>
+      <Default>4</Default>
+    </Setting>
+    <Setting>
+      <Name>Timestamp size (bytes)</Name>
+      <Type>Int</Type>
+      <Default>8</Default>
+    </Setting>
+    <Setting>
+      <Name>interfaces_info.h path</Name>
+      <Type>String</Type>
+      <Default>work/build/node_1/samv71asw/interfaces_info.h</Default>
+    </Setting>
+    <Setting>
+      <Name>Output HTML filename</Name>
+      <Type>String</Type>
+      <Default>performance-report.html</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>
