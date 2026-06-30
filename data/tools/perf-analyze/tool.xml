@@ -14,7 +14,22 @@
       <Default>trace.miab</Default>
     </Setting>
     <Setting>
+      <Name>Little-endian</Name>
+      <Type>Bool</Type>
+      <Default>true</Default>
+    </Setting>
+    <Setting>
+      <Name>Interface offset (bytes)</Name>
+      <Type>Int</Type>
+      <Default>0</Default>
+    </Setting>
+    <Setting>
       <Name>Interface size (bytes)</Name>
+      <Type>Int</Type>
+      <Default>4</Default>
+    </Setting>
+    <Setting>
+      <Name>Entry type offset (bytes)</Name>
       <Type>Int</Type>
       <Default>4</Default>
     </Setting>
@@ -22,6 +37,11 @@
       <Name>Entry type size (bytes)</Name>
       <Type>Int</Type>
       <Default>4</Default>
+    </Setting>
+    <Setting>
+      <Name>Timestamp offset (bytes)</Name>
+      <Type>Int</Type>
+      <Default>8</Default>
     </Setting>
     <Setting>
       <Name>Timestamp size (bytes)</Name>
@@ -34,9 +54,14 @@
       <Default>work/build/node_1/samv71asw/interfaces_info.h</Default>
     </Setting>
     <Setting>
-      <Name>Output HTML filename</Name>
-      <Type>String</Type>
-      <Default>performance-report.html</Default>
+      <Name>Include combined invocation history</Name>
+      <Type>Bool</Type>
+      <Default>true</Default>
+    </Setting>
+    <Setting>
+      <Name>Include per-interface invocation history</Name>
+      <Type>Bool</Type>
+      <Default>true</Default>
     </Setting>
   </Settings>
 </ToolDefinition>

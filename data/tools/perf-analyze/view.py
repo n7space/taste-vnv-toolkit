@@ -33,7 +33,9 @@ if not taste_project_directory:
     status_text = "Project directory is not configured"
     show_status = True
 else:
-    output_filename = str(get_setting(settings, "Output HTML filename", "performance-report.html"))
+    # Derive project name from project directory
+    project_name = os.path.basename(os.path.abspath(taste_project_directory))
+    output_filename = f"{project_name}-performance-report.html"
     
     # Build candidate paths for the report
     candidate_paths = []

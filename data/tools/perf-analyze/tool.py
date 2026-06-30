@@ -70,13 +70,20 @@ def parse_interfaces_enum(interfaces_file_path):
     return interfaces
 
 
-def parse_miab_file(miab_path, interface_size, entry_type_size, timestamp_size):
+def parse_miab_file(miab_path, interface_size, entry_type_size, timestamp_size,
+                    interface_offset, entry_type_offset, timestamp_offset, little_endian):
     """
     Parse MIAB file (binary cyclic buffer).
     Returns list of tuples: (interface_id, entry_type, timestamp)
     entry_type: 0 = activation, 1 = deactivation
     """
-    entry_size = interface_size + entry_type_size + timestamp_size
+    # Calculate entry size based on maximum offset + size
+    max_offset_end = max(
+        interface_offset + interface_size,
+        entry_type_offset + entry_type_size,
+        timestamp_offset + timestamp_size
+    )
+    entry_size = max_offset_end
     
     with open(miab_path, 'rb') as f:
         data = f.read()
@@ -85,47 +92,58 @@ def parse_miab_file(miab_path, interface_size, entry_type_size, timestamp_size):
         raise Exception(f"MIAB file size ({len(data)} bytes) is not a multiple of entry size ({entry_size} bytes)")
     
     entries = []
-    offset = 0
+    
+    # Determine endianness prefix
+    endian_prefix = '<' if little_endian else '>'
     
     # Determine struct format based on sizes
-    # Assuming little-endian and unsigned integers
     if interface_size == 4:
-        interface_fmt = '<I'
+        interface_fmt = endian_prefix + 'I'
     elif interface_size == 2:
-        interface_fmt = '<H'
+        interface_fmt = endian_prefix + 'H'
     elif interface_size == 1:
-        interface_fmt = '<B'
+        interface_fmt = 'B'  # Byte order doesn't matter for single byte
     else:
         raise Exception(f"Unsupported interface size: {interface_size}")
     
     if entry_type_size == 4:
-        entry_type_fmt = '<I'
+        entry_type_fmt = endian_prefix + 'I'
     elif entry_type_size == 2:
-        entry_type_fmt = '<H'
+        entry_type_fmt = endian_prefix + 'H'
     elif entry_type_size == 1:
-        entry_type_fmt = '<B'
+        entry_type_fmt = 'B'  # Byte order doesn't matter for single byte
     else:
         raise Exception(f"Unsupported entry type size: {entry_type_size}")
     
     if timestamp_size == 8:
-        timestamp_fmt = '<Q'
+        timestamp_fmt = endian_prefix + 'Q'
     elif timestamp_size == 4:
-        timestamp_fmt = '<I'
+        timestamp_fmt = endian_prefix + 'I'
     else:
         raise Exception(f"Unsupported timestamp size: {timestamp_size}")
     
-    while offset < len(data):
-        # Read interface
-        interface_id = struct.unpack(interface_fmt, data[offset:offset+interface_size])[0]
-        offset += interface_size
+    # Parse entries
+    num_entries = len(data) // entry_size
+    for i in range(num_entries):
+        base_offset = i * entry_size
         
-        # Read entry type
-        entry_type = struct.unpack(entry_type_fmt, data[offset:offset+entry_type_size])[0]
-        offset += entry_type_size
+        # Read interface at specified offset
+        interface_id = struct.unpack(
+            interface_fmt,
+            data[base_offset + interface_offset:base_offset + interface_offset + interface_size]
+        )[0]
         
-        # Read timestamp
-        timestamp = struct.unpack(timestamp_fmt, data[offset:offset+timestamp_size])[0]
-        offset += timestamp_size
+        # Read entry type at specified offset
+        entry_type = struct.unpack(
+            entry_type_fmt,
+            data[base_offset + entry_type_offset:base_offset + entry_type_offset + entry_type_size]
+        )[0]
+        
+        # Read timestamp at specified offset
+        timestamp = struct.unpack(
+            timestamp_fmt,
+            data[base_offset + timestamp_offset:base_offset + timestamp_offset + timestamp_size]
+        )[0]
         
         entries.append((interface_id, entry_type, timestamp))
     
@@ -179,8 +197,18 @@ def calculate_interface_statistics(entries, interface_id):
     }
 
 
-def generate_html_report(entries, interfaces_map, output_path):
+def generate_html_report(entries, interfaces_map, output_path, project_name="TASTE",
+                         include_combined_history=True, include_per_interface_history=True):
     """Generate HTML report with performance analysis."""
+    
+    def format_timestamp(ns):
+        """Format nanoseconds as seconds with all digits visible."""
+        seconds = ns / 1_000_000_000
+        return f"{seconds:.9f} s"
+    
+    def format_duration(ns):
+        """Format duration in nanoseconds with ns unit."""
+        return f"{ns} ns"
     
     # Sort entries chronologically
     sorted_entries = sorted(entries, key=lambda x: x[2])
@@ -230,7 +258,7 @@ def generate_html_report(entries, interfaces_map, output_path):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Analysis Report</title>
+    <title>{project_name} - Performance Analysis Report</title>
     <style>
         * {{
             margin: 0;
@@ -360,12 +388,59 @@ def generate_html_report(entries, interfaces_map, output_path):
 <body>
     <div class="container">
         <div class="header">
-            <h1>Performance Analysis Report</h1>
+            <h1>{project_name} - Performance Analysis Report</h1>
             <p>Generated on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
             <p>Total events: {len(entries)} | Interfaces analyzed: {len(interface_ids)}</p>
         </div>
         
         <div class="section">
+            <h2>Statistics Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Interface</th>
+                        <th>Activations</th>
+                        <th>Min Time</th>
+                        <th>Max Time</th>
+                        <th>Avg Time</th>
+                        <th>Median Time</th>
+                        <th>Std Dev</th>
+                    </tr>
+                </thead>
+                <tbody>
+"""
+    
+    # Add statistics for all interfaces in a single table
+    for iid in interface_ids:
+        interface_name = interfaces_map.get(iid, f"Unknown_{iid}")
+        stats = statistics[iid]
+        
+        if stats['count'] > 0:
+            html_content += f"""                    <tr>
+                        <td class="interface-name">{interface_name}</td>
+                        <td class="stat-value">{stats['count']}</td>
+                        <td class="stat-value">{format_duration(stats['min'])}</td>
+                        <td class="stat-value">{format_duration(stats['max'])}</td>
+                        <td class="stat-value">{stats['mean']:.2f} ns</td>
+                        <td class="stat-value">{stats['median']:.2f} ns</td>
+                        <td class="stat-value">{stats['stdev']:.2f} ns</td>
+                    </tr>
+"""
+        else:
+            html_content += f"""                    <tr>
+                        <td class="interface-name">{interface_name}</td>
+                        <td class="no-data" colspan="6">No complete activation-deactivation pairs</td>
+                    </tr>
+"""
+    
+    html_content += """                </tbody>
+            </table>
+        </div>
+"""
+    
+    # Conditionally add combined invocation history
+    if include_combined_history:
+        html_content += """        <div class="section">
             <h2>All Events (Chronological Order)</h2>
             <table>
                 <thead>
@@ -377,78 +452,35 @@ def generate_html_report(entries, interfaces_map, output_path):
                 </thead>
                 <tbody>
 """
-    
-    # Add all events chronologically
-    for iid, entry_type, timestamp in sorted_entries:
-        interface_name = interfaces_map.get(iid, f"Unknown_{iid}")
-        event_type_str = "Activation" if entry_type == 0 else "Deactivation"
-        event_class = "activation" if entry_type == 0 else "deactivation"
         
-        html_content += f"""                    <tr>
+        # Add all events chronologically
+        for iid, entry_type, timestamp in sorted_entries:
+            interface_name = interfaces_map.get(iid, f"Unknown_{iid}")
+            event_type_str = "Activation" if entry_type == 0 else "Deactivation"
+            event_class = "activation" if entry_type == 0 else "deactivation"
+            
+            html_content += f"""                    <tr>
                         <td class="interface-name">{interface_name}</td>
                         <td class="{event_class}">{event_type_str}</td>
-                        <td class="timestamp">{timestamp}</td>
+                        <td class="timestamp">{format_timestamp(timestamp)}</td>
                     </tr>
 """
-    
-    html_content += """                </tbody>
+        
+        html_content += """                </tbody>
             </table>
         </div>
 """
     
-    # Add per-interface details and statistics
-    for iid in interface_ids:
-        interface_name = interfaces_map.get(iid, f"Unknown_{iid}")
-        stats = statistics[iid]
-        events = interface_details[iid]
-        
-        html_content += f"""        <div class="section">
+    # Conditionally add per-interface details
+    if include_per_interface_history:
+        for iid in interface_ids:
+            interface_name = interfaces_map.get(iid, f"Unknown_{iid}")
+            events = interface_details[iid]
+            
+            html_content += f"""        <div class="section">
             <h2>Interface: {interface_name}</h2>
             
-            <h3>Statistics</h3>
-"""
-        
-        if stats['count'] > 0:
-            html_content += f"""            <table>
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Total Activations</td>
-                        <td class="stat-value">{stats['count']}</td>
-                    </tr>
-                    <tr>
-                        <td>Minimum Activation Time</td>
-                        <td class="stat-value">{stats['min']}</td>
-                    </tr>
-                    <tr>
-                        <td>Maximum Activation Time</td>
-                        <td class="stat-value">{stats['max']}</td>
-                    </tr>
-                    <tr>
-                        <td>Average Activation Time</td>
-                        <td class="stat-value">{stats['mean']:.2f}</td>
-                    </tr>
-                    <tr>
-                        <td>Standard Deviation</td>
-                        <td class="stat-value">{stats['stdev']:.2f}</td>
-                    </tr>
-                    <tr>
-                        <td>Median Activation Time</td>
-                        <td class="stat-value">{stats['median']:.2f}</td>
-                    </tr>
-                </tbody>
-            </table>
-"""
-        else:
-            html_content += """            <p class="no-data">No complete activation-deactivation pairs found for this interface.</p>
-"""
-        
-        html_content += """            <h3>Event History</h3>
+            <h3>Event History</h3>
             <table>
                 <thead>
                     <tr>
@@ -459,34 +491,34 @@ def generate_html_report(entries, interfaces_map, output_path):
                 </thead>
                 <tbody>
 """
-        
-        for event in events:
-            if event[0] == 'paired':
-                _, activation_ts, deactivation_ts, duration = event
-                html_content += f"""                    <tr>
-                        <td class="timestamp">{activation_ts}</td>
-                        <td class="timestamp">{deactivation_ts}</td>
-                        <td class="stat-value">{duration}</td>
+            
+            for event in events:
+                if event[0] == 'paired':
+                    _, activation_ts, deactivation_ts, duration = event
+                    html_content += f"""                    <tr>
+                        <td class="timestamp">{format_timestamp(activation_ts)}</td>
+                        <td class="timestamp">{format_timestamp(deactivation_ts)}</td>
+                        <td class="stat-value">{format_duration(duration)}</td>
                     </tr>
 """
-            elif event[0] == 'unpaired_activation':
-                _, activation_ts, _ = event
-                html_content += f"""                    <tr>
-                        <td class="timestamp">{activation_ts}</td>
+                elif event[0] == 'unpaired_activation':
+                    _, activation_ts, _ = event
+                    html_content += f"""                    <tr>
+                        <td class="timestamp">{format_timestamp(activation_ts)}</td>
                         <td class="warning">No deactivation</td>
                         <td class="warning">-</td>
                     </tr>
 """
-            elif event[0] == 'unpaired_deactivation':
-                _, deactivation_ts, _ = event
-                html_content += f"""                    <tr>
+                elif event[0] == 'unpaired_deactivation':
+                    _, deactivation_ts, _ = event
+                    html_content += f"""                    <tr>
                         <td class="warning">No activation</td>
-                        <td class="timestamp">{deactivation_ts}</td>
+                        <td class="timestamp">{format_timestamp(deactivation_ts)}</td>
                         <td class="warning">-</td>
                     </tr>
 """
-        
-        html_content += """                </tbody>
+            
+            html_content += """                </tbody>
             </table>
         </div>
 """
@@ -512,12 +544,23 @@ else:
         
         # Get settings
         miab_file = str(get_setting(settings, "MIAB file path", "trace.miab"))
+        little_endian = bool(get_setting(settings, "Little-endian", True))
+        interface_offset = int(get_setting(settings, "Interface offset (bytes)", 0))
         interface_size = int(get_setting(settings, "Interface size (bytes)", 4))
+        entry_type_offset = int(get_setting(settings, "Entry type offset (bytes)", 4))
         entry_type_size = int(get_setting(settings, "Entry type size (bytes)", 4))
+        timestamp_offset = int(get_setting(settings, "Timestamp offset (bytes)", 8))
         timestamp_size = int(get_setting(settings, "Timestamp size (bytes)", 8))
         interfaces_file = str(get_setting(settings, "interfaces_info.h path", 
                                           "work/build/node_1/samv71asw/interfaces_info.h"))
-        output_filename = str(get_setting(settings, "Output HTML filename", "performance-report.html"))
+        include_combined_history = bool(get_setting(settings, "Include combined invocation history", True))
+        include_per_interface_history = bool(get_setting(settings, "Include per-interface invocation history", True))
+        
+        # Derive project name from project directory
+        project_name = os.path.basename(os.path.abspath(taste_project_directory))
+        
+        # Generate output filename with project name
+        output_filename = f"{project_name}-performance-report.html"
         
         emit_progress(10)
         
@@ -562,7 +605,16 @@ else:
             
             # Parse MIAB file
             emit_progress(50)
-            entries = parse_miab_file(miab_path, interface_size, entry_type_size, timestamp_size)
+            entries = parse_miab_file(
+                miab_path, 
+                interface_size, 
+                entry_type_size, 
+                timestamp_size,
+                interface_offset,
+                entry_type_offset,
+                timestamp_offset,
+                little_endian
+            )
             
             if not entries:
                 status = "warning"
@@ -571,7 +623,14 @@ else:
             else:
                 # Generate HTML report
                 emit_progress(80)
-                generate_html_report(entries, interfaces_map, output_path)
+                generate_html_report(
+                    entries, 
+                    interfaces_map, 
+                    output_path, 
+                    project_name,
+                    include_combined_history,
+                    include_per_interface_history
+                )
                 
                 emit_progress(100)
                 status = "ok"
