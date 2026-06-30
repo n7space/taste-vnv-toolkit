@@ -2,13 +2,7 @@
 
 import os
 
-
-def get_setting(settings, name, default_value):
-    """Get a setting value by name, or return default if not found."""
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
+from perfanalyzeshared import get_setting, resolve_path
 
 
 if not taste_project_directory:
@@ -21,15 +15,8 @@ else:
                                       "work/build/node_1/samv71asw/interfaces_info.h"))
     
     # Build absolute paths
-    if os.path.isabs(miab_file):
-        miab_path = miab_file
-    else:
-        miab_path = os.path.join(taste_project_directory, miab_file)
-    
-    if os.path.isabs(interfaces_file):
-        interfaces_path = interfaces_file
-    else:
-        interfaces_path = os.path.join(taste_project_directory, interfaces_file)
+    miab_path = resolve_path(taste_project_directory, miab_file)
+    interfaces_path = resolve_path(taste_project_directory, interfaces_file)
     
     # Check if files exist
     miab_exists = os.path.isfile(miab_path)

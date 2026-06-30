@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ToolDefinition>
-  <Name>Performance Analysis</Name>
+  <Name>Performance Trace Analysis</Name>
   <Group>Analysis</Group>
   <Hint>Analyze interface performance from MIAB trace file</Hint>
   <Description>Parses a MIAB trace file containing interface activations/deactivations and generates an HTML report with timing statistics.</Description>
   <StatusScript>status.py</StatusScript>
   <ToolScript>tool.py</ToolScript>
   <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../perf-analyze-shared</Path>
+  </ImportPaths>
   <Settings>
     <Setting>
       <Name>MIAB file path</Name>
@@ -54,12 +57,12 @@
       <Default>work/build/node_1/samv71asw/interfaces_info.h</Default>
     </Setting>
     <Setting>
-      <Name>Include combined invocation history</Name>
+      <Name>Combined invocation history</Name>
       <Type>Bool</Type>
       <Default>true</Default>
     </Setting>
     <Setting>
-      <Name>Include per-interface invocation history</Name>
+      <Name>Per-interface invocation history</Name>
       <Type>Bool</Type>
       <Default>true</Default>
     </Setting>

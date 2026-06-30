@@ -4,13 +4,7 @@ import os
 import subprocess
 import sys
 
-
-def get_setting(settings, name, default_value):
-    """Get a setting value by name, or return default if not found."""
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
+from perfanalyzeshared import get_project_name
 
 
 def open_path(path):
@@ -34,7 +28,7 @@ if not taste_project_directory:
     show_status = True
 else:
     # Derive project name from project directory
-    project_name = os.path.basename(os.path.abspath(taste_project_directory))
+    project_name = get_project_name(taste_project_directory)
     output_filename = f"{project_name}-performance-report.html"
     
     # Build candidate paths for the report

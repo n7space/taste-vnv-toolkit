@@ -54,5 +54,60 @@
       <ToolName>Performance Analysis</ToolName>
       <Value>performance-report.html</Value>
     </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>MIAB file path</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>dummy-trace.miab</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Little-endian</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>true</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Interface offset (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>0</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Interface size (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>4</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Entry type offset (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>4</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Entry type size (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>4</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Timestamp offset (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>8</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Timestamp size (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>8</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>interfaces_info.h path</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>work/build/node_1/samv71asw/interfaces_info.h</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Combined invocation history</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>true</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Per-interface invocation history</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>true</Value>
+    </ToolSettingEntry>
   </toolSettings>
 </ConfigurationOptions>

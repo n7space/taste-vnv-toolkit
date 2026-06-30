@@ -81,3 +81,8 @@ demo-stack:
 
 demo-regenerate-trace:
 	python3 demo/scripts/generate_trace.py demo/demo-taste-project/dummy-trace.miab
+
+demo-perf-analyze-trace:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Performance Trace Analysis" || true) && \
+	cd ${CURRENT_DIRECTORY}
