@@ -112,12 +112,12 @@
     <ToolSettingEntry>
       <SettingName>Log address</SettingName>
       <ToolName>Get Performance Trace</ToolName>
-      <Value>0x20460000</Value>
+      <Value>0x20457000</Value>
     </ToolSettingEntry>
     <ToolSettingEntry>
       <SettingName>Log size</SettingName>
       <ToolName>Get Performance Trace</ToolName>
-      <Value>4k</Value>
+      <Value>32k</Value>
     </ToolSettingEntry>
     <ToolSettingEntry>
       <SettingName>Target address</SettingName>

@@ -86,3 +86,8 @@ demo-perf-analyze-trace:
 	cd ${PROJECT_DIRECTORY} && \
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Performance Trace Analysis" || true) && \
 	cd ${CURRENT_DIRECTORY}
+
+demo-perf-get-trace:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Get Performance Trace" || true) && \
+	cd ${CURRENT_DIRECTORY}
