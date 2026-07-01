@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"  standalone='yes'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <tagfile doxygen_version="1.16.0">
   <compound kind="requirement">
     <id>DEMO-FUN-UTILS-001</id>
