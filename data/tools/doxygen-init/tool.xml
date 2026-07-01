@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Initialize Doxygen configuration</Name>
+  <Group>Documentation</Group>
+  <Hint>Initialize Doxygen configuration file for the project</Hint>
+  <Description>Creates a Doxyfile configuration optimized for C/C++ TASTE projects with requirement tracing support. Automatically configures source paths while excluding glue code, build artifacts, and wrapper files.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../doxygen-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Doxygen command</Name>
+      <Type>String</Type>
+      <Default>doxygen</Default>
+    </Setting>
+    <Setting>
+      <Name>Requirements tag file</Name>
+      <Type>String</Type>
+      <Default>doxygen-requirements.tag</Default>
+    </Setting>
+    <Setting>
+      <Name>Output directory</Name>
+      <Type>String</Type>
+      <Default>docs</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

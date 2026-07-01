@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Execute unit tests [ceedling]</Name>
+  <Group>Tests</Group>
+  <Hint>Run Ceedling tests and export JUnit XML and HTML reports</Hint>
+  <Description>Executes the unit tests defined by the project's Ceedling configuration and produces JUnit XML and HTML reports.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../tests-shared-ceedling</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Ceedling command</Name>
+      <Type>String</Type>
+      <Default>ceedling</Default>
+    </Setting>
+    <Setting>
+      <Name>JUnit report filename</Name>
+      <Type>String</Type>
+      <Default>junit_tests_report.xml</Default>
+    </Setting>
+    <Setting>
+      <Name>HTML report filename</Name>
+      <Type>String</Type>
+      <Default>tests_report.html</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

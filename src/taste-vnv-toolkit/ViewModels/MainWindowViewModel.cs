@@ -62,10 +62,11 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
 
         Action saveConfig = SaveConfig;
+        Func<string, Task> reloadGroupStatus = LoadStatusesForGroupAsync;
         var loadedTools = ToolLoader.LoadAll(options.ToolDirectory);
 
         foreach (var (definition, toolDir) in loadedTools)
-            _allTools.Add(new ToolViewModel(definition, toolDir, _tasteProjectDirectory, options, saveConfig));
+            _allTools.Add(new ToolViewModel(definition, toolDir, _tasteProjectDirectory, options, saveConfig, reloadGroupStatus));
 
         var groups = _allTools
             .GroupBy(t => t.Definition.Group)
@@ -84,6 +85,21 @@ public partial class MainWindowViewModel : ViewModelBase
 
         for (int i = 0; i < results.Count; i++)
             _allTools[i].ApplyStatusResult(results[i]);
+    }
+
+    public async Task LoadStatusesForGroupAsync(string groupName)
+    {
+        var toolsInGroup = _allTools.Where(t => t.Definition.Group == groupName).ToList();
+        if (toolsInGroup.Count == 0)
+            return;
+
+        toolsInGroup.ForEach(t => t.ResetStatus());
+
+        var results = await PythonRunner.RunStatusBatchAsync(
+            toolsInGroup.Select(t => t.BuildStatusRequest()));
+
+        for (int i = 0; i < results.Count; i++)
+            toolsInGroup[i].ApplyStatusResult(results[i]);
     }
 
     private void SaveConfig()

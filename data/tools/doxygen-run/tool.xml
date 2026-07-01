@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Generate Doxygen documentation</Name>
+  <Group>Documentation</Group>
+  <Hint>Run Doxygen to generate project documentation</Hint>
+  <Description>Executes Doxygen using the project's Doxyfile configuration and generates HTML documentation in the configured output directory.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../doxygen-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Doxygen command</Name>
+      <Type>String</Type>
+      <Default>doxygen</Default>
+    </Setting>
+    <Setting>
+      <Name>Output directory</Name>
+      <Type>String</Type>
+      <Default>docs</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

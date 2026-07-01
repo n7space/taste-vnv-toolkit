@@ -1,0 +1,9 @@
+DEMO-TASTE-PROJECT-DATAVIEW DEFINITIONS ::= BEGIN
+
+    ParameterValue [] {
+        id ParameterID[],
+        val [determinant id]
+    }
+
+END
+
