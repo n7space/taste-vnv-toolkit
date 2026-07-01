@@ -74,3 +74,8 @@ demo-doxy-xls:
 	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Extract requirements from Excel to Doxygen tag file" || true) && \
 	cd ${CURRENT_DIRECTORY}
 
+demo-stack:
+	cd ${PROJECT_DIRECTORY} && \
+	(dotnet run --no-restore -- run -c ${DEFAULT_CONFIG_FILE} -p ${ABSOLUTE_DEMO_PROJECT_DIR} "Check TASTE stack usage" || true) && \
+	cd ${CURRENT_DIRECTORY}
+

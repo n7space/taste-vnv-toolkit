@@ -64,12 +64,18 @@ def collect_source_files(source_directories):
 
 
 def collect_support_files(source_directories):
-	"""Collect source files for :support section - implementation files and dataview files only, no wrappers."""
+	"""Collect source files for :support section - only dataview files, not module implementations."""
 	support_files = []
 
 	for source_directory in source_directories:
 		# Skip wrapper directories
 		if source_directory.endswith("wrappers") or "/wrappers/" in source_directory.replace(os.sep, "/"):
+			continue
+		
+		# Only include dataview directory files in support
+		# Module implementation files (controller.c, utilities.c, etc.) should NOT be in support
+		# They should be compiled only when their specific test runs, with dependencies mocked
+		if "/dataview/" not in source_directory.replace(os.sep, "/"):
 			continue
 
 		for child_name in sorted(os.listdir(source_directory)):
@@ -94,6 +100,11 @@ def get_top_level_function_names(interfaceview_path):
 
 	function_names = []
 	for function_element in root.findall("./Function"):
+		# Only process C language functions (Ceedling is for C testing)
+		language = function_element.get("language", "").upper()
+		if language != "C":
+			continue
+			
 		function_name = function_element.get("name", "")
 		normalized_name = normalize_function_name(function_name)
 		if normalized_name:
@@ -186,6 +197,21 @@ def write_project_configuration(project_yml_path, project_directory, tests_folde
 		":cmock:",
 		"  :mock_prefix: mock_",
 		"  :when_no_prototypes: :warn",
+		"  :when_ptr: :compare_ptr",
+		"  :enforce_strict_ordering: TRUE",
+		"  :plugins:",
+		"    - :ignore",
+		"    - :callback",
+		"  :treat_as:",
+		"    uint8_t: HEX8",
+		"    uint16_t: HEX16",
+		"    uint32_t: HEX32",
+		"    int8_t: INT8",
+		"    int16_t: INT16",
+		"    int32_t: INT32",
+		"  :includes:",
+		"    - <string.h>",
+		"  :treat_externs: :include",
 		"",
 		":report_tests_log_factory:",
 		"  :reports:",
@@ -221,16 +247,24 @@ def write_project_configuration(project_yml_path, project_directory, tests_folde
 	return project_state
 
 
-def ensure_test_stub(tests_root, function_name):
+def ensure_test_stub(tests_root, function_name, has_ri_header=False):
 	function_test_directory = os.path.join(tests_root, function_name)
-	if os.path.exists(function_test_directory):
+	test_file_path = os.path.join(function_test_directory, f"test_{function_name}.c")
+	
+	# Check if the test file already exists, not the directory
+	if os.path.exists(test_file_path):
 		return False
 
 	os.makedirs(function_test_directory, exist_ok=True)
-
-	test_file_path = os.path.join(function_test_directory, f"test_{function_name}.c")
+	
+	# Build includes list
+	includes = ['#include "unity.h"']
+	if has_ri_header:
+		includes.append(f'#include "mock_{function_name}_ri.h"')
+	includes.append(f'#include "{function_name}.h"')
+	
 	test_stub = "\n".join([
-		'#include "unity.h"',
+		*includes,
 		"",
 		"void setUp(void)",
 		"{",
@@ -250,6 +284,69 @@ def ensure_test_stub(tests_root, function_name):
 	with open(test_file_path, "w", encoding="utf-8") as handle:
 		handle.write(test_stub)
 
+	return True
+
+
+def extract_ri_functions(header_path, function_name):
+	"""Extract Required Interface (RI) function declarations from a module header."""
+	if not os.path.isfile(header_path):
+		return []
+	
+	ri_functions = []
+	with open(header_path, "r", encoding="utf-8") as f:
+		for line in f:
+			# Look for extern function declarations that match the RI pattern
+			if f"{function_name}_RI_" in line and "extern" in line:
+				# Extract the full declaration (may span multiple lines)
+				declaration = line.strip()
+				ri_functions.append(declaration)
+	
+	return ri_functions
+
+
+def create_ri_header(tests_root, function_name, project_directory):
+	"""Create a header file with only RI functions for mocking."""
+	function_test_directory = os.path.join(tests_root, function_name)
+	os.makedirs(function_test_directory, exist_ok=True)
+	
+	# Find the module header
+	header_path = os.path.join(project_directory, "work", function_name, "implem", "default", "C", "src", f"{function_name}.h")
+	
+	if not os.path.isfile(header_path):
+		# Header not found, skip RI header creation
+		return False
+	
+	# Extract RI function declarations
+	ri_functions = extract_ri_functions(header_path, function_name)
+	
+	if not ri_functions:
+		# No RI functions, skip RI header creation
+		return False
+	
+	# Create RI header file
+	ri_header_path = os.path.join(function_test_directory, f"{function_name}_ri.h")
+	ri_header_content = "\n".join([
+		f"/* Header file with only Required Interface (RI) functions for {function_name} */",
+		"/* Generated for mocking purposes */",
+		"#pragma once",
+		"",
+		'#include "dataview-uniq.h"',
+		"",
+		"#ifdef __cplusplus",
+		'extern "C" {',
+		"#endif",
+		"",
+		*ri_functions,
+		"",
+		"#ifdef __cplusplus",
+		"}",
+		"#endif",
+		"",
+	])
+	
+	with open(ri_header_path, "w", encoding="utf-8") as f:
+		f.write(ri_header_content)
+	
 	return True
 
 
@@ -313,8 +410,14 @@ else:
 		emit_progress(75)
 
 		created_count = 0
+		ri_created_count = 0
 		for function_name in function_names:
-			if ensure_test_stub(tests_root, function_name):
+			# Create RI header first to know if we should include mock in test stub
+			has_ri_header = create_ri_header(tests_root, function_name, taste_project_directory)
+			if has_ri_header:
+				ri_created_count += 1
+			
+			if ensure_test_stub(tests_root, function_name, has_ri_header):
 				created_count += 1
 
 		emit_progress(100)
@@ -325,9 +428,10 @@ else:
 			"updated": "updated project.yml",
 			"unchanged": "kept project.yml unchanged",
 		}[project_state]
+		ri_message = f"; created {ri_created_count} RI header file(s)" if ri_created_count > 0 else ""
 		status_text = (
 			f"Initialized Ceedling tests in {tests_root}: {project_message}; "
-			f"created {created_count} function folders, skipped {len(function_names) - created_count} existing folders"
+			f"created {created_count} function folder(s), skipped {len(function_names) - created_count} existing folder(s){ri_message}"
 		)
 		show_status = True
 

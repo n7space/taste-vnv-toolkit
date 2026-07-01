@@ -2,7 +2,7 @@
 // It contains sample tests, providing some initial demonstration coverage.
 
 #include "unity.h"
-#include <utilities.h>
+#include "utilities.h"
 
 void setUp(void)
 {

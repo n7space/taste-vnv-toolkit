@@ -26,10 +26,29 @@ void controller_PI_deactivate(void)
    // NOP
 }
 
+#define COUNT (4)
+
+// Volatile variable to prevent compiler from optimizing away unused results
+static volatile asn1SccT_UInt32 dummy_sink = 0;
 
 void controller_PI_pps(void)
 {
-   // NOP
+   static asn1SccT_UInt32 x = 0;
+   asn1SccT_UInt32 accu;
+   asn1SccT_UInt32 rs[COUNT];
+
+   for (int i = 0; i < COUNT; i++)
+   {
+      controller_RI_fib(&x, &(rs[i]));
+   }
+   accu = 0;
+   for (int i = COUNT - 1; i >= 0;i--)
+   {
+      accu += rs[i];
+   }
+
+   // Write to volatile variable to avoid optimization
+   dummy_sink = accu;
 }
 
 
