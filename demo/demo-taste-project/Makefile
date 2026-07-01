@@ -14,6 +14,13 @@ SPACECREATOR?=spacecreator.AppImage
 # If you need to reset this Makefile to its original state, run:
 # $ taste reset
 
+export SAMV71ASW_USER_CFLAGS=-DRT_EXEC_LOG_ACTIVE
+
+CURRENT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+export SAMV71ASW_USER_LDSCRIPT_DIR=$(CURRENT_DIR)work/linker_script
+export SAMV71ASW_USER_LDSCRIPT=$(CURRENT_DIR)work/linker_script/linkcmds.intsram
+
+
 # Disable the progress bar from taste-update-data-view when building systems
 export NO_PROGRESS_BAR=1
 
