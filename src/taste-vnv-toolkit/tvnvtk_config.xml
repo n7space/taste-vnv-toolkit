@@ -26,36 +26,6 @@
     </ToolSettingEntry>
     <ToolSettingEntry>
       <SettingName>MIAB file path</SettingName>
-      <ToolName>Performance Analysis</ToolName>
-      <Value>dummy.miab</Value>
-    </ToolSettingEntry>
-    <ToolSettingEntry>
-      <SettingName>Interface size (bytes)</SettingName>
-      <ToolName>Performance Analysis</ToolName>
-      <Value>4</Value>
-    </ToolSettingEntry>
-    <ToolSettingEntry>
-      <SettingName>Entry type size (bytes)</SettingName>
-      <ToolName>Performance Analysis</ToolName>
-      <Value>4</Value>
-    </ToolSettingEntry>
-    <ToolSettingEntry>
-      <SettingName>Timestamp size (bytes)</SettingName>
-      <ToolName>Performance Analysis</ToolName>
-      <Value>8</Value>
-    </ToolSettingEntry>
-    <ToolSettingEntry>
-      <SettingName>interfaces_info.h path</SettingName>
-      <ToolName>Performance Analysis</ToolName>
-      <Value>work/build/node_1/samv71asw/interfaces_info.h</Value>
-    </ToolSettingEntry>
-    <ToolSettingEntry>
-      <SettingName>Output HTML filename</SettingName>
-      <ToolName>Performance Analysis</ToolName>
-      <Value>performance-report.html</Value>
-    </ToolSettingEntry>
-    <ToolSettingEntry>
-      <SettingName>MIAB file path</SettingName>
       <ToolName>Performance Trace Analysis</ToolName>
       <Value>output/trace.miab</Value>
     </ToolSettingEntry>
@@ -122,7 +92,7 @@
     <ToolSettingEntry>
       <SettingName>Target address</SettingName>
       <ToolName>Get Performance Trace</ToolName>
-      <Value>192.168.2.237:2331</Value>
+      <Value></Value>
     </ToolSettingEntry>
     <ToolSettingEntry>
       <SettingName>GDB binary</SettingName>
