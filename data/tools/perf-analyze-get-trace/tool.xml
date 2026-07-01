@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Get Performance Trace</Name>
+  <Group>Analysis</Group>
+  <Hint>Download performance trace from target via GDB</Hint>
+  <Description>Connects to a remote target using GDB and downloads a memory region containing performance trace data. The downloaded binary data is saved to a MIAB file for later analysis.
+
+Settings:
+  Log address – Memory address where the trace log is located (default: 0xDEADBEEF)
+  Log size – Size of the trace log in bytes (default: 1024)
+  Target address – Remote target address for GDB extended-remote connection (e.g., localhost:3333)
+  GDB binary – Path to the GDB binary to use (default: gdb-multiarch)
+  Output file name – Name of the output MIAB file (default: trace.miab)</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../perf-analyze-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Log address</Name>
+      <Type>String</Type>
+      <Default>0xDEADBEEF</Default>
+    </Setting>
+    <Setting>
+      <Name>Log size</Name>
+      <Type>String</Type>
+      <Default>1k</Default>
+    </Setting>
+    <Setting>
+      <Name>Target address</Name>
+      <Type>String</Type>
+      <Default></Default>
+    </Setting>
+    <Setting>
+      <Name>GDB binary</Name>
+      <Type>String</Type>
+      <Default>gdb-multiarch</Default>
+    </Setting>
+    <Setting>
+      <Name>Output file name</Name>
+      <Type>String</Type>
+      <Default>trace.miab</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

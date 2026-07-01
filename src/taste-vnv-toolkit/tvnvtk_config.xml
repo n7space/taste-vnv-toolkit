@@ -57,7 +57,7 @@
     <ToolSettingEntry>
       <SettingName>MIAB file path</SettingName>
       <ToolName>Performance Trace Analysis</ToolName>
-      <Value>dummy-trace.miab</Value>
+      <Value>output/trace.miab</Value>
     </ToolSettingEntry>
     <ToolSettingEntry>
       <SettingName>Little-endian</SettingName>
@@ -108,6 +108,31 @@
       <SettingName>Per-interface invocation history</SettingName>
       <ToolName>Performance Trace Analysis</ToolName>
       <Value>true</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Log address</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>0x20460000</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Log size</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>4k</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Target address</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>192.168.2.237:2331</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>GDB binary</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>gdb-multiarch</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Output file name</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>trace.miab</Value>
     </ToolSettingEntry>
   </toolSettings>
 </ConfigurationOptions>
