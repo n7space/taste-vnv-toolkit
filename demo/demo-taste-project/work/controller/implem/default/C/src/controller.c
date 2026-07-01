@@ -18,13 +18,13 @@ void controller_startup(void)
 
 void controller_PI_activate(void)
 {
-   // Write your code here
+   // NOP
 }
 
 
 void controller_PI_deactivate(void)
 {
-   // Write your code here
+   // NOP
 }
 
 #define COUNT (4)
