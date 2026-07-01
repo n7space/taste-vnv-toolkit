@@ -57,6 +57,11 @@
       <Default>work/build/node_1/samv71asw/interfaces_info.h</Default>
     </Setting>
     <Setting>
+      <Name>Invocation chart</Name>
+      <Type>Bool</Type>
+      <Default>true</Default>
+    </Setting>
+    <Setting>
       <Name>Combined invocation history</Name>
       <Type>Bool</Type>
       <Default>true</Default>

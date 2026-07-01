@@ -17,7 +17,8 @@ from perfanalyzeshared import (
 
 
 def generate_html_report(entries, interfaces_map, output_path, project_name="TASTE",
-                         include_combined_history=True, include_per_interface_history=True):
+                         include_invocation_chart=True, include_combined_history=True, 
+                         include_per_interface_history=True):
     """Generate HTML report with performance analysis."""
     
     # Sort entries chronologically
@@ -193,6 +194,43 @@ def generate_html_report(entries, interfaces_map, output_path, project_name="TAS
             font-family: 'Courier New', monospace;
             font-size: 14px;
         }}
+        
+        .invocation-chart {{
+            margin-top: 20px;
+            overflow-x: auto;
+        }}
+        
+        .chart-container {{
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+        }}
+        
+        .chart-svg {{
+            width: 100%;
+            min-height: 400px;
+        }}
+        
+        .chart-svg rect:hover {{
+            opacity: 0.8;
+            cursor: pointer;
+        }}
+        
+        .chart-svg text {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }}
+        
+        .chart-label {{
+            font-weight: 600;
+            font-size: 14px;
+        }}
+        
+        .chart-axis-label {{
+            font-size: 12px;
+            fill: #6c757d;
+            font-family: 'Courier New', monospace;
+        }}
     </style>
 </head>
 <body>
@@ -245,6 +283,90 @@ def generate_html_report(entries, interfaces_map, output_path, project_name="TAS
     
     html_content += """                </tbody>
             </table>
+        </div>
+"""
+    
+    # Conditionally add invocation chart
+    if include_invocation_chart and sorted_entries:
+        # Define a set of readable primary colors
+        colors = [
+            '#667eea',  # Purple
+            '#28a745',  # Green
+            '#dc3545',  # Red
+            '#ffc107',  # Yellow
+            '#17a2b8',  # Cyan
+            '#e83e8c',  # Pink
+            '#fd7e14',  # Orange
+            '#20c997',  # Teal
+        ]
+        
+        # Get time range from the trace
+        min_time = min(timestamp for _, _, timestamp in sorted_entries)
+        max_time = max(timestamp for _, _, timestamp in sorted_entries)
+        time_span = max_time - min_time if max_time > min_time else 1
+        
+        # SVG dimensions and layout constants
+        label_width = 320
+        chart_width = 1600
+        row_height = 35
+        top_margin = 20
+        bottom_margin = 40
+        
+        # Calculate total height
+        svg_height = top_margin + (len(interface_ids) * row_height) + bottom_margin
+        
+        html_content += f"""        <div class="section">
+            <h2>Invocation Timeline</h2>
+            <div class="invocation-chart">
+                <div class="chart-container">
+                    <svg class="chart-svg" viewBox="0 0 {label_width + chart_width} {svg_height}" preserveAspectRatio="xMidYMid meet">
+"""
+        
+        # Generate chart rows for each interface
+        for idx, iid in enumerate(interface_ids):
+            interface_name = interfaces_map.get(iid, f"Unknown_{iid}")
+            color = colors[idx % len(colors)]
+            paired_events = interface_details[iid]
+            
+            y_position = top_margin + (idx * row_height)
+            
+            # Draw interface name (colored)
+            html_content += f"""                        <text x="{label_width - 10}" y="{y_position + 18}" text-anchor="end" class="chart-label" fill="{color}">{interface_name}</text>
+"""
+            
+            # Draw background timeline
+            html_content += f"""                        <rect x="{label_width}" y="{y_position}" width="{chart_width}" height="24" fill="#f8f9fa" rx="3"/>
+"""
+            
+            # Add bars for each activation period (activation to deactivation)
+            for event in paired_events:
+                if event[0] == 'paired':
+                    _, activation_time, deactivation_time, duration = event
+                    # Calculate position and width in SVG units
+                    x_pos = label_width + ((activation_time - min_time) / time_span) * chart_width
+                    width = (duration / time_span) * chart_width
+                    # Ensure minimum width of 1 pixel so it's visible
+                    width = max(1, width)
+                    
+                    # Format tooltip
+                    tooltip = f"{interface_name}: {format_duration(duration)} (at {format_timestamp(activation_time)})"
+                    
+                    html_content += f"""                        <rect x="{x_pos:.2f}" y="{y_position}" width="{width:.2f}" height="24" fill="{color}" rx="2">
+                            <title>{tooltip}</title>
+                        </rect>
+"""
+        
+        # Add time axis labels
+        axis_y = top_margin + (len(interface_ids) * row_height) + 20
+        for i in range(5):
+            time_at_marker = min_time + (time_span * i / 4)
+            x_pos = label_width + (i / 4) * chart_width
+            html_content += f"""                        <text x="{x_pos:.2f}" y="{axis_y}" text-anchor="middle" class="chart-axis-label">{format_timestamp(time_at_marker)}</text>
+"""
+        
+        html_content += """                    </svg>
+                </div>
+            </div>
         </div>
 """
     
@@ -363,8 +485,9 @@ else:
         timestamp_size = int(get_setting(settings, "Timestamp size (bytes)", 8))
         interfaces_file = str(get_setting(settings, "interfaces_info.h path", 
                                           "work/build/node_1/samv71asw/interfaces_info.h"))
-        include_combined_history = bool(get_setting(settings, "Include combined invocation history", True))
-        include_per_interface_history = bool(get_setting(settings, "Include per-interface invocation history", True))
+        include_invocation_chart = bool(get_setting(settings, "Invocation chart", True))
+        include_combined_history = bool(get_setting(settings, "Combined invocation history", True))
+        include_per_interface_history = bool(get_setting(settings, "Per-interface invocation history", True))
         
         # Derive project name from project directory
         project_name = get_project_name(taste_project_directory)
@@ -431,6 +554,7 @@ else:
                     interfaces_map, 
                     output_path, 
                     project_name,
+                    include_invocation_chart,
                     include_combined_history,
                     include_per_interface_history
                 )
