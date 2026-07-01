@@ -8,14 +8,12 @@
     !! file. The up-to-date signatures can be found in the header file. !!
 */
 #include "controller.h"
-//#include <stdio.h>
+#include <Monitor.h>
 
 
 void controller_startup(void)
 {
-   // Write your initialisation code
-   // You may call sporadic required interfaces and start timers
-   // puts ("[Controller] Startup");
+   Monitor_UnfreezeInterfaceActivationLogging();
 }
 
 void controller_PI_activate(void)
