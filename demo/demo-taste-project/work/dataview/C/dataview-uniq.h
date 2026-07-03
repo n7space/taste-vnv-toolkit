@@ -578,7 +578,7 @@ typedef enum {
     PID_datapool = 1,
     PID_manager = 2,
     PID_utilities = 3,
-    PID_demo_timer_manager = 4,
+    PID_samv71asw_timer_manager = 4,
     PID_env = 5
 } asn1SccPID;
 
@@ -587,12 +587,12 @@ typedef enum {
 #define asn1SccPID_datapool PID_datapool
 #define asn1SccPID_manager PID_manager
 #define asn1SccPID_utilities PID_utilities
-#define asn1SccPID_demo_timer_manager PID_demo_timer_manager
+#define asn1SccPID_samv71asw_timer_manager PID_samv71asw_timer_manager
 #define asn1SccPID_env PID_env
 
 flag asn1SccPID_Equal(const asn1SccPID* pVal1, const asn1SccPID* pVal2);
 
-#define ERR_PID		129  /*controller | datapool | manager | utilities | demo-timer-manager | env*/
+#define ERR_PID		129  /*controller | datapool | manager | utilities | samv71asw-timer-manager | env*/
 flag asn1SccPID_IsConstraintValid(const asn1SccPID* pVal, int* pErrCode);
 
 #ifdef __cplusplus

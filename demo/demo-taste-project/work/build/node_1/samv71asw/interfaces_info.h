@@ -4,8 +4,8 @@
 #include <limits.h>
 #include <rtems.h>
 
-#define RUNTIME_THREAD_COUNT ( 1 + 6 )
-#define RUNTIME_CYCLIC_INTERFACE_COUNT ( 0 + 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1 )
+#define RUNTIME_THREAD_COUNT ( 1 + 7 )
+#define RUNTIME_CYCLIC_INTERFACE_COUNT ( 0 + 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1+ 1 )
 #define MAX_THREAD_NAME_SIZE 64
 #define NANOSECONDS_IN_MILLISECOND 1000000ULL
 
@@ -18,6 +18,8 @@ enum interfaces_enum{
     controller_pps,
 
     manager_cooldowntimer,
+
+    manager_init,
 
     manager_report_oor,
 

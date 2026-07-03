@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ConfigurationOptions xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://n7space.com/TVnVTK">
+  <intermediateDirectory></intermediateDirectory>
+  <resultDirectory>output</resultDirectory>
+  <toolDirectory>../../data/tools</toolDirectory>
+  <toolSettings>
+    <ToolSettingEntry>
+      <SettingName>output_filename</SettingName>
+      <ToolName>GCC Help</ToolName>
+      <Value>gcc_help.txt</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Doxygen command</SettingName>
+      <ToolName>Initialize Doxygen configuration</ToolName>
+      <Value>doxygen</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Requirements tag file</SettingName>
+      <ToolName>Initialize Doxygen configuration</ToolName>
+      <Value>doxygen-requirements.tag</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Output directory</SettingName>
+      <ToolName>Initialize Doxygen configuration</ToolName>
+      <Value>docs</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>MIAB file path</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>output/trace.miab</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Little-endian</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>true</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Interface offset (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>0</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Interface size (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>4</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Entry type offset (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>4</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Entry type size (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>4</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Timestamp offset (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>8</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Timestamp size (bytes)</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>8</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>interfaces_info.h path</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>work/build/node_1/samv71asw/interfaces_info.h</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Combined invocation history</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>true</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Per-interface invocation history</SettingName>
+      <ToolName>Performance Trace Analysis</ToolName>
+      <Value>true</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Log address</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>0x20457000</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Log size</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>32k</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Target address</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>192.168.2.237:2331</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>GDB binary</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>gdb-multiarch</Value>
+    </ToolSettingEntry>
+    <ToolSettingEntry>
+      <SettingName>Output file name</SettingName>
+      <ToolName>Get Performance Trace</ToolName>
+      <Value>trace.miab</Value>
+    </ToolSettingEntry>
+  </toolSettings>
+</ConfigurationOptions>

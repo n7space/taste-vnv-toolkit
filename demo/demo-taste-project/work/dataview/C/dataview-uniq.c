@@ -1486,7 +1486,7 @@ flag asn1SccPID_Equal(const asn1SccPID* pVal1, const asn1SccPID* pVal2)
 flag asn1SccPID_IsConstraintValid(const asn1SccPID* pVal, int* pErrCode)
 {
     flag ret = TRUE;
-    ret = ((((((((((((*(pVal)) == PID_controller)) || (((*(pVal)) == PID_datapool)))) || (((*(pVal)) == PID_manager)))) || (((*(pVal)) == PID_utilities)))) || (((*(pVal)) == PID_demo_timer_manager)))) || (((*(pVal)) == PID_env)));
+    ret = ((((((((((((*(pVal)) == PID_controller)) || (((*(pVal)) == PID_datapool)))) || (((*(pVal)) == PID_manager)))) || (((*(pVal)) == PID_utilities)))) || (((*(pVal)) == PID_samv71asw_timer_manager)))) || (((*(pVal)) == PID_env)));
     *pErrCode = ret ? 0 :  ERR_PID;
 
 	return ret;
@@ -1526,7 +1526,7 @@ flag asn1SccPID_Encode(const asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCod
 	        case PID_utilities:
 	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 3, 0, 5);
 	        	break;
-	        case PID_demo_timer_manager:
+	        case PID_samv71asw_timer_manager:
 	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 4, 0, 5);
 	        	break;
 	        case PID_env:
@@ -1568,7 +1568,7 @@ flag asn1SccPID_Decode(asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCode)
 	                (*(pVal)) = PID_utilities;
 	                break;
 	            case 4:
-	                (*(pVal)) = PID_demo_timer_manager;
+	                (*(pVal)) = PID_samv71asw_timer_manager;
 	                break;
 	            case 5:
 	                (*(pVal)) = PID_env;
@@ -1606,7 +1606,7 @@ flag asn1SccPID_ACN_Encode(const asn1SccPID* pVal, BitStream* pBitStrm, int* pEr
 	        case PID_utilities:
 	            intVal_pVal = 3UL;
 	            break;
-	        case PID_demo_timer_manager:
+	        case PID_samv71asw_timer_manager:
 	            intVal_pVal = 4UL;
 	            break;
 	        case PID_env:
@@ -1649,7 +1649,7 @@ flag asn1SccPID_ACN_Decode(asn1SccPID* pVal, BitStream* pBitStrm, int* pErrCode)
 	            (*(pVal)) = PID_utilities;
 	            break;
 	        case 4:
-	            (*(pVal)) = PID_demo_timer_manager;
+	            (*(pVal)) = PID_samv71asw_timer_manager;
 	            break;
 	        case 5:
 	            (*(pVal)) = PID_env;

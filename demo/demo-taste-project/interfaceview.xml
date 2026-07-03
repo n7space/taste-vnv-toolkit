@@ -1,13 +1,31 @@
 <InterfaceView version="1.3" asn1file="demo-taste-project.acn" UiFile="interfaceview.ui.xml" modifierHash="383508e">
-<Function id="{9990576a-8cf6-46c9-b808-eda13a3940f5}" name="Controller" is_type="NO" language="C" default_implementation="default" fixed_system_element="NO" required_system_element="NO" instances_max="1" startup_priority="1" instances_min="1">
+<Function id="{5dac6920-ddb8-4f04-acd2-40b2da03f067}" name="Utilities" is_type="NO" language="C" default_implementation="default" fixed_system_element="NO" required_system_element="NO" startup_priority="1" instances_min="1" instances_max="1">
     <Property name="TASTE_IV_Properties::Default_Codegen" value="Ada"/>
-<Provided_Interface id="{66618505-7518-4375-9c4b-b50f43a6efe7}" name="pps" kind="Cyclic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" wcet="0" stack_size="1024">
+<Provided_Interface id="{d4bb0ceb-a142-47eb-b6d0-ce27bd9ee99a}" name="mulf" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_alarm="false" is_observable="false" wcet="0">
+    <Input_Parameter name="a" type="Float32" encoding="NATIVE"/>
+    <Input_Parameter name="b" type="Float32" encoding="NATIVE"/>
+    <Output_Parameter name="r" type="Float32" encoding="NATIVE"/>
 </Provided_Interface>
 
-<Provided_Interface id="{d02019e9-cdb0-4dfa-a22f-76a2966a39be}" name="activate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" queue_size="1" wcet="0" miat="0" stack_size="1024">
+<Provided_Interface id="{d869c3f4-34d8-4e73-8a63-bd96c3a14365}" name="fib" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_alarm="false" is_observable="false" wcet="0">
+    <Input_Parameter name="p" type="T-UInt32" encoding="NATIVE"/>
+    <Output_Parameter name="r" type="T-UInt32" encoding="NATIVE"/>
 </Provided_Interface>
 
-<Provided_Interface id="{cb88080a-c75b-4272-9162-8db2cf14cc86}" name="deactivate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" queue_size="1" wcet="0" miat="0" stack_size="1024">
+    <Implementations>
+        <Implementation name="default" language="C"/>
+    </Implementations>
+</Function>
+
+<Function id="{9990576a-8cf6-46c9-b808-eda13a3940f5}" name="Controller" is_type="NO" language="C" default_implementation="default" fixed_system_element="NO" required_system_element="NO" startup_priority="1" instances_min="1" instances_max="1">
+    <Property name="TASTE_IV_Properties::Default_Codegen" value="Ada"/>
+<Provided_Interface id="{66618505-7518-4375-9c4b-b50f43a6efe7}" name="pps" kind="Cyclic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" dispatch_offset="0" stack_size="1024" period="1000" wcet="0">
+</Provided_Interface>
+
+<Provided_Interface id="{d02019e9-cdb0-4dfa-a22f-76a2966a39be}" name="activate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" miat="0" priority="1" queue_size="1" stack_size="1024" wcet="0">
+</Provided_Interface>
+
+<Provided_Interface id="{cb88080a-c75b-4272-9162-8db2cf14cc86}" name="deactivate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" miat="0" priority="1" queue_size="1" stack_size="1024" wcet="0">
 </Provided_Interface>
 
 <Required_Interface id="{15944ed8-adb9-4dfa-a9ae-3b301b83e8dd}" name="read_param" kind="Protected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" wcet="0">
@@ -25,7 +43,7 @@
     <Property name="Taste::Autonamed" value="true"/>
 </Required_Interface>
 
-<Required_Interface id="{258695f4-4e02-45ea-b3c4-ce6e22bca8c8}" name="mulf" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_observable="false" wcet="0" is_alarm="false">
+<Required_Interface id="{258695f4-4e02-45ea-b3c4-ce6e22bca8c8}" name="mulf" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_alarm="false" is_observable="false" wcet="0">
     <Input_Parameter name="a" type="Float32" encoding="NATIVE"/>
     <Input_Parameter name="b" type="Float32" encoding="NATIVE"/>
     <Output_Parameter name="r" type="Float32" encoding="NATIVE"/>
@@ -33,14 +51,14 @@
     <Property name="Taste::Autonamed" value="true"/>
 </Required_Interface>
 
-<Required_Interface id="{ec335e71-5c03-4030-987b-a26351c25434}" name="fib" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_observable="false" wcet="0" is_alarm="false">
+<Required_Interface id="{ec335e71-5c03-4030-987b-a26351c25434}" name="fib" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_alarm="false" is_observable="false" wcet="0">
     <Input_Parameter name="p" type="T-UInt32" encoding="NATIVE"/>
     <Output_Parameter name="r" type="T-UInt32" encoding="NATIVE"/>
     <Property name="Taste::InheritPI" value="true"/>
     <Property name="Taste::Autonamed" value="true"/>
 </Required_Interface>
 
-<Required_Interface id="{3101ced1-321e-4f39-820f-5014462210fa}" name="report_oor" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" queue_size="1" wcet="0" miat="0" stack_size="1024">
+<Required_Interface id="{3101ced1-321e-4f39-820f-5014462210fa}" name="report_oor" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" miat="0" priority="1" queue_size="1" stack_size="1024" wcet="0">
     <Property name="Taste::InheritPI" value="true"/>
     <Property name="Taste::Autonamed" value="true"/>
 </Required_Interface>
@@ -50,46 +68,7 @@
     </Implementations>
 </Function>
 
-<Function id="{5dac6920-ddb8-4f04-acd2-40b2da03f067}" name="Utilities" is_type="NO" language="C" default_implementation="default" fixed_system_element="NO" required_system_element="NO" instances_max="1" startup_priority="1" instances_min="1">
-    <Property name="TASTE_IV_Properties::Default_Codegen" value="Ada"/>
-<Provided_Interface id="{d4bb0ceb-a142-47eb-b6d0-ce27bd9ee99a}" name="mulf" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_observable="false" wcet="0" is_alarm="false">
-    <Input_Parameter name="a" type="Float32" encoding="NATIVE"/>
-    <Input_Parameter name="b" type="Float32" encoding="NATIVE"/>
-    <Output_Parameter name="r" type="Float32" encoding="NATIVE"/>
-</Provided_Interface>
-
-<Provided_Interface id="{d869c3f4-34d8-4e73-8a63-bd96c3a14365}" name="fib" kind="Unprotected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" is_observable="false" wcet="0" is_alarm="false">
-    <Input_Parameter name="p" type="T-UInt32" encoding="NATIVE"/>
-    <Output_Parameter name="r" type="T-UInt32" encoding="NATIVE"/>
-</Provided_Interface>
-
-    <Implementations>
-        <Implementation name="default" language="C"/>
-    </Implementations>
-</Function>
-
-<Function id="{5fbddcb9-fc17-49d0-8410-c40601937d87}" name="Manager" is_type="NO" language="SDL" default_implementation="default" fixed_system_element="NO" required_system_element="NO" instances_max="1" startup_priority="1" instances_min="1">
-    <Property name="TASTE_IV_Properties::Default_Codegen" value="C"/>
-    <ContextParameter name="cooldowntimer" type="Timer" value=""/>
-<Provided_Interface id="{0ba4537b-7522-4936-89be-fc4d47054787}" name="report_oor" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" queue_size="1" wcet="0" miat="0" stack_size="1024">
-</Provided_Interface>
-
-<Required_Interface id="{a66b4c92-9ff1-4110-b649-ef8a34b37d97}" name="activate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" queue_size="1" wcet="0" miat="0" stack_size="1024">
-    <Property name="Taste::InheritPI" value="true"/>
-    <Property name="Taste::Autonamed" value="true"/>
-</Required_Interface>
-
-<Required_Interface id="{5e62460f-70d4-4f57-a943-ba8a130327e2}" name="deactivate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" queue_size="1" wcet="0" miat="0" stack_size="1024">
-    <Property name="Taste::InheritPI" value="true"/>
-    <Property name="Taste::Autonamed" value="true"/>
-</Required_Interface>
-
-    <Implementations>
-        <Implementation name="default" language="SDL"/>
-    </Implementations>
-</Function>
-
-<Function id="{8c985dd8-2daf-49e8-99cf-5821f4d95276}" name="DataPool" is_type="NO" language="C" default_implementation="default" fixed_system_element="NO" required_system_element="NO" instances_max="1" startup_priority="1" instances_min="1">
+<Function id="{8c985dd8-2daf-49e8-99cf-5821f4d95276}" name="DataPool" is_type="NO" language="C" default_implementation="default" fixed_system_element="NO" required_system_element="NO" startup_priority="1" instances_min="1" instances_max="1">
     <Property name="TASTE_IV_Properties::Default_Codegen" value="Ada"/>
 <Provided_Interface id="{2e42c62f-a370-4de9-aacd-4d177fb1be6d}" name="read_param" kind="Protected" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" wcet="0">
     <Input_Parameter name="pid" type="ParameterID" encoding="ACN"/>
@@ -107,6 +86,35 @@
     </Implementations>
 </Function>
 
+<Function id="{5fbddcb9-fc17-49d0-8410-c40601937d87}" name="Manager" is_type="NO" language="SDL" default_implementation="default" fixed_system_element="NO" required_system_element="NO" startup_priority="1" instances_min="1" instances_max="1">
+    <Property name="TASTE_IV_Properties::Default_Codegen" value="C"/>
+    <ContextParameter name="cooldowntimer" type="Timer" value=""/>
+<Provided_Interface id="{0ba4537b-7522-4936-89be-fc4d47054787}" name="report_oor" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" miat="0" priority="1" queue_size="1" stack_size="1024" wcet="0">
+</Provided_Interface>
+
+<Provided_Interface id="{1ea1ee43-1298-4812-8fd5-4567506a7cf0}" name="init" kind="Cyclic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" priority="1" stack_size="1024" period="100" wcet="0">
+</Provided_Interface>
+
+<Required_Interface id="{a66b4c92-9ff1-4110-b649-ef8a34b37d97}" name="activate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" miat="0" priority="1" queue_size="1" stack_size="1024" wcet="0">
+    <Property name="Taste::InheritPI" value="true"/>
+    <Property name="Taste::Autonamed" value="true"/>
+</Required_Interface>
+
+<Required_Interface id="{5e62460f-70d4-4f57-a943-ba8a130327e2}" name="deactivate" kind="Sporadic" enable_multicast="true" layer="default" required_system_element="NO" is_simulink_interface="false" miat="0" priority="1" queue_size="1" stack_size="1024" wcet="0">
+    <Property name="Taste::InheritPI" value="true"/>
+    <Property name="Taste::Autonamed" value="true"/>
+</Required_Interface>
+
+    <Implementations>
+        <Implementation name="default" language="SDL"/>
+    </Implementations>
+</Function>
+
+<Connection id="{1316c193-f4f9-4b6f-abe4-4c0056f00894}" name="Controller_mulf____Utilities_mulf" required_system_element="NO">
+    <Source iface_id="{258695f4-4e02-45ea-b3c4-ce6e22bca8c8}" func_name="Controller" ri_name="mulf" />
+    <Target iface_id="{d4bb0ceb-a142-47eb-b6d0-ce27bd9ee99a}" func_name="Utilities" pi_name="mulf" />
+</Connection>
+
 <Connection id="{13cbf790-545d-4927-820a-5e44c3e838dd}" name="Controller_read_param____DataPool_read_param" required_system_element="NO">
     <Source iface_id="{15944ed8-adb9-4dfa-a9ae-3b301b83e8dd}" func_name="Controller" ri_name="read_param" />
     <Target iface_id="{2e42c62f-a370-4de9-aacd-4d177fb1be6d}" func_name="DataPool" pi_name="read_param" />
@@ -117,9 +125,14 @@
     <Target iface_id="{cb88080a-c75b-4272-9162-8db2cf14cc86}" func_name="Controller" pi_name="deactivate" />
 </Connection>
 
-<Connection id="{1316c193-f4f9-4b6f-abe4-4c0056f00894}" name="Controller_mulf____Utilities_mulf" required_system_element="NO">
-    <Source iface_id="{258695f4-4e02-45ea-b3c4-ce6e22bca8c8}" func_name="Controller" ri_name="mulf" />
-    <Target iface_id="{d4bb0ceb-a142-47eb-b6d0-ce27bd9ee99a}" func_name="Utilities" pi_name="mulf" />
+<Connection id="{b57ec316-8688-483a-bcaf-8ca7a152fa86}" name="Controller_write_param____DataPool_write_param" required_system_element="NO">
+    <Source iface_id="{07b17f9d-a5c1-4d3c-b881-2cc28bef50e2}" func_name="Controller" ri_name="write_param" />
+    <Target iface_id="{e6111d60-1174-458b-a788-8ef07abe2062}" func_name="DataPool" pi_name="write_param" />
+</Connection>
+
+<Connection id="{6417fbc2-e6e5-4a93-8ff8-48ccf9fc2a44}" name="Controller_report_oor____Manager_report_oor" required_system_element="NO">
+    <Source iface_id="{3101ced1-321e-4f39-820f-5014462210fa}" func_name="Controller" ri_name="report_oor" />
+    <Target iface_id="{0ba4537b-7522-4936-89be-fc4d47054787}" func_name="Manager" pi_name="report_oor" />
 </Connection>
 
 <Connection id="{ced95aba-180d-46c0-80db-b81618ac45b3}" name="Manager_activate____Controller_activate" required_system_element="NO">
@@ -130,16 +143,6 @@
 <Connection id="{1e1bf209-8c08-4df1-8ebf-56ea9555a2e1}" name="Controller_fib____Utilities_fib" required_system_element="NO">
     <Source iface_id="{ec335e71-5c03-4030-987b-a26351c25434}" func_name="Controller" ri_name="fib" />
     <Target iface_id="{d869c3f4-34d8-4e73-8a63-bd96c3a14365}" func_name="Utilities" pi_name="fib" />
-</Connection>
-
-<Connection id="{b57ec316-8688-483a-bcaf-8ca7a152fa86}" name="Controller_write_param____DataPool_write_param" required_system_element="NO">
-    <Source iface_id="{07b17f9d-a5c1-4d3c-b881-2cc28bef50e2}" func_name="Controller" ri_name="write_param" />
-    <Target iface_id="{e6111d60-1174-458b-a788-8ef07abe2062}" func_name="DataPool" pi_name="write_param" />
-</Connection>
-
-<Connection id="{6417fbc2-e6e5-4a93-8ff8-48ccf9fc2a44}" name="Controller_report_oor____Manager_report_oor" required_system_element="NO">
-    <Source iface_id="{3101ced1-321e-4f39-820f-5014462210fa}" func_name="Controller" ri_name="report_oor" />
-    <Target iface_id="{0ba4537b-7522-4936-89be-fc4d47054787}" func_name="Manager" pi_name="report_oor" />
 </Connection>
 
 <Layer name="default" is_visible="true"/>

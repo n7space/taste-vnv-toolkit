@@ -348,7 +348,7 @@ void PrintASN1PID(const char *paramName, const asn1SccPID *pData)
         printf("utilities");
         break;
     case 4:
-        printf("demo-timer-manager");
+        printf("samv71asw-timer-manager");
         break;
     case 5:
         printf("env");
