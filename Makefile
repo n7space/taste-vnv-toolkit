@@ -82,7 +82,7 @@ demo-stack:
 	cd ${CURRENT_DIRECTORY}
 
 demo-regenerate-trace:
-	python3 demo/scripts/generate_trace.py demo/demo-taste-project/dummy-trace.miab
+	python3 demo/scripts/generate_trace.py demo/demo-taste-project/output/dummy-trace.miab
 
 demo-perf-analyze-trace:
 	cd ${PROJECT_DIRECTORY} && \
