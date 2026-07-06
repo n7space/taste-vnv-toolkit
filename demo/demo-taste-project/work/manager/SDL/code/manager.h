@@ -6,7 +6,7 @@
 #include "manager_datamodel.h"
 
 enum Manager_Branches {
-startup_transition, state_emergency_input_cooldowntimer, state_nominal_input_report_oor, continuous_signals, branch_end
+startup_transition, state_emergency_input_cooldowntimer, state_nominal_input_report_oor, state_off_input_init, continuous_signals, branch_end
 };
 
 void runTransitionManager(enum Manager_Branches Id);
@@ -19,6 +19,9 @@ void manager_startup();
 
 
 //// Input Signals
+
+// Provided interface "init"
+void manager_PI_init();
 
 // Provided interface "report_oor"
 void manager_PI_report_oor();

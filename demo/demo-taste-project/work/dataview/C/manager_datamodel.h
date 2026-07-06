@@ -13,16 +13,18 @@ extern "C" {
 
 typedef enum {
     asn1Sccnominal = 0,
-    asn1Sccemergency = 1
+    asn1Sccoff = 1,
+    asn1Sccemergency = 2
 } asn1SccManager_States;
 
 // please use the following macros to avoid breaking code.
 #define asn1SccManager_States_nominal asn1Sccnominal
+#define asn1SccManager_States_off asn1Sccoff
 #define asn1SccManager_States_emergency asn1Sccemergency
 
 flag asn1SccManager_States_Equal(const asn1SccManager_States* pVal1, const asn1SccManager_States* pVal2);
 
-#define ERR_MANAGER_STATES		1  /*nominal | emergency*/
+#define ERR_MANAGER_STATES		1  /*nominal | off | emergency*/
 flag asn1SccManager_States_IsConstraintValid(const asn1SccManager_States* pVal, int* pErrCode);
 
 #ifdef __cplusplus

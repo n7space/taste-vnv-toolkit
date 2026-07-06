@@ -6,7 +6,7 @@ IMPORTS
    T-Int32, T-UInt32, T-Int8, T-UInt8, T-Boolean, T-Null-Record, T-Runtime-Error FROM TASTE-BasicTypes
    PID-Range, PID FROM System-Dataview;
 
-Manager-States ::= ENUMERATED {nominal, emergency}
+Manager-States ::= ENUMERATED {off, nominal, emergency}
 
 Manager-Context ::= SEQUENCE {
    state Manager-States,

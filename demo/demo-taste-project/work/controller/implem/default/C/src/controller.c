@@ -9,30 +9,47 @@
 */
 #include "controller.h"
 
+#define COUNT (4)
+
+// Volatile variable to prevent compiler from optimizing away unused results
+static volatile asn1SccT_UInt32 dummy_sink = 0;
+static volatile uint32_t oor_counter = 0;
+static volatile bool activated = false;
+
+
+#if defined(N7S_TARGET_SAMV71Q21) || defined(N7S_TARGET_SAMRH71F20)
+#include <Monitor.h>
+#endif
 
 void controller_startup(void)
 {
-   // NOP
+#if defined(N7S_TARGET_SAMV71Q21) || defined(N7S_TARGET_SAMRH71F20)
+   Monitor_UnfreezeInterfaceActivationLogging();
+#endif
 }
 
 void controller_PI_activate(void)
 {
-   // NOP
+   activated = true;
 }
 
 
 void controller_PI_deactivate(void)
 {
-   // NOP
+   activated = false;
 }
-
-#define COUNT (4)
-
-// Volatile variable to prevent compiler from optimizing away unused results
-static volatile asn1SccT_UInt32 dummy_sink = 0;
 
 void controller_PI_pps(void)
 {
+   if (activated)
+   {
+      oor_counter++;
+      if (oor_counter > 2)
+      {
+         oor_counter = 0;
+         controller_RI_report_oor();
+      }
+   }
    static asn1SccT_UInt32 x = 0;
    asn1SccT_UInt32 accu;
    asn1SccT_UInt32 rs[COUNT];

@@ -18,8 +18,6 @@
 #endif
 
 #include "dataview-uniq.h"  // contains definition of PID type
-#include <stdio.h>
-extern long long getTimeInMilliseconds(void);
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,6 +29,9 @@ void init_manager(void);
 
 /* Provided interfaces */
 void manager_cooldowntimer(void);
+
+
+void manager_init(void);
 
 
 void manager_report_oor(void);

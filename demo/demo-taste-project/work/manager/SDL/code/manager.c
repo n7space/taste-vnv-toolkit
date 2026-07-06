@@ -35,6 +35,22 @@ void manager_startup()
 }
 
 //// Input Signals
+void manager_PI_init()
+{
+   switch(ctxt.state)
+   {
+      case asn1SccManager_States_off:
+      {
+         runTransitionManager(state_off_input_init);
+         break;
+      }
+      default:
+      {
+         runTransitionManager(continuous_signals);
+         break;
+      }
+   }
+}
 void manager_PI_report_oor()
 {
    switch(ctxt.state)
@@ -82,10 +98,8 @@ void manager_PI_cooldowntimer()
 // CONNECTION Startup_Transition
 static enum Manager_Branches branch_startup_transition(void)
 {
-   // activate (15,15)
-   manager_RI_activate();
-   // NEXT_STATE Nominal (17,18) at 318, 115
-   ctxt.state = asn1SccManager_States_nominal;
+   // NEXT_STATE Off (15,18) at 300, 74
+   ctxt.state = asn1SccManager_States_off;
    return continuous_signals;
 }
 // CONNECTION STATE_emergency_INPUT_cooldowntimer
@@ -93,11 +107,11 @@ static enum Manager_Branches branch_state_emergency_input_cooldowntimer(void)
 {
    // get_sender(sender) (1,5)
    manager_RI_get_sender(&ctxt.sender);
-   // Reset_timer(cooldowntimer) (24,17)
+   // Reset_timer(cooldowntimer) (22,17)
    RESET_cooldowntimer();
-   // activate (26,19)
+   // activate (24,19)
    manager_RI_activate();
-   // NEXT_STATE Nominal (28,22) at 318, 605
+   // NEXT_STATE Nominal (26,22) at 577, 506
    ctxt.state = asn1SccManager_States_nominal;
    return continuous_signals;
 }
@@ -107,15 +121,26 @@ static enum Manager_Branches branch_state_nominal_input_report_oor(void)
    asn1SccT_UInt32 tmp12;
    // get_sender(sender) (1,5)
    manager_RI_get_sender(&ctxt.sender);
-   // RESET_timer(cooldowntimer) (36,17)
+   // RESET_timer(cooldowntimer) (34,17)
    RESET_cooldowntimer();
-   // Set_timer(1000,cooldowntimer) (38,17)
-   tmp12 = 1000;
+   // Set_timer(200,cooldowntimer) (36,17)
+   tmp12 = 200;
    SET_cooldowntimer(&tmp12);
-   // deactivate (40,19)
+   // deactivate (38,19)
    manager_RI_deactivate();
-   // NEXT_STATE Emergency (42,22) at 310, 385
+   // NEXT_STATE Emergency (40,22) at 569, 286
    ctxt.state = asn1SccManager_States_emergency;
+   return continuous_signals;
+}
+// CONNECTION STATE_off_INPUT_Init
+static enum Manager_Branches branch_state_off_input_init(void)
+{
+   // get_sender(sender) (1,5)
+   manager_RI_get_sender(&ctxt.sender);
+   // activate (48,19)
+   manager_RI_activate();
+   // NEXT_STATE Nominal (50,22) at 408, 171
+   ctxt.state = asn1SccManager_States_nominal;
    return continuous_signals;
 }
 //// Definition Of Run Transition
@@ -129,6 +154,7 @@ void runTransitionManager(enum Manager_Branches Id)
          case startup_transition: trId = branch_startup_transition(); break;
          case state_emergency_input_cooldowntimer: trId = branch_state_emergency_input_cooldowntimer(); break;
          case state_nominal_input_report_oor: trId = branch_state_nominal_input_report_oor(); break;
+         case state_off_input_init: trId = branch_state_off_input_init(); break;
          case continuous_signals: trId = branch_end; break;
          default: trId = branch_end; break;
       }

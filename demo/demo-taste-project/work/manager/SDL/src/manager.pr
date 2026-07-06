@@ -9,36 +9,44 @@ process Manager;
     -- PROCEDURE CALL symbol to use them
     timer cooldowntimer;
     /* CIF ENDTEXT */
-    /* CIF START (320, 10), (70, 35) */
+    /* CIF START (300, 11), (70, 35) */
     START;
-        /* CIF output (320, 65), (70, 35) */
-        output activate;
-        /* CIF NEXTSTATE (318, 115), (72, 35) */
-        NEXTSTATE Nominal;
-    /* CIF state (310, 385), (89, 35) */
+        /* CIF NEXTSTATE (300, 74), (70, 35) */
+        NEXTSTATE Off;
+    /* CIF state (569, 286), (89, 35) */
     /* CIF Keep Specific Geode Partition 'default' */
     state Emergency;
-        /* CIF input (298, 440), (112, 35) */
+        /* CIF input (557, 341), (112, 35) */
         input cooldowntimer;
-            /* CIF PROCEDURECALL (256, 495), (196, 35) */
+            /* CIF PROCEDURECALL (515, 396), (196, 35) */
             call Reset_timer(cooldowntimer);
-            /* CIF output (320, 550), (70, 35) */
+            /* CIF output (579, 451), (70, 35) */
             output activate;
-            /* CIF NEXTSTATE (318, 605), (72, 35) */
+            /* CIF NEXTSTATE (577, 506), (72, 35) */
             NEXTSTATE Nominal;
     endstate;
-    /* CIF state (318, 115), (72, 35) */
+    /* CIF state (578, 16), (72, 35) */
     /* CIF Keep Specific Geode Partition 'default' */
     state Nominal;
-        /* CIF input (311, 170), (87, 35) */
+        /* CIF input (570, 71), (87, 35) */
         input report_oor;
-            /* CIF PROCEDURECALL (254, 225), (201, 35) */
+            /* CIF PROCEDURECALL (514, 126), (201, 35) */
             call RESET_timer(cooldowntimer);
-            /* CIF PROCEDURECALL (247, 280), (214, 35) */
-            call Set_timer(1000,cooldowntimer);
-            /* CIF output (312, 335), (84, 35) */
+            /* CIF PROCEDURECALL (510, 181), (207, 35) */
+            call Set_timer(200,cooldowntimer);
+            /* CIF output (572, 236), (84, 35) */
             output deactivate;
-            /* CIF NEXTSTATE (310, 385), (89, 35) */
+            /* CIF NEXTSTATE (569, 286), (89, 35) */
             NEXTSTATE Emergency;
+    endstate;
+    /* CIF state (410, 11), (70, 35) */
+    /* CIF Keep Specific Geode Partition 'default' */
+    state Off;
+        /* CIF input (410, 66), (70, 35) */
+        input Init;
+            /* CIF output (410, 121), (70, 35) */
+            output activate;
+            /* CIF NEXTSTATE (408, 171), (72, 35) */
+            NEXTSTATE Nominal;
     endstate;
 endprocess Manager;

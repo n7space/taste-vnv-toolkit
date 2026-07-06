@@ -5,6 +5,9 @@ use Datamodel;
 
 system Manager;
 
+   signal init;
+   
+   
    signal report_oor;
 
    signal activate;
@@ -21,14 +24,14 @@ system Manager;
    external;
 
    channel c
-      from env to Manager with report_oor;
+      from env to Manager with init, report_oor;
       from Manager to env with activate, deactivate;
    endchannel;
 
    block Manager;
 
       signalroute r
-      from env to Manager with report_oor;
+      from env to Manager with init, report_oor;
       from Manager to env with activate, deactivate;
       connect c and r;
 
