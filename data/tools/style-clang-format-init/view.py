@@ -22,5 +22,5 @@ else:
             show_status = True
         except Exception as exc:
             status = "error"
-            status_text = f"Failed to read Doxyfile: {exc}"
+            status_text = f"Failed to read .clang-format: {exc}"
             show_status = True

@@ -1,9 +1,11 @@
 """Generic utilities for all tools"""
 
 import os
+import re
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 # ── Settings helpers ──────────────────────────────────────────────────────────
 
@@ -24,6 +26,49 @@ def get_project_name(project_directory):
     if not project_directory:
         return "TASTE"
     return os.path.basename(os.path.abspath(project_directory))
+
+
+def get_interface_view_path(project_directory):
+    """Provides project's Interface View XML file path"""
+    path = os.path.join(project_directory, "interfaceview.xml")
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"interfaceview.xml not found: {path}")
+    return path
+
+
+def normalize_function_name(function_name):
+    """Normalize functoion name for path processing"""
+    return re.sub(r"\s+", "_", function_name.strip().lower())
+
+
+def get_leaf_function_names(interfaceview_path, language="C"):
+    """Lists all functions that have implementation in provided language"""
+    tree = ET.parse(interfaceview_path)
+    root = tree.getroot()
+
+    # must be a leaf (no sub-functions) and in correct language
+    functions = [
+        fun
+        for fun in root.findall(".//Function")
+        if fun.find("Function") is None and fun.get("language").upper() == language
+    ]
+    names = [normalize_function_name(fun.get("name", "")) for fun in functions]
+    return [name for name in sorted(set(names)) if name]
+
+
+def get_function_impl_path(project_directory, function_name, language="C"):
+    """Provides path to function implementation in specified language"""
+    root = os.path.join(project_directory, "work", function_name)
+    if not os.path.isdir(root):
+        raise FileNotFoundError(
+            f"Generated work directory not found for function '{function_name}': {root}"
+        )
+
+    impl_dir = os.path.join(root, language, "src")
+    if not os.path.isdir(impl_dir):
+        return ""
+
+    return impl_dir
 
 
 # ── Commands helpers ──────────────────────────────────────────────────────────
