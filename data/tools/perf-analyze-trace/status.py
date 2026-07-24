@@ -2,7 +2,8 @@
 
 import os
 
-from perfanalyzeshared import get_setting, resolve_path
+from vnvtoolkit import get_setting
+from perfanalyzeshared import resolve_path
 
 
 if not taste_project_directory:

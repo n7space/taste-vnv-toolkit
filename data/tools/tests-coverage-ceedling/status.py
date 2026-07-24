@@ -1,7 +1,8 @@
 import os
 import shutil
 
-from testsharedceedling import get_setting, parse_project_yml
+from vnvtoolkit import get_setting
+from testsharedceedling import parse_project_yml
 
 
 def parse_build_root(project_yml_text):

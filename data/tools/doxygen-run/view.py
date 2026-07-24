@@ -1,9 +1,8 @@
 from doxygenshared import (
     get_output_directory,
     get_documentation_paths,
-    open_directory,
-    open_html_file,
 )
+from vnvtoolkit import open_in_os_viewer
 import os
 
 output_dir = get_output_directory(settings)
@@ -28,11 +27,11 @@ else:
     else:
         try:
             if os.path.isfile(index_path):
-                open_html_file(index_path)
+                open_in_os_viewer(index_path)
                 status = "ok"
                 status_text = f"Opened documentation: {index_path}"
             else:
-                open_directory(html_path)
+                open_in_os_viewer(html_path)
                 status = "ok"
                 status_text = f"Opened documentation directory: {html_path}"
             show_status = False

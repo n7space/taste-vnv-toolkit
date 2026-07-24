@@ -1,6 +1,6 @@
 """Check status of requirements extraction tool."""
 
-from doxygenshared import get_setting
+from vnvtoolkit import get_setting
 import os
 
 

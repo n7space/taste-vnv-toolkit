@@ -18,8 +18,8 @@ Provided by the toolkit:
 import os
 import subprocess
 import re
+from vnvtoolkit import get_setting
 from perfanalyzeshared import (
-    get_setting,
     resolve_path,
 )
 

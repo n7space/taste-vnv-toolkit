@@ -2,8 +2,8 @@ import os
 import shutil
 import subprocess
 
+from vnvtoolkit import get_setting
 from testsharedceedling import (
-    get_setting,
     parse_project_yml,
     emit_progress,
     resolve_coverage_output_paths,

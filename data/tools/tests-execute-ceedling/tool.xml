@@ -8,6 +8,7 @@
   <ToolScript>tool.py</ToolScript>
   <ViewScript>view.py</ViewScript>
   <ImportPaths>
+    <Path>../shared</Path>
     <Path>../tests-shared-ceedling</Path>
   </ImportPaths>
   <Settings>

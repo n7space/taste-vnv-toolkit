@@ -5,7 +5,7 @@ import re
 import subprocess
 import sys
 from datetime import datetime
-from shared import get_setting, open_path
+from vnvtoolkit import get_setting, get_project_name, resolve_path
 
 
 def emit_progress(value):
@@ -36,13 +36,6 @@ def parse_stack_usage_line(line):
         max_stack = int(match.group(3))
         return (function_name, used, max_stack)
     return None
-
-
-def get_project_name(project_directory):
-    """Extract project name from the directory path."""
-    if not project_directory:
-        return "TASTE"
-    return os.path.basename(os.path.abspath(project_directory))
 
 
 def generate_html_report(stack_data, output_path, project_name="TASTE"):
@@ -372,10 +365,7 @@ else:
         work_dir = os.path.join(taste_project_directory, "work")
         
         # Resolve output_directory (may be relative or absolute)
-        if os.path.isabs(output_directory):
-            resolved_output = output_directory
-        else:
-            resolved_output = os.path.join(taste_project_directory, output_directory)
+        resolved_output = resolve_path(taste_project_directory, output_directory)
         
         output_path = os.path.join(resolved_output, report_filename)
         

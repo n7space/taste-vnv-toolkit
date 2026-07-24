@@ -15,6 +15,7 @@ Settings:
   <ToolScript>tool.py</ToolScript>
   <ViewScript>view.py</ViewScript>
   <ImportPaths>
+    <Path>../shared</Path>
     <Path>../perf-analyze-shared</Path>
   </ImportPaths>
   <Settings>

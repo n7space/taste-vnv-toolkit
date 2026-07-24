@@ -1,20 +1,11 @@
 """Shared utilities for Doxygen tools."""
 
 import os
-import shutil
-import subprocess
-import sys
+
+from vnvtoolkit import get_setting, resolve_path
 
 
 # ── Settings helpers ──────────────────────────────────────────────────────────
-
-
-def get_setting(settings, name, default_value):
-    """Get a setting value by name, or return default if not found."""
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
 
 
 def get_doxygen_command(settings):
@@ -29,22 +20,9 @@ def get_output_directory(settings):
 
 def get_requirements_tag(settings):
     """Get the requirements tag file from settings."""
-    return str(get_setting(settings, "Requirements tag file", "doxygen-requirements.tag"))
-
-
-# ── Doxygen availability ──────────────────────────────────────────────────────
-
-
-def check_doxygen_available(doxygen_command):
-    """
-    Check if doxygen command is available in PATH.
-    Returns (status, status_text) tuple.
-    """
-    path = shutil.which(doxygen_command)
-    if path is not None:
-        return "ok", f"{doxygen_command} found at {path}"
-    else:
-        return "error", f"{doxygen_command} not found in PATH"
+    return str(
+        get_setting(settings, "Requirements tag file", "doxygen-requirements.tag")
+    )
 
 
 # ── Doxyfile helpers ──────────────────────────────────────────────────────────
@@ -70,23 +48,12 @@ def check_doxyfile_exists(doxyfile_path):
 # ── Path resolution ───────────────────────────────────────────────────────────
 
 
-def resolve_output_path(project_directory, output_dir):
-    """
-    Resolve output directory path, handling both absolute and relative paths.
-    Returns the absolute path to the output directory.
-    """
-    if os.path.isabs(output_dir):
-        return output_dir
-    else:
-        return os.path.join(project_directory, output_dir)
-
-
 def get_documentation_paths(project_directory, output_dir):
     """
     Get documentation paths: docs_path, html_path, index_path.
     Returns a tuple (docs_path, html_path, index_path).
     """
-    docs_path = resolve_output_path(project_directory, output_dir)
+    docs_path = resolve_path(project_directory, output_dir)
     html_path = os.path.join(docs_path, "html")
     index_path = os.path.join(html_path, "index.html")
     return docs_path, html_path, index_path
@@ -99,37 +66,6 @@ def get_documentation_paths(project_directory, output_dir):
 # globals, not this module's globals.
 
 
-# ── File/directory opening ────────────────────────────────────────────────────
-
-
-def open_directory(directory_path):
-    """Open a directory in the system's file explorer."""
-    if sys.platform.startswith("win"):
-        os.startfile(directory_path)
-        return
-
-    command = ["open", directory_path] if sys.platform == "darwin" else ["xdg-open", directory_path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-
-def open_html_file(file_path):
-    """Open an HTML file in the default browser."""
-    if sys.platform.startswith("win"):
-        os.startfile(file_path)
-        return
-
-    command = ["open", file_path] if sys.platform == "darwin" else ["xdg-open", file_path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
 
 
 # ── Directory scanning ────────────────────────────────────────────────────────

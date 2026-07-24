@@ -7,6 +7,9 @@
   <StatusScript>status.py</StatusScript>
   <ToolScript>tool.py</ToolScript>
   <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+  </ImportPaths>
   <Settings>
     <Setting>
       <Name>Report filename</Name>
