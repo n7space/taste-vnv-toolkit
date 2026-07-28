@@ -16,56 +16,56 @@ static volatile asn1SccT_UInt32 dummy_sink = 0;
 static volatile uint32_t oor_counter = 0;
 static volatile bool activated = false;
 
-
 #if defined(N7S_TARGET_SAMV71Q21) || defined(N7S_TARGET_SAMRH71F20)
 #include <Monitor.h>
 #endif
 
-void controller_startup(void)
+void
+controller_startup (void)
 {
 #if defined(N7S_TARGET_SAMV71Q21) || defined(N7S_TARGET_SAMRH71F20)
-   Monitor_UnfreezeInterfaceActivationLogging();
+  Monitor_UnfreezeInterfaceActivationLogging ();
 #endif
 }
 
-void controller_PI_activate(void)
+void
+controller_PI_activate (void)
 {
-   activated = true;
+  activated = true;
 }
 
-
-void controller_PI_deactivate(void)
+void
+controller_PI_deactivate (void)
 {
-   activated = false;
+  activated = false;
 }
 
-void controller_PI_pps(void)
+void
+controller_PI_pps (void)
 {
-   if (activated)
-   {
+  if (activated)
+    {
       oor_counter++;
       if (oor_counter > 2)
-      {
-         oor_counter = 0;
-         controller_RI_report_oor();
-      }
-   }
-   static asn1SccT_UInt32 x = 0;
-   asn1SccT_UInt32 accu;
-   asn1SccT_UInt32 rs[COUNT];
+        {
+          oor_counter = 0;
+          controller_RI_report_oor ();
+        }
+    }
+  static asn1SccT_UInt32 x = 0;
+  asn1SccT_UInt32 accu;
+  asn1SccT_UInt32 rs[COUNT];
 
-   for (int i = 0; i < COUNT; i++)
-   {
-      controller_RI_fib(&x, &(rs[i]));
-   }
-   accu = 0;
-   for (int i = COUNT - 1; i >= 0;i--)
-   {
+  for (int i = 0; i < COUNT; i++)
+    {
+      controller_RI_fib (&x, &(rs[i]));
+    }
+  accu = 0;
+  for (int i = COUNT - 1; i >= 0; i--)
+    {
       accu += rs[i];
-   }
+    }
 
-   // Write to volatile variable to avoid optimization
-   dummy_sink = accu;
+  // Write to volatile variable to avoid optimization
+  dummy_sink = accu;
 }
-
-
