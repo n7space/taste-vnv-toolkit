@@ -1,6 +1,7 @@
 import os
 
-from testsharedceedling import get_setting, parse_project_yml, open_path
+from vnvtoolkit import get_setting, open_in_os_viewer, resolve_path
+from testsharedceedling import parse_project_yml
 
 
 html_filename = str(get_setting(settings, "HTML coverage report filename", "GcovCoverageResults.html"))
@@ -17,10 +18,7 @@ else:
     candidate_paths = []
     if output_directory:
         # Resolve output_directory relative to project_directory
-        if os.path.isabs(output_directory):
-            resolved_output = output_directory
-        else:
-            resolved_output = os.path.join(taste_project_directory, output_directory)
+        resolved_output = resolve_path(taste_project_directory, output_directory)
         candidate_paths.append(
             os.path.join(resolved_output, "ceedling-coverage-reports", html_filename)
         )
@@ -36,7 +34,7 @@ else:
         show_status = True
     else:
         try:
-            open_path(report_path)
+            open_in_os_viewer(report_path)
             status = "ok"
             status_text = f"Opened coverage HTML report: {report_path}"
             show_status = False

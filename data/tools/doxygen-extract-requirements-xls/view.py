@@ -1,6 +1,6 @@
 """Display the generated Doxygen requirements tag file."""
 
-from doxygenshared import get_setting
+from vnvtoolkit import get_setting
 import os
 
 

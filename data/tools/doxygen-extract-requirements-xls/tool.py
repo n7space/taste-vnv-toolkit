@@ -1,6 +1,6 @@
 """Extract requirements from Excel file to Doxygen tag file."""
 
-from doxygenshared import get_setting
+from vnvtoolkit import get_setting
 import os
 import xml.etree.ElementTree as ET
 from xml.dom import minidom

@@ -5,15 +5,7 @@ import re
 import struct
 from statistics import mean, median, stdev
 
-
-# ── Settings utilities ────────────────────────────────────────────────────────
-
-def get_setting(settings, name, default_value):
-    """Get a setting value by name, or return default if not found."""
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
+from vnvtoolkit import get_setting, resolve_path, get_project_name
 
 
 # ── Progress reporting ────────────────────────────────────────────────────────
@@ -217,23 +209,3 @@ def format_timestamp(ns):
 def format_duration(ns):
     """Format duration in nanoseconds with ns unit."""
     return f"{ns} ns"
-
-
-# ── Path resolution utilities ─────────────────────────────────────────────────
-
-def resolve_path(base_path, relative_or_absolute_path):
-    """
-    Resolve a path that may be relative or absolute.
-    If absolute, return as-is. If relative, join with base_path.
-    """
-    if os.path.isabs(relative_or_absolute_path):
-        return relative_or_absolute_path
-    else:
-        return os.path.join(base_path, relative_or_absolute_path)
-
-
-def get_project_name(project_directory):
-    """Extract project name from the project directory path."""
-    if not project_directory:
-        return "TASTE"
-    return os.path.basename(os.path.abspath(project_directory))

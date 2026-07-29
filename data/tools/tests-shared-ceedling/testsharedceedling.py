@@ -5,19 +5,11 @@ Shared utilities for Ceedling test tools.
 import os
 import re
 import shutil
-import subprocess
-import sys
+
+from vnvtoolkit import get_setting, resolve_path
 
 
 # ── Settings utilities ────────────────────────────────────────────────────────
-
-def get_setting(settings, name, default_value):
-    """Extract a setting value by name from the settings list."""
-    for setting_name, setting_value in settings:
-        if setting_name == name:
-            return setting_value
-    return default_value
-
 
 def get_ceedling_command(settings):
     """Get the configured ceedling command."""
@@ -89,16 +81,6 @@ def summarize_directory(directory_path):
     return preview
 
 
-def resolve_absolute_path(base_directory, relative_or_absolute_path):
-    """Resolve a path that may be relative or absolute against a base directory."""
-    if os.path.isabs(relative_or_absolute_path):
-        return relative_or_absolute_path
-    else:
-        return os.path.join(base_directory, relative_or_absolute_path)
-
-
-# ── Test execution utilities ──────────────────────────────────────────────────
-
 def build_test_artifacts_directory(project_directory, build_root, test_directory):
     """Build path to test artifacts directory."""
     return os.path.join(project_directory, build_root, "artifacts", test_directory)
@@ -114,7 +96,7 @@ def resolve_test_output_paths(project_directory, build_root, test_directory, out
     if not output_directory:
         raise ValueError("Output directory is not configured")
     
-    resolved_output = resolve_absolute_path(project_directory, output_directory)
+    resolved_output = resolve_path(project_directory, output_directory)
     target_directory = os.path.join(resolved_output, "ceedling-test-reports")
     junit_target = os.path.join(target_directory, junit_filename)
     html_target = os.path.join(target_directory, html_filename)
@@ -157,7 +139,7 @@ def resolve_coverage_output_paths(project_directory, build_root, test_directory,
     if not output_directory:
         raise ValueError("Output directory is not configured")
     
-    resolved_output = resolve_absolute_path(project_directory, output_directory)
+    resolved_output = resolve_path(project_directory, output_directory)
     target_directory = os.path.join(resolved_output, "ceedling-coverage-reports")
     html_target = os.path.join(target_directory, html_filename)
     
@@ -180,25 +162,3 @@ def format_missing_coverage_report_error(expected_path, artifacts_directory, com
         " This tool expects the default gcovr HTML artifact name and output location produced by the init tool."
     )
     return message
-
-
-# ── View utilities ────────────────────────────────────────────────────────────
-
-def open_path(path):
-    """Open a file or directory using the system default application."""
-    if sys.platform.startswith("win"):
-        os.startfile(path)
-        return
-
-    command = ["open", path] if sys.platform == "darwin" else ["xdg-open", path]
-    subprocess.Popen(
-        command,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-
-def open_directory(directory_path):
-    """Open a directory using the system file manager."""
-    open_path(directory_path)

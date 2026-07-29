@@ -12,3 +12,13 @@ The toolkit loads a set of tools from the directory defined in its options, and 
 - to execute the tool.
 
 Tools can be defined and modified by the users to suit their needs and toolchains. 
+
+
+## Built-in tools
+
+### Clang-Format
+
+Executes code style validation according to project specfic settings.
+
+Prerequisites:
+    * clang-format 

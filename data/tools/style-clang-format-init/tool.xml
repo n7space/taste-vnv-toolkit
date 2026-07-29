@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Initialize Clang-Format configuration</Name>
+  <Group>Code Style</Group>
+  <Hint>Initialize Clang-Format style options configuration file for the project</Hint>
+  <Description>Creates a .clang-format configuration based on style pre-selected by the user.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+    <Path>../clang-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Clang-Format command</Name>
+      <Type>String</Type>
+      <Default>clang-format</Default>
+    </Setting>
+    <Setting>
+      <Name>Base style</Name>
+      <Type>String</Type>
+      <Default>GNU</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

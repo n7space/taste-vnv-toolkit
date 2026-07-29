@@ -1,6 +1,6 @@
 import os
 
-from testsharedceedling import get_setting, open_directory
+from vnvtoolkit import get_setting, open_in_os_viewer
 
 
 # ── resolve settings ──────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ else:
         show_status = True
     else:
         try:
-            open_directory(tests_path)
+            open_in_os_viewer(tests_path)
             status = "ok"
             status_text = f"Opened tests directory: {tests_path}"
             show_status = False

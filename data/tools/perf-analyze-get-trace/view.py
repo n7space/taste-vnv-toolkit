@@ -1,9 +1,7 @@
 """Display information about the downloaded performance trace file."""
 
 import os
-from perfanalyzeshared import (
-    get_setting,
-)
+from vnvtoolkit import get_setting
 
 
 # ── Resolve settings ──────────────────────────────────────────────────────────

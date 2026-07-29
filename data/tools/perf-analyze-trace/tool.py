@@ -3,8 +3,8 @@
 import os
 from datetime import datetime
 
+from vnvtoolkit import get_setting
 from perfanalyzeshared import (
-    get_setting,
     emit_progress,
     parse_interfaces_enum,
     parse_miab_file,
@@ -503,10 +503,7 @@ else:
         
         # Determine output path
         if output_directory:
-            if os.path.isabs(output_directory):
-                resolved_output = output_directory
-            else:
-                resolved_output = os.path.join(taste_project_directory, output_directory)
+            resolved_output = resolve_path(taste_project_directory, output_directory)
         else:
             resolved_output = os.path.join(taste_project_directory, "output")
         

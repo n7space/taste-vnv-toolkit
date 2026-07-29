@@ -11,13 +11,12 @@
 
 /**
  * @file Utilities
- * 
+ *
  */
 
-
-void utilities_startup(void)
+void
+utilities_startup (void)
 {
-
 }
 
 /**
@@ -25,42 +24,39 @@ void utilities_startup(void)
  * @param IN_p Pointer to input parameter (n-th position in Fibonacci sequence)
  * @param OUT_r Pointer to output parameter (result of Fibonacci calculation)
  * @return void
- * 
+ *
  * @satisfies DEMO-FUN-UTILS-001
- * 
+ *
  * Computes the Fibonacci number at position n using an iterative approach.
  * Base cases: fib(0) = 0, fib(1) = 1
  */
-void utilities_PI_fib
-      (const asn1SccT_UInt32 *IN_p,
-       asn1SccT_UInt32 *OUT_r)
+void
+utilities_PI_fib (const asn1SccT_UInt32 *IN_p, asn1SccT_UInt32 *OUT_r)
 
 {
-    switch (*IN_p)
+  switch (*IN_p)
     {
     case 0:
-        *OUT_r = 0;
-        return;
+      *OUT_r = 0;
+      return;
     case 1:
-        *OUT_r = 1;
-        return;
+      *OUT_r = 1;
+      return;
     default:
-        {
-            uint32_t x1 = 0;
-            uint32_t x2 = 1;
-            uint32_t r;
-            for (uint32_t i = 2; i <= *IN_p; i++)
-            {
-                r = x1 + x2;
-                x1 = x2;
-                x2 = r;
-            }
-            *OUT_r = r;
-        }
+      {
+        uint32_t x1 = 0;
+        uint32_t x2 = 1;
+        uint32_t r;
+        for (uint32_t i = 2; i <= *IN_p; i++)
+          {
+            r = x1 + x2;
+            x1 = x2;
+            x2 = r;
+          }
+        *OUT_r = r;
+      }
     }
 }
-
-
 
 /**
  * @brief Multiplies two floating-point numbers
@@ -68,18 +64,15 @@ void utilities_PI_fib
  * @param IN_b Pointer to second input parameter (multiplier)
  * @param OUT_r Pointer to output parameter (result of multiplication)
  * @return void
- * 
+ *
  * @satisfies DEMO-FUN-UTILS-002
- * 
+ *
  * Performs multiplication of two 32-bit floating-point values.
  */
-void utilities_PI_mulf
-      (const asn1SccFloat32 *IN_a,
-       const asn1SccFloat32 *IN_b,
-       asn1SccFloat32 *OUT_r)
+void
+utilities_PI_mulf (const asn1SccFloat32 *IN_a, const asn1SccFloat32 *IN_b,
+                   asn1SccFloat32 *OUT_r)
 
 {
-    *OUT_r = *IN_a * *IN_b;
+  *OUT_r = *IN_a * *IN_b;
 }
-
-

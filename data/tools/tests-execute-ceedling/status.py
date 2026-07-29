@@ -1,7 +1,8 @@
 import os
 import shutil
 
-from testsharedceedling import get_setting, parse_project_yml
+from vnvtoolkit import get_setting
+from testsharedceedling import parse_project_yml
 
 BUILD_ROOT = "build"
 JUNIT_FILENAME = "junit_tests_report.xml"

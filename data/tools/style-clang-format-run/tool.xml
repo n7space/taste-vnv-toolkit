@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Execute Clang-Format style check</Name>
+  <Group>Code Style</Group>
+  <Hint>Execute Clang-Format to check code style in the project</Hint>
+  <Description>Uses project-wide settings from .clang-format to verify code compliance to the code style.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+    <Path>../clang-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Clang-Format command</Name>
+      <Type>String</Type>
+      <Default>clang-format</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>
