@@ -10,6 +10,7 @@
 #include "datapool.h"
 
 #define VALUE_COUNT (2)
+#define bad_name "X"
 
 asn1SccParameterValue values[VALUE_COUNT];
 

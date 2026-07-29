@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Initialize Clang-Tidy naming configuration</Name>
+  <Group>Code Style (naming)</Group>
+  <Hint>Initialize Clang-Tidy configuration file for the code style of the project</Hint>
+  <Description>Creates a .clang-tidy.style file optimized for C/C++ TASTE projects.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+    <Path>../clang-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Clang-Tidy command</Name>
+      <Type>String</Type>
+      <Default>clang-tidy</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>
