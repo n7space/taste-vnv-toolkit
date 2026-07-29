@@ -22,3 +22,10 @@ Executes code style validation according to project specfic settings.
 
 Prerequisites:
     * clang-format 
+
+### Clang-Tidy naming check
+
+Executes code naming style validation according to project specfic settings.
+
+Prerequisites:
+    * clang-tidy 

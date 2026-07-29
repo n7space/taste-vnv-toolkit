@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Execute Clang-Tidy naming check</Name>
+  <Group>Code Style</Group>
+  <Hint>Execute Clang-Tidy to check naming conventions in the project</Hint>
+  <Description>Uses project-wide settings from .clang-tidy.style to verify code compliance to naming conventions.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+    <Path>../clang-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Clang-Tidy command</Name>
+      <Type>String</Type>
+      <Default>clang-tidy</Default>
+    </Setting>
+    <Setting>
+      <Name>Clang-Tidy include paths</Name>
+      <Type>String</Type>
+      <Default>work/dataview/C</Default>
+    </Setting>
+    <Setting>
+      <Name>Clang-Tidy defines</Name>
+      <Type>String</Type>
+      <Default></Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

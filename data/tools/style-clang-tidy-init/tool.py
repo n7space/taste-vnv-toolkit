@@ -16,13 +16,185 @@ CheckOptions:
     value: CamelCase
 
   - key: readability-identifier-naming.FunctionCase
-    value: camelBack
+    value: lower_case
+
+  - key: readability-identifier-naming.FunctionIgnoredRegexp
+    value: ^[a-z_][a-z0-9_]*_(startup|(PI|RI)_[A-Za-z_][A-Za-z0-9_]*)$
 
   - key: readability-identifier-naming.VariableCase
-    value: lower_case
+    value: camelBack
 
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: m_
+
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.EnumConstantCase
+    value: Camel_Snake_Case
+
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.AbstractClassCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.UnionCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.TypedefCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.TypeAliasCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.ConceptCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.ScopedEnumConstantCase
+    value: Camel_Snake_Case
+
+  - key: readability-identifier-naming.GlobalFunctionCase
+    value: lower_case
+
+  - key: readability-identifier-naming.GlobalFunctionIgnoredRegexp
+    value: ^[a-z_][a-z0-9_]*_(startup|(PI|RI)_[A-Za-z_][A-Za-z0-9_]*)$
+
+  - key: readability-identifier-naming.ConstexprFunctionCase
+    value: lower_case
+
+  - key: readability-identifier-naming.MethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.ConstexprMethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.ClassMethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.PrivateMethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.ProtectedMethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.PublicMethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.VirtualMethodCase
+    value: lower_case
+
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+
+  - key: readability-identifier-naming.InlineNamespaceCase
+    value: lower_case
+
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.TypeTemplateParameterCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.TemplateTemplateParameterCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.ValueTemplateParameterCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.ParameterPackCase
+    value: lower_case
+
+  - key: readability-identifier-naming.LocalVariableCase
+    value: lower_case
+
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: lower_case
+
+  - key: readability-identifier-naming.StaticVariableCase
+    value: lower_case
+
+  - key: readability-identifier-naming.GlobalPointerCase
+    value: lower_case
+
+  - key: readability-identifier-naming.LocalPointerCase
+    value: lower_case
+
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+
+  - key: readability-identifier-naming.ClassMemberCase
+    value: camelBack
+
+  - key: readability-identifier-naming.PublicMemberCase
+    value: camelBack
+
+  - key: readability-identifier-naming.ProtectedMemberCase
+    value: camelBack
+
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: camelBack
+
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.LocalConstantCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.ClassConstantCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.ConstantMemberCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.ConstexprVariableCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.GlobalConstexprVariableCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.LocalConstexprVariableCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.StaticConstexprVariableCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.ClassConstexprCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.GlobalConstantPointerCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.LocalConstantPointerCase
+    value: UPPER_CASE
+
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+
+  - key: readability-identifier-naming.ParameterIgnoredRegexp
+    value: ^(IN|OUT)_[a-zA-Z0=9_]+$
+
+  - key: readability-identifier-naming.PointerParameterCase
+    value: lower_case
+
+  - key: readability-identifier-naming.PointerParameterIgnoredRegexp
+    value: ^(IN|OUT)_[a-zA-Z0=9_]+$
+
+  - key: readability-identifier-naming.ConstantParameterCase
+    value: lower_case
+
+  - key: readability-identifier-naming.ConstantPointerParameterCase
+    value: lower_case
+
 """
 
 
