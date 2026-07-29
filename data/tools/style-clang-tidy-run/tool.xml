@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ToolDefinition>
   <Name>Execute Clang-Tidy naming check</Name>
-  <Group>Code Style</Group>
+  <Group>Code Style (naming)</Group>
   <Hint>Execute Clang-Tidy to check naming conventions in the project</Hint>
   <Description>Uses project-wide settings from .clang-tidy.style to verify code compliance to naming conventions.</Description>
   <StatusScript>status.py</StatusScript>

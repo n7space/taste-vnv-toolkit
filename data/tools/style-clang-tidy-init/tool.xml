@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ToolDefinition>
   <Name>Initialize Clang-Tidy naming configuration</Name>
-  <Group>Code Style</Group>
+  <Group>Code Style (naming)</Group>
   <Hint>Initialize Clang-Tidy configuration file for the code style of the project</Hint>
   <Description>Creates a .clang-tidy.style file optimized for C/C++ TASTE projects.</Description>
   <StatusScript>status.py</StatusScript>
