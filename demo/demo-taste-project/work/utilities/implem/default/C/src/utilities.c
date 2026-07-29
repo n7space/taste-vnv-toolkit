@@ -46,7 +46,7 @@ utilities_PI_fib (const asn1SccT_UInt32 *IN_p, asn1SccT_UInt32 *OUT_r)
       {
         uint32_t x1 = 0;
         uint32_t x2 = 1;
-        uint32_t r;
+        uint32_t r = 0;
         for (uint32_t i = 2; i <= *IN_p; i++)
           {
             r = x1 + x2;

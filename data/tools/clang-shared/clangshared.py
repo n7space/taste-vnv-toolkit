@@ -91,6 +91,26 @@ def check_clang_style_file_exists(file_path):
     return True, None
 
 
+def get_clang_tidy_analysis_file_path(project_directory):
+    """Get the path to the .clang-tidy configuration file in the project directory."""
+    return os.path.join(project_directory, ".clang-tidy") if project_directory else ""
+
+
+def check_clang_tidy_analysis_file_exists(file_path):
+    """
+    Check if .clang-tidy exists.
+    Returns (exists: bool, error_message: str or None).
+    """
+    if not file_path:
+        return False, "Project directory is not configured"
+    if not os.path.isfile(file_path):
+        return (
+            False,
+            f".clang-tidy not found: {file_path}\nRun the 'Initialize Clang-Tidy analysis configuration' tool first.",
+        )
+    return True, None
+
+
 # ── Source file enumeration ───────────────────────────────────────────────────
 
 SOURCE_EXTENSIONS = (".c", ".cpp", ".cc", ".h", ".hpp", ".hh")
@@ -128,6 +148,73 @@ def strip_trailing_bracket_suffix(message):
     reduces visual noise in the report.
     """
     return re.sub(r"\s*\[[^\]]+\]\s*$", "", message)
+
+
+def extract_trailing_bracket_suffix(message):
+    """Extract the trailing bracketed check name from a diagnostic message.
+
+    Returns (clean_message, check_name) where check_name is the content inside
+    the final brackets (e.g. 'readability-magic-numbers'), or None if absent.
+    """
+    match = re.search(r"\s*\[([^\]]+)\]\s*$", message)
+    if match:
+        check_name = match.group(1)
+        clean_message = message[: match.start()]
+        return clean_message, check_name
+    return message, None
+
+
+# ── Check name categorisation ─────────────────────────────────────────────────
+
+_CHECK_CATEGORY_PREFIXES = [
+    ("clang-analyzer-security", "security"),
+    ("clang-analyzer-core.uninitialized", "best-practice"),
+    ("clang-analyzer-deadcode", "quality"),
+    ("clang-analyzer", "quality"),
+    ("cert-", "security"),
+    ("cppcoreguidelines-pro-bounds", "security"),
+    ("cppcoreguidelines-init-variables", "best-practice"),
+    ("cppcoreguidelines-", "best-practice"),
+    ("bugprone-not-null-terminated", "security"),
+    ("bugprone-suspicious-string", "security"),
+    ("bugprone-", "quality"),
+    ("readability-function-size", "quality"),
+    ("readability-magic-numbers", "best-practice"),
+    ("readability-", "best-practice"),
+    ("misc-const-correctness", "best-practice"),
+    ("misc-unused-parameters", "quality"),
+    ("misc-", "quality"),
+]
+
+_CATEGORY_COLORS = {
+    "quality": ("#1a4a8a", "#ddeeff"),
+    "security": ("#7a0000", "#ffe0e0"),
+    "best-practice": ("#2a6a00", "#e0f5d0"),
+    "other": ("#555555", "#f0f0f0"),
+}
+
+
+def get_check_category(check_name):
+    """Return the category string for a given clang-tidy check name."""
+    if not check_name:
+        return "other"
+    for prefix, category in _CHECK_CATEGORY_PREFIXES:
+        if check_name.startswith(prefix):
+            return category
+    return "other"
+
+
+def render_check_badge(check_name):
+    """Render a small HTML badge for the given clang-tidy check name."""
+    if not check_name:
+        return ""
+    category = get_check_category(check_name)
+    fg, bg = _CATEGORY_COLORS.get(category, _CATEGORY_COLORS["other"])
+    return (
+        f"<span class=\"check-badge check-badge-{html.escape(category)}\" "
+        f"title=\"Category: {html.escape(category)}\">"
+        f"{html.escape(check_name)}</span>"
+    )
 
 
 # ── HTML report scaffold ──────────────────────────────────────────────────────
@@ -173,6 +260,11 @@ tr.ok { background-color: #e5ffe5; }
 .issue-title { font-size: 0.9rem; font-weight: 700; color: #555; margin-bottom: 4px; }
 .issue-message { margin-bottom: 8px; }
 .issue-snippet { white-space: pre-wrap; margin: 0; padding: 10px; background: #f8f8f8; border-radius: 6px; border: 1px solid #eee; }
+.check-badge { display: inline-block; font-size: 0.75rem; font-family: monospace; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; font-weight: 600; }
+.check-badge-quality { color: #1a4a8a; background: #ddeeff; border: 1px solid #aaccee; }
+.check-badge-security { color: #7a0000; background: #ffe0e0; border: 1px solid #ffaaaa; }
+.check-badge-best-practice { color: #2a6a00; background: #e0f5d0; border: 1px solid #99dd77; }
+.check-badge-other { color: #555555; background: #f0f0f0; border: 1px solid #cccccc; }
 """
 
 
@@ -244,6 +336,109 @@ def render_style_report_html(
     if success_rows_html:
         report += f"""
 <h2>Code Style ({html.escape(category_label)}) verified</h2>
+<table>
+<thead><tr><th>File</th><th>Summary</th></tr></thead>
+<tbody>
+{success_rows_html}
+</tbody>
+</table>
+"""
+
+    report += """
+</body>
+</html>
+"""
+    return report
+
+
+def render_analysis_report_html(
+    project_name,
+    generated_at,
+    total_files,
+    files_with_issues,
+    total_issues,
+    failure_rows_html,
+    success_rows_html,
+    check_summary_rows_html,
+):
+    """Render a full HTML static-analysis report page.
+
+    Unlike the style report, the analysis report shows check-name badges per
+    issue and includes an optional 'Issues by check' breakdown table.
+
+    Args:
+        project_name: The project name shown in the title and heading.
+        generated_at: Timestamp string to show under the heading.
+        total_files: Total number of source files processed.
+        files_with_issues: Number of files with at least one finding.
+        total_issues: Total number of individual findings across all files.
+        failure_rows_html: Pre-rendered HTML rows for files with issues.
+        success_rows_html: Pre-rendered HTML rows for clean files.
+        check_summary_rows_html: Pre-rendered HTML rows for the per-check breakdown
+            table (may be empty string to omit the section).
+    """
+    files_without_issues = total_files - files_with_issues
+    issue_percent = (files_with_issues / total_files * 100) if total_files else 0
+    ok_percent = (files_without_issues / total_files * 100) if total_files else 0
+
+    report = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{html.escape(project_name)} Static Analysis Report</title>
+<style>{_REPORT_CSS}</style>
+<script>{_TOGGLE_SCRIPT}</script>
+</head>
+<body>
+<h1>{html.escape(project_name)} Static Analysis Report</h1>
+<p>Generated {html.escape(generated_at)}</p>
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">Processed files</div>
+    <div class="stat-value">{total_files}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Clean files</div>
+    <div class="stat-value">{files_without_issues}</div>
+    <div class="stat-meta">{ok_percent:.1f}%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Files with issues</div>
+    <div class="stat-value">{files_with_issues}</div>
+    <div class="stat-meta">{issue_percent:.1f}%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total findings</div>
+    <div class="stat-value">{total_issues}</div>
+  </div>
+</div>
+"""
+
+    if check_summary_rows_html:
+        report += f"""
+<h2>Issues by check</h2>
+<table>
+<thead><tr><th>Check</th><th>Category</th><th>Count</th></tr></thead>
+<tbody>
+{check_summary_rows_html}
+</tbody>
+</table>
+"""
+
+    if failure_rows_html:
+        report += f"""
+<h2>Files with issues</h2>
+<table>
+<thead><tr><th>File</th><th>Summary</th></tr></thead>
+<tbody>
+{failure_rows_html}
+</tbody>
+</table>
+"""
+
+    if success_rows_html:
+        report += f"""
+<h2>Clean files</h2>
 <table>
 <thead><tr><th>File</th><th>Summary</th></tr></thead>
 <tbody>
