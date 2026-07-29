@@ -8,14 +8,14 @@ from datetime import datetime
 from clangshared import (
     build_clang_tidy_extra_args,
     enumerate_source_files,
+    extract_trailing_bracket_suffix,
     get_check_category,
     get_clang_tidy_analysis_file_path,
     get_clang_tidy_command,
     get_clang_tidy_defines,
     get_clang_tidy_include_paths,
-    extract_trailing_bracket_suffix,
-    render_check_badge,
     render_analysis_report_html,
+    render_check_badge,
 )
 from vnvtoolkit import (
     get_interface_view_path,
@@ -30,7 +30,9 @@ def emit_progress(value):
         report_progress(value)
 
 
-def check_file_analysis(tidy_command, config_path, extra_args, project_directory, source_file):
+def check_file_analysis(
+    tidy_command, config_path, extra_args, project_directory, source_file
+):
     """Runs clang-tidy on a single file and returns (has_issues, issues).
 
     Only issues originating from source_file itself are returned — diagnostics
@@ -38,7 +40,14 @@ def check_file_analysis(tidy_command, config_path, extra_args, project_directory
     with the check name extracted from the trailing bracketed suffix.
     """
     completed = subprocess.run(
-        [tidy_command, f"--config-file={config_path}", "--quiet", *extra_args, source_file, "--"],
+        [
+            tidy_command,
+            f"--config-file={config_path}",
+            "--quiet",
+            *extra_args,
+            source_file,
+            "--",
+        ],
         cwd=project_directory,
         capture_output=True,
         text=True,
@@ -99,15 +108,15 @@ def render_analysis_issues_html(issues):
         body_html = ""
         if issue["body"]:
             body_html = (
-                "<pre class=\"issue-snippet\">"
+                '<pre class="issue-snippet">'
                 f"{html.escape(os.linesep.join(issue['body']))}"
                 "</pre>"
             )
         severity_label = issue["severity"].capitalize()
         badge_html = render_check_badge(issue.get("check"))
         rendered_issues.append(
-            "<div class=\"issue-block\">"
-            f"<div class=\"issue-title\">{html.escape(severity_label)} — "
+            '<div class="issue-block">'
+            f'<div class="issue-title">{html.escape(severity_label)} — '
             f"Line {html.escape(issue['line'])}, col {html.escape(issue['column'])}"
             f"{badge_html}</div>"
             f"<div class=\"issue-message\">{html.escape(issue['message'])}</div>"
@@ -117,7 +126,7 @@ def render_analysis_issues_html(issues):
 
     if not rendered_issues:
         rendered_issues.append(
-            "<div class=\"issue-block issue-block-empty\">No analysis details available.</div>"
+            '<div class="issue-block issue-block-empty">No analysis details available.</div>'
         )
 
     return "".join(rendered_issues)
@@ -130,19 +139,16 @@ def render_analysis_report_row(project_directory, source_file, has_issues, issue
         issue_count = len(issues)
         details_html = render_analysis_issues_html(issues)
         return (
-            f"<tr class=\"summary-row issue\" data-summary-row=\"true\">"
-            f"<td><span class=\"toggle-marker\">+</span> {html.escape(rel_path)}</td>"
+            f'<tr class="summary-row issue" data-summary-row="true">'
+            f'<td><span class="toggle-marker">+</span> {html.escape(rel_path)}</td>'
             f"<td>Issues found ({issue_count})</td>"
             "</tr>"
-            "<tr class=\"details-row issue\">"
-            f"<td colspan=\"2\">{details_html}</td>"
+            '<tr class="details-row issue">'
+            f'<td colspan="2">{details_html}</td>'
             "</tr>"
         )
     return (
-        f"<tr class=\"ok\">"
-        f"<td>{html.escape(rel_path)}</td>"
-        "<td>Clean</td>"
-        "</tr>"
+        f'<tr class="ok">' f"<td>{html.escape(rel_path)}</td>" "<td>Clean</td>" "</tr>"
     )
 
 
@@ -235,7 +241,11 @@ else:
         total_files = len(source_files)
         for index, source_file in enumerate(source_files):
             has_issues, issues = check_file_analysis(
-                tidy_command, config_path, extra_args, taste_project_directory, source_file
+                tidy_command,
+                config_path,
+                extra_args,
+                taste_project_directory,
+                source_file,
             )
             results.append((source_file, has_issues, issues))
 

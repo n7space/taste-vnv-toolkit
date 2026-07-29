@@ -1,12 +1,12 @@
 import subprocess
 
-from clangshared import get_clang_tidy_command, get_clang_style_file_path
-from vnvtoolkit import get_setting
+from clangshared import get_clang_style_file_path
 
 
 def emit_progress(value):
     if "report_progress" in globals():
         report_progress(value)
+
 
 __DEFAULT_STYLE = """
 Checks: '-*,readability-identifier-naming'

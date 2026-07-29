@@ -27,7 +27,9 @@ def emit_progress(value):
         report_progress(value)
 
 
-def check_file_naming(tidy_command, config_path, extra_args, project_directory, source_file):
+def check_file_naming(
+    tidy_command, config_path, extra_args, project_directory, source_file
+):
     """Runs clang-tidy on a single file and returns (has_issues, issues).
 
     Only issues originating from source_file itself are returned — diagnostics
@@ -35,7 +37,14 @@ def check_file_naming(tidy_command, config_path, extra_args, project_directory, 
     such filtered issues exist, not by the process exit code.
     """
     completed = subprocess.run(
-        [tidy_command, f"--config-file={config_path}", "--quiet", *extra_args, source_file, "--"],
+        [
+            tidy_command,
+            f"--config-file={config_path}",
+            "--quiet",
+            *extra_args,
+            source_file,
+            "--",
+        ],
         cwd=project_directory,
         capture_output=True,
         text=True,
@@ -92,14 +101,14 @@ def render_issues_html(issues):
         body_html = ""
         if issue["body"]:
             body_html = (
-                "<pre class=\"issue-snippet\">"
+                '<pre class="issue-snippet">'
                 f"{html.escape(os.linesep.join(issue['body']))}"
                 "</pre>"
             )
         severity_label = issue["severity"].capitalize()
         rendered_issues.append(
-            "<div class=\"issue-block\">"
-            f"<div class=\"issue-title\">{html.escape(severity_label)} — "
+            '<div class="issue-block">'
+            f'<div class="issue-title">{html.escape(severity_label)} — '
             f"Line {html.escape(issue['line'])}, col {html.escape(issue['column'])}</div>"
             f"<div class=\"issue-message\">{html.escape(issue['message'])}</div>"
             f"{body_html}"
@@ -108,7 +117,7 @@ def render_issues_html(issues):
 
     if not rendered_issues:
         rendered_issues.append(
-            "<div class=\"issue-block issue-block-empty\">No naming details available.</div>"
+            '<div class="issue-block issue-block-empty">No naming details available.</div>'
         )
 
     return "".join(rendered_issues)
@@ -125,16 +134,16 @@ def render_report_row(project_directory, source_file, has_issues, issues):
         issue_count = len(issues)
         details_html = render_issues_html(issues)
         return (
-            f"<tr class=\"summary-row issue\" data-summary-row=\"true\">"
-            f"<td><span class=\"toggle-marker\">+</span> {html.escape(rel_path)}</td>"
+            f'<tr class="summary-row issue" data-summary-row="true">'
+            f'<td><span class="toggle-marker">+</span> {html.escape(rel_path)}</td>'
             f"<td>Issues found ({issue_count})</td>"
             "</tr>"
-            "<tr class=\"details-row issue\">"
-            f"<td colspan=\"2\">{details_html}</td>"
+            '<tr class="details-row issue">'
+            f'<td colspan="2">{details_html}</td>'
             "</tr>"
         )
     return (
-        f"<tr class=\"ok\">"
+        f'<tr class="ok">'
         f"<td>{html.escape(rel_path)}</td>"
         "<td>Verified</td>"
         "</tr>"
@@ -205,7 +214,11 @@ else:
         total_files = len(source_files)
         for index, source_file in enumerate(source_files):
             has_issues, issues_output = check_file_naming(
-                tidy_command, config_path, extra_args, taste_project_directory, source_file
+                tidy_command,
+                config_path,
+                extra_args,
+                taste_project_directory,
+                source_file,
             )
             results.append((source_file, has_issues, issues_output))
 

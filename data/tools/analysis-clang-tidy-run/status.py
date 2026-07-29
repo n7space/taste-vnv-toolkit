@@ -20,6 +20,4 @@ else:
             status = "error"
             status_text = error_message
         else:
-            status_text = (
-                f"Ready to generate static analysis report using {file_path}"
-            )
+            status_text = f"Ready to generate static analysis report using {file_path}"
