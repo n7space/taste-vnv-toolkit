@@ -3,7 +3,7 @@
   <Name>Initialize Clang-Tidy analysis configuration</Name>
   <Group>Static Analysis (Clang-Tidy)</Group>
   <Hint>Initialize Clang-Tidy configuration file for static analysis of the project</Hint>
-  <Description>Creates a .clang-tidy file with checks covering code quality metrics (function size, dead code, loop pitfalls, goto avoidance), code security rules (insecure APIs, buffer overflows, dangling pointers, memory issues, unchecked return values, non-reentrant calls), and code best practices (magic numbers, const correctness, initialization, macro safety, switch completeness, heap allocation avoidance). Key thresholds are configurable via settings. Note: the 'cppcoreguidelines-no-malloc' check (enabled by default in the best-practice theme) may produce false positives on ASN.1/PolyORB-generated TASTE glue code that legitimately uses heap allocation — use // NOLINT suppressions or disable the best-practice theme to reduce noise if needed.</Description>
+  <Description>Creates a .clang-tidy file with checks covering code quality metrics (function size, dead code, loop pitfalls, goto avoidance), code security rules (insecure APIs, buffer overflows, dangling pointers, memory issues, unchecked return values, non-reentrant calls), and code best practices (magic numbers, const correctness, initialization, macro safety, switch completeness, heap allocation avoidance). Key thresholds are configurable via settings.</Description>
   <StatusScript>status.py</StatusScript>
   <ToolScript>tool.py</ToolScript>
   <ViewScript>view.py</ViewScript>
