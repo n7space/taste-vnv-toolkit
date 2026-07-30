@@ -18,6 +18,22 @@ def get_setting(settings, name, default_value):
     return default_value
 
 
+def get_bool_setting(settings, name, default):
+    """Get a boolean setting value by name, coercing strings to bool."""
+    val = get_setting(settings, name, default)
+    if isinstance(val, bool):
+        return val
+    return str(val).strip().lower() in ("true", "1", "yes")
+
+
+def get_int_setting(settings, name, default):
+    """Get an integer setting value by name, returning default on parse failure."""
+    try:
+        return int(get_setting(settings, name, default))
+    except (TypeError, ValueError):
+        return default
+
+
 # ── Project helpers ───────────────────────────────────────────────────────────
 
 

@@ -1,24 +1,10 @@
 from clangshared import get_clang_tidy_analysis_file_path
-from vnvtoolkit import get_setting
+from vnvtoolkit import get_bool_setting, get_int_setting, get_setting
 
 
 def emit_progress(value):
     if "report_progress" in globals():
         report_progress(value)
-
-
-def _get_bool(settings, name, default):
-    val = get_setting(settings, name, default)
-    if isinstance(val, bool):
-        return val
-    return str(val).strip().lower() in ("true", "1", "yes")
-
-
-def _get_int(settings, name, default):
-    try:
-        return int(get_setting(settings, name, default))
-    except (TypeError, ValueError):
-        return default
 
 
 def _build_checks(enable_quality, enable_security, enable_best_practice):
@@ -163,16 +149,18 @@ else:
     try:
         emit_progress(10)
 
-        enable_quality = _get_bool(settings, "Enable code quality checks", True)
-        enable_security = _get_bool(settings, "Enable code security checks", True)
-        enable_best_practice = _get_bool(
+        enable_quality = get_bool_setting(settings, "Enable code quality checks", True)
+        enable_security = get_bool_setting(
+            settings, "Enable code security checks", True
+        )
+        enable_best_practice = get_bool_setting(
             settings, "Enable code best practice checks", True
         )
-        max_lines = _get_int(settings, "Function max lines", 80)
-        max_statements = _get_int(settings, "Function max statements", 40)
-        max_branches = _get_int(settings, "Function max branches", 10)
-        max_params = _get_int(settings, "Function max parameters", 8)
-        max_nesting = _get_int(settings, "Max nesting depth", 5)
+        max_lines = get_int_setting(settings, "Function max lines", 80)
+        max_statements = get_int_setting(settings, "Function max statements", 40)
+        max_branches = get_int_setting(settings, "Function max branches", 10)
+        max_params = get_int_setting(settings, "Function max parameters", 8)
+        max_nesting = get_int_setting(settings, "Max nesting depth", 5)
         magic_ignored_raw = str(
             get_setting(settings, "Magic number ignored values", "0;1;2")
         )
