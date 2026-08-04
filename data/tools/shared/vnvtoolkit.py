@@ -87,6 +87,14 @@ def get_function_impl_path(project_directory, function_name, language="C"):
     return impl_dir
 
 
+def check_build_dir_present(project_directory):
+    """Checks if the project was built (build directory is present)"""
+    work = os.path.join(project_directory, "work", "build")
+    if not os.path.isdir(work):
+        return "error", "Project build directory missing"
+    return "ok", "Project build directory found"
+
+
 # ── Commands helpers ──────────────────────────────────────────────────────────
 
 
