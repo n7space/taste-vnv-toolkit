@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Initialize Clang-Tidy analysis configuration</Name>
+  <Group>Static Analysis (Clang-Tidy)</Group>
+  <Hint>Initialize Clang-Tidy configuration file for static analysis of the project</Hint>
+  <Description>Creates a .clang-tidy file with checks covering code quality metrics (function size, dead code, loop pitfalls, goto avoidance), code security rules (insecure APIs, buffer overflows, dangling pointers, memory issues, unchecked return values, non-reentrant calls), and code best practices (magic numbers, const correctness, initialization, macro safety, switch completeness, heap allocation avoidance). Key thresholds are configurable via settings.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+    <Path>../clang-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Clang-Tidy command</Name>
+      <Type>String</Type>
+      <Default>clang-tidy</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable code quality checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable code security checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable code best practice checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Function max lines</Name>
+      <Type>Int</Type>
+      <Default>80</Default>
+    </Setting>
+    <Setting>
+      <Name>Function max statements</Name>
+      <Type>Int</Type>
+      <Default>40</Default>
+    </Setting>
+    <Setting>
+      <Name>Function max branches</Name>
+      <Type>Int</Type>
+      <Default>10</Default>
+    </Setting>
+    <Setting>
+      <Name>Function max parameters</Name>
+      <Type>Int</Type>
+      <Default>8</Default>
+    </Setting>
+    <Setting>
+      <Name>Max nesting depth</Name>
+      <Type>Int</Type>
+      <Default>5</Default>
+    </Setting>
+    <Setting>
+      <Name>Magic number ignored values</Name>
+      <Type>String</Type>
+      <Default>0;1;2</Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>
