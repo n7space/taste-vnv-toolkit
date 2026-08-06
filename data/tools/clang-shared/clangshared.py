@@ -1,8 +1,10 @@
 """Shared utilities for Clang tools."""
 
 import html
+import json
 import os
 import re
+import subprocess
 from datetime import datetime
 
 from vnvtoolkit import get_function_impl_path, get_setting
@@ -265,6 +267,8 @@ tr.ok { background-color: #e5ffe5; }
 .check-badge-security { color: #7a0000; background: #ffe0e0; border: 1px solid #ffaaaa; }
 .check-badge-best-practice { color: #2a6a00; background: #e0f5d0; border: 1px solid #99dd77; }
 .check-badge-other { color: #555555; background: #f0f0f0; border: 1px solid #cccccc; }
+.sarif-link { display: inline-block; margin: 0.5rem 0 1rem; padding: 8px 16px; background: #1a4a8a; color: #fff; text-decoration: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; }
+.sarif-link:hover { background: #123a6e; }
 """
 
 
@@ -360,6 +364,8 @@ def render_analysis_report_html(
     failure_rows_html,
     success_rows_html,
     check_summary_rows_html,
+    tool_version=None,
+    sarif_filename=None,
 ):
     """Render a full HTML static-analysis report page.
 
@@ -376,10 +382,26 @@ def render_analysis_report_html(
         success_rows_html: Pre-rendered HTML rows for clean files.
         check_summary_rows_html: Pre-rendered HTML rows for the per-check breakdown
             table (may be empty string to omit the section).
+        tool_version: Optional clang-tidy version string (see
+            get_clang_tidy_version); appended inline to the "Generated" line when provided.
+        sarif_filename: Optional filename of the SARIF report generated
+            alongside this HTML report. Assumed to live in the same output
+            directory, so it's rendered as a relative download link.
     """
     files_without_issues = total_files - files_with_issues
     issue_percent = (files_with_issues / total_files * 100) if total_files else 0
     ok_percent = (files_without_issues / total_files * 100) if total_files else 0
+
+    version_suffix = ""
+    if tool_version:
+        version_suffix = f" using Clang-Tidy {html.escape(tool_version)}"
+
+    sarif_link_html = ""
+    if sarif_filename:
+        sarif_link_html = (
+            f'<a class="sarif-link" href="{html.escape(sarif_filename)}" download>'
+            "Download SARIF report</a>"
+        )
 
     report = f"""<!DOCTYPE html>
 <html lang="en">
@@ -391,7 +413,8 @@ def render_analysis_report_html(
 </head>
 <body>
 <h1>{html.escape(project_name)} Static Analysis Report</h1>
-<p>Generated {html.escape(generated_at)}</p>
+<p>Generated {html.escape(generated_at)}{version_suffix}</p>
+{sarif_link_html}
 <div class="stats">
   <div class="stat-card">
     <div class="stat-label">Processed files</div>
@@ -413,6 +436,7 @@ def render_analysis_report_html(
   </div>
 </div>
 """
+
 
     if check_summary_rows_html:
         report += f"""
@@ -452,3 +476,130 @@ def render_analysis_report_html(
 </html>
 """
     return report
+
+
+# ── SARIF report ───────────────────────────────────────────────────────────────
+
+_FALLBACK_CLANG_TIDY_VERSION = "0.0.0"
+
+_CLANG_TIDY_VERSION_RE = re.compile(r"version\s+([0-9]+(?:\.[0-9]+){1,3})", re.IGNORECASE)
+
+_SEMANTIC_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){1,3}$")
+
+
+def get_clang_tidy_version(tidy_command):
+    """Resolve the clang-tidy binary's version string (e.g. '22.1.8').
+
+    Runs '<tidy_command> --version' and extracts the version number from
+    output such as 'LLVM version 22.1.8'. Falls back to a placeholder
+    version ('0.0.0') if the command fails, times out, or the output can't
+    be parsed, so callers always get a usable, non-empty version string.
+    """
+    try:
+        completed = subprocess.run(
+            [tidy_command, "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
+    except Exception:
+        return _FALLBACK_CLANG_TIDY_VERSION
+
+    output = (completed.stdout or "") + (completed.stderr or "")
+    match = _CLANG_TIDY_VERSION_RE.search(output)
+    if not match:
+        return _FALLBACK_CLANG_TIDY_VERSION
+    return match.group(1)
+
+
+_DEFAULT_SARIF_RULE_ID = "clang-tidy"
+
+_SARIF_LEVEL_BY_SEVERITY = {
+    "error": "error",
+    "warning": "warning",
+}
+
+
+def render_analysis_report_sarif(project_name, project_directory, results, tool_version):
+    """Render a SARIF 2.1.0 log (as a JSON string) for the given per-file results.
+
+    Args:
+        project_name: The project name (kept for signature symmetry with
+            render_analysis_report_html; not currently embedded in the log).
+        project_directory: Absolute path used to compute file URIs relative to it.
+        results: Iterable of (source_file, has_issues, issues) tuples, the same
+            data used to build the HTML report. Each issue dict is expected to
+            have 'line', 'column', 'severity', 'message' and optionally 'check'.
+        tool_version: Version string for the clang-tidy binary used (see
+            get_clang_tidy_version). Populates tool.driver.version (and
+            semanticVersion when it's a clean numeric X.Y[.Z[.Z]] value),
+            satisfying SARIF2005.
+    """
+    rule_ids = []
+    seen_rule_ids = set()
+    sarif_results = []
+
+    for source_file, has_issues, issues in results:
+        if not has_issues:
+            continue
+        rel_path = os.path.relpath(source_file, project_directory).replace(os.sep, "/")
+        for issue in issues:
+            rule_id = issue.get("check") or _DEFAULT_SARIF_RULE_ID
+            if rule_id not in seen_rule_ids:
+                seen_rule_ids.add(rule_id)
+                rule_ids.append(rule_id)
+
+            level = _SARIF_LEVEL_BY_SEVERITY.get(issue.get("severity"), "warning")
+
+            try:
+                start_line = int(issue["line"])
+            except (KeyError, TypeError, ValueError):
+                start_line = 1
+            try:
+                start_column = int(issue["column"])
+            except (KeyError, TypeError, ValueError):
+                start_column = 1
+
+            sarif_results.append(
+                {
+                    "ruleId": rule_id,
+                    "level": level,
+                    "message": {"text": issue.get("message", "")},
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {"uri": rel_path},
+                                "region": {
+                                    "startLine": start_line,
+                                    "startColumn": start_column,
+                                },
+                            }
+                        }
+                    ],
+                }
+            )
+
+    rules = [{"id": rule_id} for rule_id in rule_ids]
+
+    driver = {
+        "name": "clang-tidy",
+        "informationUri": "https://clang.llvm.org/extra/clang-tidy/",
+        "version": tool_version,
+        "rules": rules,
+    }
+    if _SEMANTIC_VERSION_RE.match(tool_version):
+        driver["semanticVersion"] = tool_version
+
+    sarif_log = {
+        "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [
+            {
+                "tool": {"driver": driver},
+                "results": sarif_results,
+            }
+        ],
+    }
+
+    return json.dumps(sarif_log, indent=2)
