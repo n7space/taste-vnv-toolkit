@@ -1,0 +1,217 @@
+--  Node name          : samv71asw
+--  Execution platform : PLATFORM_SAMV71_RTEMS
+--  This file is generated for SAMV71 with RTEMS6
+
+
+
+
+project Samv71asw is
+
+   type Build_Type is ("Debug", "Release");
+   Build : Build_Type := external ("CFG", "Debug");
+
+   --  following to be updated with all relevant source dirs
+   for Source_Dirs use
+      (
+       "../../controller/C/src",
+       "../../controller/C/wrappers",
+       "../../datapool/C/src",
+       "../../datapool/C/wrappers",
+       "../../manager/SDL/code",
+       "../../manager/SDL/wrappers",
+       "../../samv71asw_timer_manager/Timer_Manager/src",
+       "../../samv71asw_timer_manager/Timer_Manager/wrappers",
+       "../../utilities/C/src",
+       "../../utilities/C/wrappers",
+       "../../dataview/C",
+       "../system_spec",
+       "samv71asw/runtime",
+       "samv71asw/runtime/Broker",
+       "samv71asw/runtime/Escaper",
+       "samv71asw/runtime/Packetizer",
+       "samv71asw/runtime/RuntimeCommon",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/Hal",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/Monitor",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/ThreadsCommon",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/BrokerLock",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/SamV71Core",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/Xdmac",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/FaultHandler",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/src/BootHelper",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Wdt",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Utils",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Uart",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Tic",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Systick",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/SystemConfig",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Sdramc",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Rstc",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Pmc",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Pio",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Nvic",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Mpu",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Mcan",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Fpu",
+       "samv71asw/runtime/SAMX-RTEMS-Runtime/arm-bsp/src/Scb",
+       "samv71asw")
+       & external_as_list("EXTERNAL_SOURCE_PATH", ":")
+       & external_as_list("SAMV71ASW_EXTERNAL_SOURCE_PATH", ":");
+
+   for Object_Dir use "samv71asw_obj";
+   for Exec_Dir   use "../../binaries";
+
+   for Languages use (
+       "C");
+
+   package Naming is
+       for Body_Suffix ("C++") use ".cc";
+       for Body_Suffix ("Ada") use ".adb";
+   end Naming;
+
+   for Main use ("main.c");
+
+   Warning_Switches :=
+       ("-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter");
+
+   SAMV71_Switches :=
+        ("-mcpu=cortex-m7",
+         "-mfloat-abi=hard",
+         "-mfpu=fpv5-d16",
+         "-mlittle-endian",
+         "-fstack-usage",
+         "-fcallgraph-info=su",
+         "-mthumb",
+         "-ffunction-sections",
+         "-lm",
+         "-DN7S_TARGET_SAMV71Q21",
+         "-DWORD_SIZE=4");
+
+   SAMV71_Includes := ("-I/opt/taste-rtems-qdp-arm/arm-rtems6/n7sbsp-samv71q21/lib/include");
+
+   SAMV71_CC_Switches :=
+         ("-ffunction-sections",
+         "-fdata-sections",
+         "-fstack-usage",
+         "-fcallgraph-info=su",
+         "-DRTEMS6_TARGET");
+
+   SAMV71_CXX_Switches := ("-std=c++17");
+
+   Home_Path := external ("HOME", "home/taste");
+   SAMV71_Default_Linker_Script := Home_Path &"/tool-inst/include/TASTE-SAMX-RTEMS-Runtime/linker_script/linkcmds.intsram";
+   SAMV71_Default_Linker_Script_Dir := Home_Path &"/tool-inst/include/TASTE-SAMX-RTEMS-Runtime/linker_script";
+
+   SAMV71_Linker_Script := external ("SAMV71ASW_USER_LDSCRIPT", SAMV71_Default_Linker_Script);
+   SAMV71_Linker_Script_Dir := external ("SAMV71ASW_USER_LDSCRIPT_DIR", SAMV71_Default_Linker_Script_Dir);
+
+   SAMV71_LD_Switches :=
+         ("-qnolinkcmds",
+         "-Wl,-L" & SAMV71_Linker_Script_Dir,
+         "-Wl,-L/opt/taste-rtems-qdp-arm/arm-rtems6/n7sbsp-samv71q21/lib",
+         "-Wl,-T" & SAMV71_Linker_Script,
+         "-qrtems",
+         "-Wl,--start-group",
+         "-lrtemscpu",
+         "-lrtemsbsp",
+         "-lgcc",
+         "-Wl,--end-group",
+         "-Wl,--gc-sections");
+
+   package Compiler is
+      for Driver ("C") use "arm-rtems6-gcc";
+      for Driver ("Ada") use "arm-rtems6-gnat";
+      for Driver ("C++") use "arm-rtems6-g++";
+
+      for Required_Switches ("C") use ("-c");
+      for Required_Switches ("C++") use ("-c");
+      for Required_Switches ("Ada") use ("-c");
+
+      case Build is
+         when "Release" =>
+            for Default_Switches ("C") use
+               ("-g",
+                "-O2")
+                & Warning_Switches
+                & SAMV71_Switches
+                & SAMV71_CC_Switches
+                & SAMV71_Includes
+                & external_as_list("SAMV71ASW_USER_CFLAGS", " ")
+                & external_as_list("USER_CFLAGS", " ")
+                & external_as_list("SAMV71ASW_EXTERNAL_LIBS_INCLUDES", " ");
+            for Default_Switches ("C++") use
+               ("-g",
+                "-O2")
+                & Warning_Switches
+                & SAMV71_Switches
+                & SAMV71_CC_Switches
+                & SAMV71_CXX_Switches
+                & SAMV71_Includes
+                & external_as_list("SAMV71ASW_USER_CFLAGS", " ")
+                & external_as_list("USER_CFLAGS", " ")
+                & external_as_list("SAMV71ASW_EXTERNAL_LIBS_INCLUDES", " ");
+            for Default_Switches ("Ada") use
+               ("-Wall",
+                "-Wextra",
+                "-gnatd.E")
+                & SAMV71_Switches;
+         when "Debug" =>
+            for Default_Switches ("C") use
+               ("-O0",
+                "-g")
+                & Warning_Switches
+                & SAMV71_Switches
+                & SAMV71_CC_Switches
+                & SAMV71_Includes
+                & external_as_list("SAMV71ASW_USER_CFLAGS", " ")
+                & external_as_list("USER_CFLAGS", " ")
+                & external_as_list("SAMV71ASW_EXTERNAL_LIBS_INCLUDES", " ");
+            for Default_Switches ("C++") use
+               ("-O0",
+                "-g")
+                & Warning_Switches
+                & SAMV71_Switches
+                & SAMV71_CC_Switches
+                & SAMV71_CXX_Switches
+                & SAMV71_Includes
+                & external_as_list("SAMV71ASW_USER_CFLAGS", " ")
+                & external_as_list("USER_CFLAGS", " ")
+                & external_as_list("SAMV71ASW_EXTERNAL_LIBS_INCLUDES", " ");
+            for Default_Switches ("Ada") use
+               ("-Wall",
+                "-Wextra",
+                "-gnatd.E")
+                & SAMV71_Switches;
+      end case;
+   end Compiler;
+
+   package Linker is
+      for Driver use "arm-rtems6-gcc";
+
+      Common_LD_Switches :=
+          external_as_list("SAMV71ASW_USER_LDFLAGS", " ")
+          & external_as_list("USER_LDFLAGS", " ");
+
+      case Build is
+          when "Release" =>
+            for Default_Switches ("C") use
+                Common_LD_Switches
+                & SAMV71_LD_Switches
+                & SAMV71_Switches;
+         when "Debug" =>
+            for Default_Switches ("C") use
+                Common_LD_Switches
+                & SAMV71_LD_Switches
+                & SAMV71_Switches;
+      end case;
+
+   end Linker;
+
+   package Builder is
+      for Executable ("main.c") use "samv71asw";
+   end Builder;
+
+end Samv71asw;

@@ -1,0 +1,60 @@
+# This file is generated for Generic Linux partition
+#  node_1 p1  PLATFORM_SAMV71_RTEMS ocarina_processors_arm::samv71.rtems
+
+.PHONY: all clean partitions partition_samv71asw partition_debug_samv71asw runtime_samv71asw
+
+
+all:    debug
+
+release: partition_samv71asw
+
+debug: partition_debug_samv71asw
+
+partition_samv71asw: runtime_samv71asw
+	# Install additional libraries
+	mkdir -p "samv71asw/libs"
+	for dir in $(subst :, ,$(SAMV71ASW_EXTERNAL_LIBS)); do \
+		cp -r $$dir/* samv71asw/libs/; \
+	done; \
+	SAMV71ASW_LIB_DIRS="samv71asw/libs"; \
+	for d in samv71asw/libs/*/; do \
+    	[ -d "$$d" ] && SAMV71ASW_LIB_DIRS="$$SAMV71ASW_LIB_DIRS:$$d"; \
+	done; \
+	export SAMV71ASW_EXTERNAL_SOURCE_PATH="$$SAMV71ASW_LIB_DIRS:$$SAMV71ASW_EXTERNAL_SOURCE_PATH"; \
+	SAMV71ASW_EXTERNAL_LIBS_INCLUDES=""; \
+	for d in samv71asw/libs samv71asw/libs/*; do \
+		if [ -d "$$d" ]; then \
+			SAMV71ASW_EXTERNAL_LIBS_INCLUDES="$$SAMV71ASW_EXTERNAL_LIBS_INCLUDES -I$$d"; \
+		fi; \
+	done; \
+	SAMV71ASW_EXTERNAL_LIBS_INCLUDES="$${SAMV71ASW_EXTERNAL_LIBS_INCLUDES# }"; \
+	export SAMV71ASW_EXTERNAL_LIBS_INCLUDES; \
+	gprbuild -R -p -P samv71asw.gpr -XCFG="Release" -cargs:C -DSTATIC=""
+
+partition_debug_samv71asw: runtime_samv71asw
+	# Install additional libraries
+	mkdir -p "samv71asw/libs"
+	for dir in $(subst :, ,$(SAMV71ASW_EXTERNAL_LIBS)); do \
+		cp -r $$dir/* samv71asw/libs/; \
+	done; \
+	SAMV71ASW_LIB_DIRS="samv71asw/libs"; \
+	for d in samv71asw/libs/*/; do \
+    	[ -d "$$d" ] && SAMV71ASW_LIB_DIRS="$$SAMV71ASW_LIB_DIRS:$$d"; \
+	done; \
+	export SAMV71ASW_EXTERNAL_SOURCE_PATH="$$SAMV71ASW_LIB_DIRS:$$SAMV71ASW_EXTERNAL_SOURCE_PATH"; \
+	SAMV71ASW_EXTERNAL_LIBS_INCLUDES=""; \
+	for d in samv71asw/libs samv71asw/libs/*; do \
+		if [ -d "$$d" ]; then \
+			SAMV71ASW_EXTERNAL_LIBS_INCLUDES="$$SAMV71ASW_EXTERNAL_LIBS_INCLUDES -I$$d"; \
+		fi; \
+	done; \
+	SAMV71ASW_EXTERNAL_LIBS_INCLUDES="$${SAMV71ASW_EXTERNAL_LIBS_INCLUDES# }"; \
+	export SAMV71ASW_EXTERNAL_LIBS_INCLUDES; \
+	gprbuild -R -p -P samv71asw.gpr -XCFG="Debug" -cargs:C -DSTATIC=""
+
+clean:
+	gprclean -P samv71asw.gpr
+
+runtime_samv71asw:
+	sh ./runtime_samv71asw.sh
+
