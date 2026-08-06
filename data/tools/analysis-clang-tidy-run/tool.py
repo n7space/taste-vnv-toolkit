@@ -14,7 +14,9 @@ from clangshared import (
     get_clang_tidy_command,
     get_clang_tidy_defines,
     get_clang_tidy_include_paths,
+    get_clang_tidy_version,
     render_analysis_report_html,
+    render_analysis_report_sarif,
     render_check_badge,
 )
 from vnvtoolkit import (
@@ -174,7 +176,9 @@ def render_check_summary_rows(all_issues):
     return "".join(rows)
 
 
-def generate_html_report(project_name, project_directory, results):
+def generate_html_report(
+    project_name, project_directory, results, tool_version=None, sarif_filename=None
+):
     """Generates the full HTML static analysis report for the given per-file results."""
     total_files = len(results)
     files_with_issues = sum(1 for _, has_issues, _ in results if has_issues)
@@ -202,6 +206,8 @@ def generate_html_report(project_name, project_directory, results):
         failure_rows_html=failure_rows_html,
         success_rows_html=success_rows_html,
         check_summary_rows_html=check_summary_rows_html,
+        tool_version=tool_version,
+        sarif_filename=sarif_filename,
     )
 
 
@@ -220,6 +226,7 @@ else:
 
         project_name = get_project_name(taste_project_directory)
         output_filename = f"{project_name}-code-analysis-report.html"
+        sarif_output_filename = f"{project_name}-code-analysis-report.sarif"
 
         resolved_output = (
             resolve_path(taste_project_directory, output_directory)
@@ -227,6 +234,7 @@ else:
             else os.path.join(taste_project_directory, "output")
         )
         output_path = os.path.join(resolved_output, output_filename)
+        sarif_output_path = os.path.join(resolved_output, sarif_output_filename)
 
         config_path = get_clang_tidy_analysis_file_path(taste_project_directory)
 
@@ -254,16 +262,35 @@ else:
 
         emit_progress(95)
 
-        content = generate_html_report(project_name, taste_project_directory, results)
+        tool_version = get_clang_tidy_version(tidy_command)
+
+        content = generate_html_report(
+            project_name,
+            taste_project_directory,
+            results,
+            tool_version=tool_version,
+            sarif_filename=sarif_output_filename,
+        )
+        sarif_content = render_analysis_report_sarif(
+            project_name,
+            taste_project_directory,
+            results,
+            tool_version,
+        )
 
         os.makedirs(resolved_output, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(content)
+        with open(sarif_output_path, "w", encoding="utf-8") as f:
+            f.write(sarif_content)
 
         emit_progress(100)
 
         status = "ok"
-        status_text = f"Code analysis report created at: {output_path}"
+        status_text = (
+            f"Code analysis report created at: {output_path} "
+            f"(SARIF: {sarif_output_path})"
+        )
         show_status = True
 
     except Exception as exc:
