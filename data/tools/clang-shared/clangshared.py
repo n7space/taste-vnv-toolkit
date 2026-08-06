@@ -1,13 +1,18 @@
 """Shared utilities for Clang tools."""
 
 import html
-import json
 import os
 import re
 import subprocess
-from datetime import datetime
 
-from vnvtoolkit import get_function_impl_path, get_setting
+from analysisshared import (
+    enumerate_source_files as shared_enumerate_source_files,
+    render_analysis_report_html as shared_render_analysis_report_html,
+    render_analysis_report_sarif as shared_render_analysis_report_sarif,
+    render_check_badge as shared_render_check_badge,
+    split_setting_list,
+)
+from vnvtoolkit import get_setting
 
 # ── Settings helpers ──────────────────────────────────────────────────────────
 
@@ -22,21 +27,16 @@ def get_clang_tidy_command(settings):
     return str(get_setting(settings, "Clang-Tidy command", "clang-tidy"))
 
 
-def _split_setting_list(value):
-    """Splits a ':'-separated setting string into a list, stripping empties."""
-    return [item.strip() for item in str(value).split(":") if item.strip()]
-
-
 def get_clang_tidy_include_paths(settings):
     """Get the clang-tidy include paths from settings (':'-separated list)."""
-    return _split_setting_list(
+    return split_setting_list(
         get_setting(settings, "Clang-Tidy include paths", "work/dataview/C")
     )
 
 
 def get_clang_tidy_defines(settings):
     """Get the clang-tidy defines from settings (':'-separated list)."""
-    return _split_setting_list(get_setting(settings, "Clang-Tidy defines", ""))
+    return split_setting_list(get_setting(settings, "Clang-Tidy defines", ""))
 
 
 def build_clang_tidy_extra_args(include_paths, defines):
@@ -113,29 +113,9 @@ def check_clang_tidy_analysis_file_exists(file_path):
     return True, None
 
 
-# ── Source file enumeration ───────────────────────────────────────────────────
-
-SOURCE_EXTENSIONS = (".c", ".cpp", ".cc", ".h", ".hpp", ".hh")
-
-
 def enumerate_source_files(project_directory, functions):
-    """Collects source/header files (recursively) from each function's impl dir,
-    skipping the function's own top-level generated header (<function_name>.h)."""
-    source_files = []
-    for fun in functions:
-        source_dir = get_function_impl_path(project_directory, fun)
-        if not source_dir:
-            continue
-        skip_file = f"{fun}.h"
-        for root, dirs, entries in os.walk(source_dir):
-            dirs.sort()
-            for entry in sorted(entries):
-                if not entry.lower().endswith(SOURCE_EXTENSIONS):
-                    continue
-                if root == source_dir and entry == skip_file:
-                    continue
-                source_files.append(os.path.join(root, entry))
-    return source_files
+    """Collects source/header files to analyze from function implementation dirs."""
+    return shared_enumerate_source_files(project_directory, functions)
 
 
 # ── Issue message helpers ─────────────────────────────────────────────────────
@@ -188,14 +168,6 @@ _CHECK_CATEGORY_PREFIXES = [
     ("misc-", "quality"),
 ]
 
-_CATEGORY_COLORS = {
-    "quality": ("#1a4a8a", "#ddeeff"),
-    "security": ("#7a0000", "#ffe0e0"),
-    "best-practice": ("#2a6a00", "#e0f5d0"),
-    "other": ("#555555", "#f0f0f0"),
-}
-
-
 def get_check_category(check_name):
     """Return the category string for a given clang-tidy check name."""
     if not check_name:
@@ -208,15 +180,8 @@ def get_check_category(check_name):
 
 def render_check_badge(check_name):
     """Render a small HTML badge for the given clang-tidy check name."""
-    if not check_name:
-        return ""
     category = get_check_category(check_name)
-    fg, bg = _CATEGORY_COLORS.get(category, _CATEGORY_COLORS["other"])
-    return (
-        f"<span class=\"check-badge check-badge-{html.escape(category)}\" "
-        f"title=\"Category: {html.escape(category)}\">"
-        f"{html.escape(check_name)}</span>"
-    )
+    return shared_render_check_badge(check_name, category)
 
 
 # ── HTML report scaffold ──────────────────────────────────────────────────────
@@ -366,116 +331,22 @@ def render_analysis_report_html(
     check_summary_rows_html,
     tool_version=None,
     sarif_filename=None,
+    tool_name="Clang-Tidy",
 ):
-    """Render a full HTML static-analysis report page.
-
-    Unlike the style report, the analysis report shows check-name badges per
-    issue and includes an optional 'Issues by check' breakdown table.
-
-    Args:
-        project_name: The project name shown in the title and heading.
-        generated_at: Timestamp string to show under the heading.
-        total_files: Total number of source files processed.
-        files_with_issues: Number of files with at least one finding.
-        total_issues: Total number of individual findings across all files.
-        failure_rows_html: Pre-rendered HTML rows for files with issues.
-        success_rows_html: Pre-rendered HTML rows for clean files.
-        check_summary_rows_html: Pre-rendered HTML rows for the per-check breakdown
-            table (may be empty string to omit the section).
-        tool_version: Optional clang-tidy version string (see
-            get_clang_tidy_version); appended inline to the "Generated" line when provided.
-        sarif_filename: Optional filename of the SARIF report generated
-            alongside this HTML report. Assumed to live in the same output
-            directory, so it's rendered as a relative download link.
-    """
-    files_without_issues = total_files - files_with_issues
-    issue_percent = (files_with_issues / total_files * 100) if total_files else 0
-    ok_percent = (files_without_issues / total_files * 100) if total_files else 0
-
-    version_suffix = ""
-    if tool_version:
-        version_suffix = f" using Clang-Tidy {html.escape(tool_version)}"
-
-    sarif_link_html = ""
-    if sarif_filename:
-        sarif_link_html = (
-            f'<a class="sarif-link" href="{html.escape(sarif_filename)}" download>'
-            "Download SARIF report</a>"
-        )
-
-    report = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>{html.escape(project_name)} Static Analysis Report</title>
-<style>{_REPORT_CSS}</style>
-<script>{_TOGGLE_SCRIPT}</script>
-</head>
-<body>
-<h1>{html.escape(project_name)} Static Analysis Report</h1>
-<p>Generated {html.escape(generated_at)}{version_suffix}</p>
-{sarif_link_html}
-<div class="stats">
-  <div class="stat-card">
-    <div class="stat-label">Processed files</div>
-    <div class="stat-value">{total_files}</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Clean files</div>
-    <div class="stat-value">{files_without_issues}</div>
-    <div class="stat-meta">{ok_percent:.1f}%</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Files with issues</div>
-    <div class="stat-value">{files_with_issues}</div>
-    <div class="stat-meta">{issue_percent:.1f}%</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Total findings</div>
-    <div class="stat-value">{total_issues}</div>
-  </div>
-</div>
-"""
-
-
-    if check_summary_rows_html:
-        report += f"""
-<h2>Issues by check</h2>
-<table>
-<thead><tr><th>Check</th><th>Category</th><th>Count</th></tr></thead>
-<tbody>
-{check_summary_rows_html}
-</tbody>
-</table>
-"""
-
-    if failure_rows_html:
-        report += f"""
-<h2>Files with issues</h2>
-<table>
-<thead><tr><th>File</th><th>Summary</th></tr></thead>
-<tbody>
-{failure_rows_html}
-</tbody>
-</table>
-"""
-
-    if success_rows_html:
-        report += f"""
-<h2>Clean files</h2>
-<table>
-<thead><tr><th>File</th><th>Summary</th></tr></thead>
-<tbody>
-{success_rows_html}
-</tbody>
-</table>
-"""
-
-    report += """
-</body>
-</html>
-"""
-    return report
+    """Render a full static-analysis HTML report page."""
+    return shared_render_analysis_report_html(
+        project_name=project_name,
+        generated_at=generated_at,
+        total_files=total_files,
+        files_with_issues=files_with_issues,
+        total_issues=total_issues,
+        failure_rows_html=failure_rows_html,
+        success_rows_html=success_rows_html,
+        check_summary_rows_html=check_summary_rows_html,
+        tool_name=tool_name,
+        tool_version=tool_version,
+        sarif_filename=sarif_filename,
+    )
 
 
 # ── SARIF report ───────────────────────────────────────────────────────────────
@@ -483,8 +354,6 @@ def render_analysis_report_html(
 _FALLBACK_CLANG_TIDY_VERSION = "0.0.0"
 
 _CLANG_TIDY_VERSION_RE = re.compile(r"version\s+([0-9]+(?:\.[0-9]+){1,3})", re.IGNORECASE)
-
-_SEMANTIC_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){1,3}$")
 
 
 def get_clang_tidy_version(tidy_command):
@@ -513,93 +382,13 @@ def get_clang_tidy_version(tidy_command):
     return match.group(1)
 
 
-_DEFAULT_SARIF_RULE_ID = "clang-tidy"
-
-_SARIF_LEVEL_BY_SEVERITY = {
-    "error": "error",
-    "warning": "warning",
-}
-
-
-def render_analysis_report_sarif(project_name, project_directory, results, tool_version):
-    """Render a SARIF 2.1.0 log (as a JSON string) for the given per-file results.
-
-    Args:
-        project_name: The project name (kept for signature symmetry with
-            render_analysis_report_html; not currently embedded in the log).
-        project_directory: Absolute path used to compute file URIs relative to it.
-        results: Iterable of (source_file, has_issues, issues) tuples, the same
-            data used to build the HTML report. Each issue dict is expected to
-            have 'line', 'column', 'severity', 'message' and optionally 'check'.
-        tool_version: Version string for the clang-tidy binary used (see
-            get_clang_tidy_version). Populates tool.driver.version (and
-            semanticVersion when it's a clean numeric X.Y[.Z[.Z]] value),
-            satisfying SARIF2005.
-    """
-    rule_ids = []
-    seen_rule_ids = set()
-    sarif_results = []
-
-    for source_file, has_issues, issues in results:
-        if not has_issues:
-            continue
-        rel_path = os.path.relpath(source_file, project_directory).replace(os.sep, "/")
-        for issue in issues:
-            rule_id = issue.get("check") or _DEFAULT_SARIF_RULE_ID
-            if rule_id not in seen_rule_ids:
-                seen_rule_ids.add(rule_id)
-                rule_ids.append(rule_id)
-
-            level = _SARIF_LEVEL_BY_SEVERITY.get(issue.get("severity"), "warning")
-
-            try:
-                start_line = int(issue["line"])
-            except (KeyError, TypeError, ValueError):
-                start_line = 1
-            try:
-                start_column = int(issue["column"])
-            except (KeyError, TypeError, ValueError):
-                start_column = 1
-
-            sarif_results.append(
-                {
-                    "ruleId": rule_id,
-                    "level": level,
-                    "message": {"text": issue.get("message", "")},
-                    "locations": [
-                        {
-                            "physicalLocation": {
-                                "artifactLocation": {"uri": rel_path},
-                                "region": {
-                                    "startLine": start_line,
-                                    "startColumn": start_column,
-                                },
-                            }
-                        }
-                    ],
-                }
-            )
-
-    rules = [{"id": rule_id} for rule_id in rule_ids]
-
-    driver = {
-        "name": "clang-tidy",
-        "informationUri": "https://clang.llvm.org/extra/clang-tidy/",
-        "version": tool_version,
-        "rules": rules,
-    }
-    if _SEMANTIC_VERSION_RE.match(tool_version):
-        driver["semanticVersion"] = tool_version
-
-    sarif_log = {
-        "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
-        "version": "2.1.0",
-        "runs": [
-            {
-                "tool": {"driver": driver},
-                "results": sarif_results,
-            }
-        ],
-    }
-
-    return json.dumps(sarif_log, indent=2)
+def render_analysis_report_sarif(project_directory, results, tool_version):
+    """Render a SARIF 2.1.0 log for static-analysis findings."""
+    return shared_render_analysis_report_sarif(
+        project_directory=project_directory,
+        results=results,
+        tool_name="clang-tidy",
+        tool_information_uri="https://clang.llvm.org/extra/clang-tidy/",
+        tool_version=tool_version,
+        default_rule_id="clang-tidy",
+    )

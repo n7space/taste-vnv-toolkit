@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ToolDefinition>
+  <Name>Execute Cppcheck static analysis</Name>
+  <Group>Static Analysis (Cppcheck)</Group>
+  <Hint>Execute Cppcheck to perform static analysis on the project</Hint>
+  <Description>Runs Cppcheck on project source files and generates HTML and SARIF reports. Analysis behavior is controlled by tool settings: include paths, defines, platform, enabled Cppcheck check groups, and an optional MISRA C 2012 addon. Without a supplied 'MISRA rule texts file' (a copyrighted MISRA document the user must provide under their own license), MISRA findings show a generic placeholder message with the rule id instead of full rule text.</Description>
+  <StatusScript>status.py</StatusScript>
+  <ToolScript>tool.py</ToolScript>
+  <ViewScript>view.py</ViewScript>
+  <ImportPaths>
+    <Path>../shared</Path>
+    <Path>../analysis-shared</Path>
+    <Path>../cppcheck-shared</Path>
+  </ImportPaths>
+  <Settings>
+    <Setting>
+      <Name>Cppcheck command</Name>
+      <Type>String</Type>
+      <Default>cppcheck</Default>
+    </Setting>
+    <Setting>
+      <Name>Cppcheck include paths</Name>
+      <Type>String</Type>
+      <Default>work/dataview/C</Default>
+    </Setting>
+    <Setting>
+      <Name>Cppcheck defines</Name>
+      <Type>String</Type>
+      <Default></Default>
+    </Setting>
+    <Setting>
+      <Name>Cppcheck platform</Name>
+      <Type>String</Type>
+      <Default>unix64</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable style checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable warning checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable performance checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable portability checks</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable information messages</Name>
+      <Type>Bool</Type>
+      <Default>True</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable unused function checks</Name>
+      <Type>Bool</Type>
+      <Default>False</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable missing include checks</Name>
+      <Type>Bool</Type>
+      <Default>False</Default>
+    </Setting>
+    <Setting>
+      <Name>Enable MISRA C 2012 addon</Name>
+      <Type>Bool</Type>
+      <Default>False</Default>
+    </Setting>
+    <Setting>
+      <Name>MISRA rule texts file</Name>
+      <Type>String</Type>
+      <Default></Default>
+    </Setting>
+  </Settings>
+</ToolDefinition>

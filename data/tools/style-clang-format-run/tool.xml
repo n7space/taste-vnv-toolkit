@@ -10,6 +10,7 @@
   <ImportPaths>
     <Path>../shared</Path>
     <Path>../clang-shared</Path>
+    <Path>../analysis-shared</Path>
   </ImportPaths>
   <Settings>
     <Setting>

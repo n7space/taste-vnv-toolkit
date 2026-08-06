@@ -272,7 +272,6 @@ else:
             sarif_filename=sarif_output_filename,
         )
         sarif_content = render_analysis_report_sarif(
-            project_name,
             taste_project_directory,
             results,
             tool_version,
